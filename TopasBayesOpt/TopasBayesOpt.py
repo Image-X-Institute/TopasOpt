@@ -35,6 +35,27 @@ logger.setLevel(logging.INFO)  # This toggles all the logging in your app
 logger.propagate = False
 
 
+def import_from_absolute_path(fullpath, global_name=None):
+    """
+    Dynamic script import using full path.
+    credit: https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders
+    """
+    import os
+    import sys
+
+    script_dir, filename = os.path.split(fullpath)
+    script, ext = os.path.splitext(filename)
+
+    sys.path.insert(0, script_dir)
+    try:
+        module = __import__(script)
+        if global_name is None:
+            global_name = script
+        globals()[global_name] = module
+        sys.modules[global_name] = module
+    finally:
+        del sys.path[0]
+
 class bcolors:
     """
     This is just here to enable me to print pretty colors to the linux terminal
@@ -50,7 +71,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-class SphinxOptBaseClass:
+class TopasOptBaseClass:
     """
     We provide two different method's for performing optimisation: Downhill Simplex, and Bayesian with Gausian Processes.
 
@@ -188,10 +209,6 @@ class SphinxOptBaseClass:
 
         self.CreateVariableDictionary(self.StartingValues)
         NewVariableDict = self.targ_Thicknesses_toList()  # converts targ_Thicknesses terms to list if they exist
-        PhaserGeom = PhaserBeamLine(verbose=False, **NewVariableDict)
-        if PhaserGeom.Collimator.WallThicknessError:
-            logger.error('your starting parameters produced a wall thickness error, quitting')
-            sys.exit(1)
 
     def GenerateTopasModel(self, x):
         """
@@ -205,11 +222,6 @@ class SphinxOptBaseClass:
             # seem to be working so deleting it.
             os.remove(ShellScriptLocation)
         self.ShellScriptLocation = ShellScriptLocation
-
-        NewVariableDict = self.targ_Thicknesses_toList()  # converts targ_Thicknesses terms to list if they exist
-        NewVariableDict['BeamletSpacingAtIso'] = self.TargetBeamWidth
-        self.PhaserGeom = PhaserBeamLine(verbose=False, **NewVariableDict)
-        self.WallThicknessError = self.PhaserGeom.Collimator.WallThicknessError
         ParameterString = f'run_{self.Itteration}'
         # for i, Paramter in enumerate(self.ParameterNames):
         #     ParameterString = ParameterString + f'_{Paramter}_{x[0][i]:1.1f}'
@@ -221,16 +233,8 @@ class SphinxOptBaseClass:
             UsePhaseSpaceSource = True
             Nparticles = self.Nparticles
 
-        self.TopasScript = TopasScriptGenerator(self.BaseDirectory, self.SimulationName, self.PhaserGeom,
-                                                AnglesToRun='Central', WaterTankVoxelSizeZ=2.5,
-                                                PhysicsSettings='g4em-standard_opt0',
-                                                UseMappedMagneticField=False,
-                                                Overwrite=True,
-                                                UsePhaseSpaceSource=UsePhaseSpaceSource,
-                                                ParametricVariable=ParameterString,
-                                                WT_ScoringFieldSize=self.TargetBeamWidth * 3,
-                                                Nthreads=self.Nthreads,
-                                                Nparticles=Nparticles, NPhaseSpaceRecycling=120)
+        self.TopasScript = self.TopasScriptGenerator(**self.VariableDict)
+
 
     def RunTopasModel(self):
         """
@@ -808,7 +812,7 @@ class SphinxOptBaseClass:
         plt.show()
 
 
-class NealderMeadOptimiser(SphinxOptBaseClass):
+class NealderMeadOptimiser(TopasOptBaseClass):
     """
     the purpose of this code is to run a optimsiation of the central channel for the sphinx collimator.
     The goal is to maximise the dose/dose rate while maintaining TargetBeamWidth. This is a work in progress.
@@ -949,13 +953,13 @@ class NealderMeadOptimiser(SphinxOptBaseClass):
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
 
 
-class BayesianOptimiser(SphinxOptBaseClass):
+class BayesianOptimiser(TopasOptBaseClass):
     """
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
     This inherits most of its functionality from SphinxOptBaseClass
     """
 
-    def __init__(self, optimisation_params, BaseDirectory, SimulationName,
+    def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                  TargetBeamWidth=7, debug=True, Nthreads=-6,
                  StartingSimplexRelativeVal=None, length_scales=None,
                  UseKappaDecay=False, UseBoundsTransformer=False):
@@ -989,17 +993,37 @@ class BayesianOptimiser(SphinxOptBaseClass):
         :param UseBoundsTransformer: if True, use bounds transformation as described
             `here <https://github.com/fmfn/BayesianOptimization/blob/master/examples/domain_reduction.ipynb>`_
         :type UseBoundsTransformer: Boolean
+        :param OptimisationDirectory: location that TopasObjectiveFunction and GenerateTopasScript are located
+        :type OptimisationDirectory: string or Path
         """
+
+        # attempt the absolute imports from the optimisation directory:
+        try:
+            import_from_absolute_path(Path(OptimisationDirectory) / 'GenerateTopasScript.py')
+        except ModuleNotFoundError:
+            logger.error(f'could not find required file at {str(Path(OptimisationDirectory) / "GenerateTopasScript.py")}.'
+                         f'\nQuitting')
+            sys.exit(1)
+        try:
+            import_from_absolute_path(Path(OptimisationDirectory) / 'TopasObjectiveFunction.py')
+        except:
+            logger.error(f'could not find required file at {str(Path(OptimisationDirectory) / "GenerateTopasScript.py")}.'
+                         f'\nQuitting')
+            sys.exit(1)
+        self.TopasScriptGenerator = GenerateTopasScript.WriteTopasScript
+        self.TopasObjectiveFunction = TopasObjectiveFunction.TopasObjectiveFunction
+
         if StartingSimplexRelativeVal is not None:
             logger.warning(
                 f'You have attempted to use the variable StartingSimplexRelativeVal, but this does nothing'
                 f'in the Bayesian optimiser - it only works with the Nealder-Mead optimiser. Continuing'
                 f' and ignoring this parameter')
-        # don't change __ variables!
-        self.__RestartMode = False
+
+        self.__RestartMode = False  # don't change!
         self.Nthreads = Nthreads
         self.name = 'topas_interface'
         self.BaseDirectory = BaseDirectory
+        self.OptimisationDirectory = OptimisationDirectory
         if not os.path.isdir(BaseDirectory):
             logger.error(
                 f'{bcolors.FAIL}Input BaseDirectory "{BaseDirectory}" does not exist. Exiting. {bcolors.ENDC}')

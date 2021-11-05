@@ -6,6 +6,11 @@ This code links together two open source projects: [Bayesian optimisation in pyt
 
 ## Setup/Build/Install
 
+- This code will only run on linux (as will topas)
+- You require a working installation of topas.
+
+
+
 pip install -i https://test.pypi.org/simple/ TopasBayesOpt==0.0.1
 
 ## Usage
