@@ -2,7 +2,6 @@
 import subprocess
 import jsonpickle
 from matplotlib import pyplot as plt
-import matplotlib
 # matplotlib.use('Agg')  # having trouble with generating figures through ssh, hopefiully this resolves...
 from matplotlib import rcParams
 import shutil
@@ -19,17 +18,7 @@ from bayes_opt.util import load_logs
 from bayes_opt.event import Events
 from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
-
-sys.path.append('.')
-sys.path.append('../PhaserGeometry')
-sys.path.append('../AnalysisCodes')
-from PhaserBeamLine import PhaserBeamLine
-from TopasScriptGenerator2 import TopasScriptGenerator
-from DoseAnalyser2 import WaterTankData
-from FigureSpecs import FigureSpecs
 import logging
-
-
 
 # formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
 # ch = logging.StreamHandler()
@@ -44,7 +33,6 @@ logger = logging.getLogger(__name__)
 logger.addHandler(ch)
 logger.setLevel(logging.INFO)  # This toggles all the logging in your app
 logger.propagate = False
-rcParams['font.family'] = FigureSpecs.Font
 
 
 class bcolors:

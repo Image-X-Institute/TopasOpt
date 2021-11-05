@@ -6,7 +6,6 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='TopasBayesOpt',
-    version='0.0.2',
     url='https://github.sydney.edu.au/Image-X/TopasBayesOpt',
     packages=find_packages(include=['TopasBayesOpt', 'TopasBayesOpt.*']),
     author='Brendan Whelan',
@@ -21,7 +20,8 @@ setup(
         "scikit-learn >= 0.18.0",
         "bayesian-optimization",
         "matplotlib",
-        "jsonpickle"
+        "jsonpickle",
+        "topas2numpy"
     ],
     setup_requires=['pytest-runner', 'flake8'],
     tests_require=['pytest'],
