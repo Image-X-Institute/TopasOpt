@@ -1,0 +1,4 @@
+docsrc/_build
+
+# Python
+__pycache__
