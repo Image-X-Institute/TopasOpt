@@ -1,4 +1,7 @@
 docsrc/_build
-
+TopasBayesOpt/*.egg-info
+.eggs
+dist
 # Python
 __pycache__
+.pypirc

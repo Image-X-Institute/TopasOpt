@@ -1,25 +1,28 @@
-# Image-X documentation templates
+# TopasBayesOpt
 
+**Author:** *Brendan Whelan*
 
-## Project Name
-(Note: for your readme use #Project Name as this should be the main heading)
-
-**Author:** *Author Name*
-
-*Give a brief summary of the purpose of the code and what it does. The name, author name and summary is a minimum requirement for a  repository, the rest are useful suggestions that will help document the code.*
+This code links together two open source projects: [Bayesian optimisation in python](https://github.com/fmfn/BayesianOptimization), and [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC) to perform Bayesian optimisation on topas projects.
 
 ## Setup/Build/Install
 
-*How to setup, build and/or install your code here.*
+pip install -i https://test.pypi.org/simple/ TopasBayesOpt==0.0.1
 
 ## Usage
 
-*How to use your code. Maybe add a minimum working example with a small dataset that any newcomer to the code can run with minimal issue.*
+TBC
 
 ## Directory Structure
 
-*Briefly describe what is contained in each folder.*
+- **docs:** html documentation created from docsrc using sphinx
+- **docsrc:** markdown/rst documentation.
+- **examples:** as the name implies!
+- **tests:** Unit and integration tests
+- **TopasBayesOpt:** source code
 
-## Developer Note: Sphinx
+## Packaging information
 
-Please see the Sphinx [webpage](https://pages.github.sydney.edu.au/Image-X/Template-Sphinx/index.html) for how to set up Sphinx.
+
+
+
+
