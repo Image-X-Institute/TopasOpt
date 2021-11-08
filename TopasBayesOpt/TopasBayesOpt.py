@@ -19,6 +19,7 @@ from bayes_opt.event import Events
 from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
+from suppport_classes import bcolors
 
 # formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
 # ch = logging.StreamHandler()
@@ -38,7 +39,9 @@ logger.propagate = False
 def import_from_absolute_path(fullpath, global_name=None):
     """
     Dynamic script import using full path.
-    credit: https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders
+    This is required to enable mapping to the location of the script generation function and the objective funciton,
+    which are not known in advance.
+    (credit here)[https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders]
     """
     import os
     import sys
@@ -55,20 +58,6 @@ def import_from_absolute_path(fullpath, global_name=None):
         sys.modules[global_name] = module
     finally:
         del sys.path[0]
-
-class bcolors:
-    """
-    This is just here to enable me to print pretty colors to the linux terminal
-    """
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 
 class TopasOptBaseClass:
@@ -234,7 +223,6 @@ class TopasOptBaseClass:
             Nparticles = self.Nparticles
 
         self.TopasScript = self.TopasScriptGenerator(**self.VariableDict)
-
 
     def RunTopasModel(self):
         """
@@ -901,6 +889,7 @@ class NealderMeadOptimiser(TopasOptBaseClass):
 
         if not type(self.StartingSimplexRelativeVal) is float:
             logger.error('Starting simplex can only be defined as a relative parameter, e.g. 0.1')
+            sys.exit(1)
 
         N = len(self.StartingValues)
         nonzdelt = self.StartingSimplexRelativeVal
@@ -1311,7 +1300,6 @@ class BayesianOptimiser(TopasOptBaseClass):
             plt.grid()
             SaveName = PlotSavePath + f'/{param}.png'
             plt.savefig(SaveName)
-
 
     def RunOptimisation(self):
         """

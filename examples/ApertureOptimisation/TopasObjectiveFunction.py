@@ -1,18 +1,31 @@
+import sys
+import os
 import topas2numpy as tp
+sys.path.append('../../TopasBayesOpt')
+from WaterTankAnalyser import WaterTankData
+from matplotlib import pyplot as plt
 
 
-def ReadInTopasResults():
+def ReadInTopasResults(ResultsLocation):
+    path, file = os.path.split(ResultsLocation)
+    Dose = WaterTankData(path, file)
+    Dose.Plot_DosePlanes()
+    Dose.Plot_Profiles()
+    Dose.Plot_DepthDose()
+
+
+def AnalyseTopasResults(TopasResults):
     pass
 
-def AnalyseTopasResults():
-    pass
-
-def CalculateObjectiveFunction():
+def CalculateObjectiveFunction(Metrics):
     pass
 
 def TopasObjectiveFunction(ResultsLocation):
     TopasResults = ReadInTopasResults(ResultsLocation)
-    AnalyseTopasResults(ResultsLocation)
-    OF = CalculateObjectiveFunction()
+    Metrics = AnalyseTopasResults(ResultsLocation)
+    OF = CalculateObjectiveFunction(Metrics)
     return OF
+
+if __name__ == '__main__':
+    TopasObjectiveFunction('/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/MVLinac/Dose.bin')
 
