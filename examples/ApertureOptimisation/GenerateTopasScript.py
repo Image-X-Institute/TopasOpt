@@ -5,7 +5,7 @@ def WriteTopasScript(**vars):
     When it is called from an Optimiser object,it will receive a dictionary that contains the current values of 
     the variables you set up in optimisation_params when you initialised the optimiser.
     """
-
+    
     SimpleCollimator = []
     SimpleCollimator.append('# Set threading self:')
     SimpleCollimator.append('------------------------------------------------------------')
@@ -13,7 +13,7 @@ def WriteTopasScript(**vars):
     SimpleCollimator.append('i:Ts/ShowHistoryCountAtInterval = 10000000')
     SimpleCollimator.append('b:Ts/ShowHistoryCountOnSingleLine = "True"')
     SimpleCollimator.append('')
-    SimpleCollimator.append('includeFile = IncludeFileDemo.tps')
+    SimpleCollimator.append('includeFile = /home/brendan/python/TopasBayesOpt/examples/ApertureOptimisation/IncludeFiles/IncludeFileDemo.tps')
     SimpleCollimator.append('')
     SimpleCollimator.append('# Add World:')
     SimpleCollimator.append('------------------------------------------------------------')
@@ -151,6 +151,7 @@ def WriteTopasScript(**vars):
     SimpleCollimator.append('Ts/UseQt = Gr/Enable')
     SimpleCollimator.append('Ts/PauseBeforeQuit = Gr/Enable')
     SimpleCollimator.append('Ts/IncludeDefaultGeant4QtWidgets = "F"')
+    
     WaterTank = []
     WaterTank.append('# Set threading self:')
     WaterTank.append('------------------------------------------------------------')

@@ -13,7 +13,8 @@ class CreateTopasScript:
     This code will take a single topas script, and create a python function that will write it.
     """
 
-    def __init__(self,OutputDirectory,TopasScriptLocation, RequiredIncludeFiles=None, IncludeFileStorageDirectory=None):
+    def __init__(self,OutputDirectory,TopasScriptLocation, RequiredIncludeFiles=None, IncludeFileStorageDirectory=None,
+                 ErrorChecking = True):
 
         self.OutputDirectory = Path(OutputDirectory)
         self.TopasScriptLocation = TopasScriptLocation
@@ -26,7 +27,9 @@ class CreateTopasScript:
         else:
             self.IncludeFileStorageDirectory = IncludeFileStorageDirectory
 
-        self.CheckInputs()
+        self.ErrorChecking = ErrorChecking
+        if self.ErrorChecking:
+            self.CheckInputs()
         self.GenerateTopasScriptGenerator()
 
     def CheckInputs(self):
@@ -80,20 +83,21 @@ class CreateTopasScript:
 
         # assuming we found the file, we have to 1) copy it
         shutil.copy2(IncludeFileLocation, str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName)
-        # 2) check if it itself contains any include files! Going to have to get a bit recursive...
+        # 2) check if it itself contains any include files! This happens recursively (this function calls itself)
         f = open(IncludeFileLocation)
-        for include_file_line in f:
+        for i, include_file_line in enumerate(f):
             if 'includeFile'.lower() in include_file_line.lower():
                 include_file_line = self.HandleIncludeFiles(file, include_file_line)
-                # now we need to update this line in the copied script:
-                # f2 = open(IncludeFileLocation, 'w')
-                print('hrelo')
 
+                # now we need to update this line in the copied script:
+                copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
+                f2 = open(copied_file_location, 'r')
+                old_lines = f2.readlines()
+                old_lines[i] = 'includeFile = ' + include_file_line
 
         # 3) update the line to point to the new storage location.
         line = 'includeFile = ' + str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
         return line
-
 
     def GenerateTopasScriptGenerator(self):
         """
@@ -108,7 +112,7 @@ class CreateTopasScript:
         TopasScriptGeneratorReadMe = '    """\n    This file simply returns a list object, where each list entry corresponds to' \
                                      '\n    a line in the topas script.\n    When it is called from an Optimiser object,' \
                                      'it will receive a dictionary that contains the current values of \n    ' \
-                                     'the variables you set up in optimisation_params when you initialised the optimiser.\n    """\n\n'
+                                     'the variables you set up in optimisation_params when you initialised the optimiser.\n    """\n'
 
         TopasScriptGenerator = []
         TopasScriptGenerator.append('def WriteTopasScript(**vars):\n')
@@ -123,11 +127,16 @@ class CreateTopasScript:
             ReturnStatementString = ReturnStatementString + ScriptName + ', '
             # setattr(self,ScriptName,[])
             f = open(file)
+            TopasScriptGenerator.append('    \n')
             TopasScriptGenerator.append('    ' + ScriptName + ' = []\n')
             for line in f:
                 line = line.replace('\n', '')
                 if 'includeFile'.lower() in line.lower():
-                    self.HandleIncludeFiles(file, line)
+                    line = self.HandleIncludeFiles(file, line)
+                if 'OutputFile '.lower() in line.lower():
+                    print('hello')
+
+
                 TopasScriptGenerator.append("    " + ScriptName + ".append('" + line + "')\n")
 
         ReturnStatementString = ReturnStatementString[:-2]  # remove the last comma
@@ -136,11 +145,6 @@ class CreateTopasScript:
         f2 = open(outputFile, 'w+')
         for line in TopasScriptGenerator:
             f2.writelines(line)
-
-
-    def CopyIncludeFiles(self):
-
-        pass
 
 if __name__ == '__main__':
     CreateTopasScript('.', '/home/brendan/topas37/examples/Basic/FlatteningFilter.txt')
