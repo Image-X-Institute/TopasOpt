@@ -17,7 +17,7 @@ from pathlib import Path
 import json
 plt.interactive(False)
 np.seterr(divide='raise')
-from suppport_classes import FigureSpecs
+from utilities import FigureSpecs
 
 
 class WaterTankData:
@@ -168,9 +168,8 @@ class WaterTankData:
             self.dose.data['Sum'] = self.dose.data['Sum'] * DoseConverter
 
         except FileNotFoundError:
-            logging.warning(f'Could not find one of the input files or file header: {self.CurrentFile}\nWill rethow error and exit')
-            raise
-            sys.exit()
+            logging.warning(f'Could not find one of the input files or file header: {self.CurrentFile}\n')
+            sys.exit(1)
 
         if np.max(self.dose.data['Sum'])<1e-16:
             logging.error(f'there is no data in the dose file {FileLocation}')
@@ -220,7 +219,7 @@ class WaterTankData:
             self.VoxelSizeY = ((self.PhantomSizeY * 2) / self.dose.dimensions[1].n_bins)
             self.VoxelSizeZ = ((self.PhantomSizeZ * 2) / self.dose.dimensions[2].n_bins)
 
-        self.DataSize = np.array([self.x.shape[0], self.y.shape[0] < 2, self.z.shape[0]])
+        self.DataSize = np.array([self.x.shape[0], self.y.shape[0], self.z.shape[0]])
         dim_check_ind = self.DataSize < 2  # check for singleton dimensions
         if dim_check_ind.any():
             # singleton dimensions will be mirrored to recover 3D data

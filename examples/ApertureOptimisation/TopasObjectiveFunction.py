@@ -9,9 +9,7 @@ from matplotlib import pyplot as plt
 def ReadInTopasResults(ResultsLocation):
     path, file = os.path.split(ResultsLocation)
     Dose = WaterTankData(path, file)
-    Dose.Plot_DosePlanes()
-    Dose.Plot_Profiles()
-    Dose.Plot_DepthDose()
+    return Dose
 
 
 def AnalyseTopasResults(TopasResults):

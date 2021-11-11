@@ -1,0 +1,9 @@
+# TOPAS Version: 3.7
+# Parameter File: WaterTank.tps
+# Results for scorer PhantomScorer
+# Scored in component: Phantom
+# X in 30 bins of 0.5 cm
+# Y in 30 bins of 0.5 cm
+# Z in 60 bins of 0.25 cm
+# DoseToMedium ( Gy ) : Sum   
+# Binary file: Results/WaterTank.bin

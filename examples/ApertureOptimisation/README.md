@@ -24,6 +24,27 @@ If you open this script up, you will see that all it has done it copied the cont
 
 You can delete temp_GenerateTopasScript.py now if you want to, it has done its job. 
 
+> A code that takes a code and generates a code that generates a code
+
+````python
+# code to test GeneraetTopasScript
+
+if __name__ == '__main__':
+    Scripts = GenerateTopasScripts('.',1)
+    for i, script in enumerate(Scripts):
+        filename = 'test_script' + str(i) + '.tps'
+        f = open(filename, 'w')
+        for line in script:
+            f.write(line)
+            f.write('\n')
+
+````
+
+There are three special lines in topas scripts that bear further attention:
+
+- 'includeFile': all include files will be copied into your optimisation folder into a newly created folder called IncludeFiles. The paths in the automatically generated topas scripts will be updated to point to these files. This is to avoid issues with relative paths. This operation is recursive, e.g. all included files are also scanned for their own recursive files.
+- 'OutputFile': The output file location will be updated to point to BaseDirectory (which you haven't defined yet but the optimiser will know). In addition the names will be appended with itt_{itterationNumber}. This is so the optimiser can keep track of them
+
 ## Creating RunOptimisation.py
 
 Create a new file called RunOptimisation.py (or whatever you want, the name isn't important). Copy the below code into it:

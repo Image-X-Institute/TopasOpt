@@ -35,7 +35,7 @@ dc:So/Beam/BeamAngularCutoffX = 5 deg
 dc:So/Beam/BeamAngularCutoffY = 5 deg
 dc:So/Beam/BeamAngularSpreadX = 0.07 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 500000
+ic:So/Beam/NumberOfHistoriesInRun = 10000
 
 
 # Electron source position
@@ -48,9 +48,6 @@ s:Ge/ElectronSource/Material = Ge/World/Material
 s:Ge/ElectronSource/Color = "yellow"
 sc:Ge/ElectronSource/DrawingStyle = "Solid"
 
-
-
-
 Target
 ------------------------------------------------------------
 # Target is implemented as a separate component from the TsApertureArray
@@ -60,7 +57,7 @@ s:Ge/Target/Type 			= "TsCylinder"
 s:Ge/Target/Parent 			= "World"
 s:Ge/Target/Material 			= "G4_W"
 d:Ge/Target/RMax   			= 50 mm
-d:Ge/Target/HL  			= 1 mm
+d:Ge/Target/HL  			= 2 mm
 d:Ge/Target/TransZ 			= 703 mm
 sc:Ge/Target/DrawingStyle 		= "Solid"
 sc:Ge/Target/Color 			= "magenta"
@@ -101,7 +98,7 @@ s:Sc/PhaseSpaceFromColl/Quantity                    = "PhaseSpace"
 b:Sc/PhaseSpaceFromColl/OutputToConsole             = "False"
 s:Sc/PhaseSpaceFromColl/Surface                     = "Magic/ZMinusSurface"
 s:Sc/PhaseSpaceFromColl/OutputType                  = "Binary" # ASCII, Binary, Limited or ROOT
-s:Sc/PhaseSpaceFromColl/OutputFile                  = "Results/coll_PhaseSpace_opt0_VarRed"
+s:Sc/PhaseSpaceFromColl/OutputFile                  = "Results/coll_PhaseSpace"
 i:Sc/PhaseSpaceFromColl/OutputBufferSize            = 1000
 #s:Sc/PhaseSpaceFromColl/OnlyIncludeParticlesGoing  = "In"
 b:Sc/PhaseSpaceFromColl/IncludeTOPASTime            = "False"
@@ -118,7 +115,7 @@ s:Sc/PhaseSpaceFromColl/IfOutputFileAlreadyExists   = "Overwrite"
 
 # Graphics View and trajectory filters:
 ------------------------------------------------------------
-b:Gr/Enable = "True"  # Enable/Disable graphics
+b:Gr/Enable = "False"  # Enable/Disable graphics
 s:Gr/ViewA/Type              = "OpenGL"
 d:Gr/ViewA/Theta            = 90 deg
 d:Gr/ViewA/Phi              = 0 deg

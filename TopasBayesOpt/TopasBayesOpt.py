@@ -19,7 +19,7 @@ from bayes_opt.event import Events
 from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from suppport_classes import bcolors
+from utilities import bcolors
 
 # formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
 # ch = logging.StreamHandler()
@@ -222,7 +222,8 @@ class TopasOptBaseClass:
             UsePhaseSpaceSource = True
             Nparticles = self.Nparticles
 
-        self.TopasScript = self.TopasScriptGenerator(**self.VariableDict)
+        self.TopasScripts = self.TopasScriptGenerator(self.BaseDirectory, self.Itteration, **self.VariableDict)
+        print('hello')
 
     def RunTopasModel(self):
         """
@@ -987,19 +988,20 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
 
         # attempt the absolute imports from the optimisation directory:
+        #ToDo:: this should be moved to BaseClass as it is shared functionality
         try:
-            import_from_absolute_path(Path(OptimisationDirectory) / 'GenerateTopasScript.py')
+            import_from_absolute_path(Path(OptimisationDirectory) / 'GenerateTopasScripts.py')
         except ModuleNotFoundError:
             logger.error(f'could not find required file at {str(Path(OptimisationDirectory) / "GenerateTopasScript.py")}.'
                          f'\nQuitting')
             sys.exit(1)
         try:
             import_from_absolute_path(Path(OptimisationDirectory) / 'TopasObjectiveFunction.py')
-        except:
-            logger.error(f'could not find required file at {str(Path(OptimisationDirectory) / "GenerateTopasScript.py")}.'
+        except ModuleNotFoundError:
+            logger.error(f'could not find required file at {str(Path(OptimisationDirectory) / "TopasObjectiveFunction.py")}.'
                          f'\nQuitting')
             sys.exit(1)
-        self.TopasScriptGenerator = GenerateTopasScript.WriteTopasScript
+        self.TopasScriptGenerator = GenerateTopasScripts.GenerateTopasScripts
         self.TopasObjectiveFunction = TopasObjectiveFunction.TopasObjectiveFunction
 
         if StartingSimplexRelativeVal is not None:

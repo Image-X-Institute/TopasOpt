@@ -35,9 +35,9 @@ s:Ge/Magic/DrawingStyle = "wireframe"
 # Phase Space source:
 ------------------------------------------------------------
 s:So/Example/Type                            = "PhaseSpace"
-s:So/Example/PhaseSpaceFileName              = "Results/coll_PhaseSpace_opt0_VarRed"
+s:So/Example/PhaseSpaceFileName              = "Results/coll_PhaseSpace"
 s:So/Example/Component                       = "World"
-i:So/Example/PhaseSpaceMultipleUse          = 100
+i:So/Example/PhaseSpaceMultipleUse          = 300
 b:So/Example/PhaseSpaceIncludeEmptyHistories = "False"
 # i:So/Example/NumberOfHistoriesInRun = 10 # set PhaseSpaceMultipleUse to 0 to enable this option
 
@@ -57,9 +57,9 @@ dc:Ge/Phantom/TransZ = 0. cm
 dc:Ge/Phantom/RotX = 0. deg
 dc:Ge/Phantom/RotY = 0. deg
 dc:Ge/Phantom/RotZ = 0. deg
-ic:Ge/Phantom/XBins = 150
-ic:Ge/Phantom/YBins = 150
-ic:Ge/Phantom/ZBins = 150
+ic:Ge/Phantom/XBins = 30
+ic:Ge/Phantom/YBins = 30
+ic:Ge/Phantom/ZBins = 60
 sc:Ge/Phantom/Color    = "green"
 sc:Ge/Phantom/DrawingStyle = "Solid"
 
@@ -72,7 +72,7 @@ s:Sc/PhantomScorer/Quantity                  = "DoseToMedium"
 b:Sc/PhantomScorer/OutputToConsole           = "FALSE"
 s:Sc/PhantomScorer/IfOutputFileAlreadyExists = "Overwrite"
 s:Sc/PhantomScorer/OutputType = "Binary" # "csv", "binary", "Root", "Xml" or "DICOM"
-s:Sc/PhantomScorer/OutputFile                  = "Results/WaterTankOpt0_VarRed"
+s:Sc/PhantomScorer/OutputFile                  = "Results/WaterTank"
 
 
 # Graphics View and trajectory filters:
@@ -105,6 +105,6 @@ b:Ph/ListProcesses = "True"
 ------------------------------------------------------------
 # QT
 # --
-Ts/UseQt = Gr/Enable 
-Ts/PauseBeforeQuit = Gr/Enable 
+Ts/UseQt = Gr/Enable
+Ts/PauseBeforeQuit = Gr/Enable
 Ts/IncludeDefaultGeant4QtWidgets = "T"
