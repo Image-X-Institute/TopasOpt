@@ -20,12 +20,7 @@ from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
 from utilities import bcolors
-
-# formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
-# ch = logging.StreamHandler()
-# ch.setFormatter(formatter)
-# logger = logging.getLogger(__name__).addHandler(ch)
-# logger.setLevel(logging.INFO)
+import stat
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
@@ -87,6 +82,7 @@ class TopasOptBaseClass:
         self.EmptySimulationFolder()
         os.mkdir(self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs')
         os.mkdir(Path(FullSimName) / 'TopasScripts')
+        self.TopasLocation = '~/topas37/'
 
         try:
             import_from_absolute_path(Path(self.OptimisationDirectory) / 'GenerateTopasScripts.py')
@@ -222,7 +218,60 @@ class TopasOptBaseClass:
         Generates a topas model with the latest parameters as well as a shell script called RunAllFiles.sh to run it.
         """
 
-        # if RunAllFiles exists, delete it
+        self.TopasScripts, self.TopasScriptNames = self.TopasScriptGenerator(self.BaseDirectory, self.Itteration, **self.VariableDict)
+        self.ScriptsToRun = []
+        for i, script_name in enumerate(self.TopasScriptNames):
+            script_name = script_name + '_itt_' + str(self.Itteration) + '.tps'
+            self.ScriptsToRun.append(script_name)
+            f = open(str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / script_name), 'w')
+            for line in self.TopasScripts[i]:
+                f.write(line)
+                f.write('\n')
+
+        self.GenerateRunAllFilesShellScript()
+
+    def GenerateRunAllFilesShellScript(self):
+
+        """
+        This will generate a bash script called 'RunAllFiles', which, funnily enough, can be used to run all files generated!
+        """
+        ShellScriptLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / 'RunAllFiles.sh')
+        if os.path.isfile(ShellScriptLocation):
+            # I don't think I should need to do this; the file should be overwritten if it exists, but this doesn't
+            # seem to be working so deleting it.
+            os.remove(ShellScriptLocation)
+        self.ShellScriptLocation = ShellScriptLocation
+
+
+        WriteHeader = True
+        f = open(ShellScriptLocation, 'w+')
+
+        # set up the environment etc.
+        if WriteHeader:
+            f.write('# !/bin/bash\n\n')
+            f.write('# This script sets up the topas environment then runs all listed files\n\n')
+            f.write('# ensure that any errors cause the script to stop executing:\n')
+            f.write('set - e\n\n')
+            f.write('export TOPAS_G4_DATA_DIR=~/G4Data\n')
+            # f.write('export LD_LIBRARY_PATH=~/topas' + self.TopasVersion + '/lib/:~/topas-dev/'
+            #             'gdcm-install/lib:~topas-dev/geant4.10.06.p03-install:$LD_LIBRARY_PATH\n\n')
+            # # just in case
+            f.write('module unload gcc >/dev/null 2>&1  # will fail on non artemis systems, output is surpressed\n')
+            f.write('module load gcc/9.1.0 >/dev/null 2>&1\n\n')
+
+        # add in all topas scripts which need to be run:
+        for script_name in self.ScriptsToRun:
+            file_loc = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / script_name)
+            f.write('echo "Beginning analysis of: ' + script_name + '"')
+            f.write('\n')
+            f.write('(time ' + self.TopasLocation + '/bin/topas ' + script_name + ') &> logs/TopasLogs/' + script_name)
+            f.write('\n')
+        # change file permissions:
+        st = os.stat(ShellScriptLocation)
+        os.chmod(ShellScriptLocation, st.st_mode | stat.S_IEXEC)
+        f.close()
+
+
         ShellScriptLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'RunAllFiles.sh')
         if os.path.isfile(ShellScriptLocation):
             # I don't think I should need to do this; the file should be overwritten if it exists, but this doesn't
@@ -230,29 +279,10 @@ class TopasOptBaseClass:
             os.remove(ShellScriptLocation)
         self.ShellScriptLocation = ShellScriptLocation
         ParameterString = f'run_{self.Itteration}'
-        # for i, Paramter in enumerate(self.ParameterNames):
-        #     ParameterString = ParameterString + f'_{Paramter}_{x[0][i]:1.1f}'
 
-        if self.debug:
-            UsePhaseSpaceSource = False
-            Nparticles = 10000
-        else:
-            UsePhaseSpaceSource = True
-            Nparticles = self.Nparticles
 
-        self.TopasScripts, self.TopasScriptNames = self.TopasScriptGenerator(self.BaseDirectory, self.Itteration, **self.VariableDict)
-        self.WriteTopasScripts()
 
-    def WriteTopasScripts(self):
-        """
-        Write out the scripts generated by GenerateTopasScripts
-        """
 
-        for i, script_name in enumerate(self.TopasScriptNames):
-            script_name = script_name + '_itt_' + str(self.Itteration) + '.tps'
-            f = open(str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / script_name),'w')
-            for line in self.TopasScripts[i]:
-                f.write(line)
 
     def RunTopasModel(self):
         """

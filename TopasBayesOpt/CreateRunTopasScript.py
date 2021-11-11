@@ -123,7 +123,7 @@ class CreateTopasScript:
         OriginalFileName = OriginalFileName.replace("'", '')
         line1 = line1.replace('"', '')
         line1 = line1.replace("'", '')
-        new_line = line1 + ' = "\' + str(Path(BaseDirectory) / "Results" / "' + OriginalFileName + '") + "_itt" + ' + 'str(iteration)' + ' + \'"\')'
+        new_line = line1 + ' =  ../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ')'
 
         return new_line, OriginalFileName
 
@@ -155,7 +155,8 @@ class CreateTopasScript:
         line1 = line1.replace("'", '')
         if not UseStaticPhaseSpace:
             # dynamically allocated phase space name
-            new_line = line1 + ' = "\' + str(Path(BaseDirectory) / "Results" / "' + OriginalFileName + '") + "_itt" + ' + 'str(iteration)' + ' + \'"\')'
+            # new_line = line1 + ' = "\' + str(Path(BaseDirectory) / "Results" / "' + OriginalFileName + '") + "_itt" + ' + 'str(iteration)' + ' + \'"\')'
+            new_line = line1 + ' =  ../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ')'
         else:
             # in this case we want to convert a relative path to an absolute path.
             # do we also want to copy the file to the IncludeDirectory? probably not, it could be huge...
