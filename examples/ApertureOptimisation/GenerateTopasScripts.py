@@ -7,6 +7,8 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     When it is called from an Optimiser object,it will receive a dictionary that contains the current values of 
     the variables you set up in optimisation_params when you initialised the optimiser.
     """
+
+    ScriptNames = ['SimpleCollimator', 'WaterTank']
     
     SimpleCollimator = []
     SimpleCollimator.append('# Set threading self:')
@@ -266,7 +268,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     WaterTank.append('Ts/PauseBeforeQuit = Gr/Enable')
     WaterTank.append('Ts/IncludeDefaultGeant4QtWidgets = "T"')
 
-    return [SimpleCollimator, WaterTank]
+    return [SimpleCollimator, WaterTank], ScriptNames
 
 if __name__ == '__main__':
     # for testing purposes only
