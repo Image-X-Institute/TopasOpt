@@ -80,8 +80,12 @@ class TopasOptBaseClass:
         if not os.path.isdir(FullSimName):
             os.mkdir(FullSimName)
         self.EmptySimulationFolder()
-        os.mkdir(self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs')
+        os.mkdir(Path(FullSimName) / 'logs')
+        os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
+        os.mkdir(Path(FullSimName) / 'logs' / 'SingleParameterPlots')
         os.mkdir(Path(FullSimName) / 'TopasScripts')
+        os.mkdir(Path(FullSimName) / 'Results')
+
         self.TopasLocation = '~/topas37/'
 
         try:
@@ -228,14 +232,14 @@ class TopasOptBaseClass:
                 f.write(line)
                 f.write('\n')
 
-        self.GenerateRunAllFilesShellScript()
+        self.GenerateRunIterationShellScript()
 
-    def GenerateRunAllFilesShellScript(self):
+    def GenerateRunIterationShellScript(self):
 
         """
         This will generate a bash script called 'RunAllFiles', which, funnily enough, can be used to run all files generated!
         """
-        ShellScriptLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / 'RunAllFiles.sh')
+        ShellScriptLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / 'RunIteration.sh')
         if os.path.isfile(ShellScriptLocation):
             # I don't think I should need to do this; the file should be overwritten if it exists, but this doesn't
             # seem to be working so deleting it.
@@ -264,37 +268,26 @@ class TopasOptBaseClass:
             file_loc = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / script_name)
             f.write('echo "Beginning analysis of: ' + script_name + '"')
             f.write('\n')
-            f.write('(time ' + self.TopasLocation + '/bin/topas ' + script_name + ') &> logs/TopasLogs/' + script_name)
+            f.write('(time ' + self.TopasLocation + '/bin/topas ' + script_name + ') &> ../logs/TopasLogs/' + script_name)
             f.write('\n')
         # change file permissions:
         st = os.stat(ShellScriptLocation)
         os.chmod(ShellScriptLocation, st.st_mode | stat.S_IEXEC)
         f.close()
 
-
-        ShellScriptLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'RunAllFiles.sh')
-        if os.path.isfile(ShellScriptLocation):
-            # I don't think I should need to do this; the file should be overwritten if it exists, but this doesn't
-            # seem to be working so deleting it.
-            os.remove(ShellScriptLocation)
-        self.ShellScriptLocation = ShellScriptLocation
-        ParameterString = f'run_{self.Itteration}'
-
-
-
-
-
     def RunTopasModel(self):
         """
         This invokes a bash subprocess to run the current model
         """
         print(f'{bcolors.OKBLUE}Topas: Running file: \n{self.ShellScriptLocation}')
-        ShellScriptPath = str(Path(self.BaseDirectory) / self.SimulationName)
+        ShellScriptPath = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts')
         cmd = subprocess.run(['bash', self.ShellScriptLocation], cwd=ShellScriptPath)
-        print(f'{bcolors.OKBLUE}Analysis complete{bcolors.ENDC}')
+        if cmd.returncode == 0:
+            print(f'{bcolors.OKBLUE}Analysis complete{bcolors.ENDC}')
+        else:
+            logger.error(f'RunIteration.sh failed with exit code {cmd.returncode}. Quitting')
+            sys.exit(1)
 
-        # update the definition of current model
-        self.CurrentWTdata = self.TopasScript.WT_PhaseSpaceName_current
 
     def ReadTopasResults(self):
         """

@@ -123,7 +123,7 @@ class CreateTopasScript:
         OriginalFileName = OriginalFileName.replace("'", '')
         line1 = line1.replace('"', '')
         line1 = line1.replace("'", '')
-        new_line = line1 + ' =  ../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ')'
+        new_line = line1 + ' =  "../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ' + \'"\')'
 
         return new_line, OriginalFileName
 
@@ -156,7 +156,7 @@ class CreateTopasScript:
         if not UseStaticPhaseSpace:
             # dynamically allocated phase space name
             # new_line = line1 + ' = "\' + str(Path(BaseDirectory) / "Results" / "' + OriginalFileName + '") + "_itt" + ' + 'str(iteration)' + ' + \'"\')'
-            new_line = line1 + ' =  ../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ')'
+            new_line = line1 + ' =  "../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ' + \'"\')'
         else:
             # in this case we want to convert a relative path to an absolute path.
             # do we also want to copy the file to the IncludeDirectory? probably not, it could be huge...
@@ -188,11 +188,13 @@ class CreateTopasScript:
         ScriptNames = []
         ReturnStatementString = '['
         OutputPhaseSpaceFilesNames = []  # need to keep track of these to see if they match the input of another file
+        ScriptNames = []
         for file in self.TopasScriptLocation:
             dum, ScriptName = os.path.split(file)
             ScriptName, dum = os.path.splitext(ScriptName)
             ScriptName = ''.join(e for e in ScriptName if e.isalnum())  # heal any weird chracters
             ReturnStatementString = ReturnStatementString + ScriptName + ', '
+            ScriptNames.append(ScriptName)
             f = open(file)
             TopasScriptGenerator.append('    \n')
             TopasScriptGenerator.append('    ' + ScriptName + ' = []\n')
@@ -222,6 +224,7 @@ class CreateTopasScript:
 
         ReturnStatementString = ReturnStatementString[:-2]  # remove the last comma
         ReturnStatementString = ReturnStatementString + ']'
+        ReturnStatementString = ReturnStatementString + ', ' + str(ScriptNames)
         TopasScriptGenerator.append('\n    return ' + ReturnStatementString)
         f2 = open(outputFile, 'w+')
         for line in TopasScriptGenerator:
