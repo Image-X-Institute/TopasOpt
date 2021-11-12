@@ -35,7 +35,7 @@ dc:So/Beam/BeamAngularCutoffX = 5 deg
 dc:So/Beam/BeamAngularCutoffY = 5 deg
 dc:So/Beam/BeamAngularSpreadX = 0.07 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 10000
+ic:So/Beam/NumberOfHistoriesInRun = 10
 
 
 # Electron source position

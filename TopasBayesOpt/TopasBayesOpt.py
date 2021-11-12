@@ -20,6 +20,7 @@ from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
 from utilities import bcolors
+from utilities import FigureSpecs
 import stat
 
 ch = logging.StreamHandler()
@@ -288,36 +289,6 @@ class TopasOptBaseClass:
             logger.error(f'RunIteration.sh failed with exit code {cmd.returncode}. Quitting')
             sys.exit(1)
 
-
-    def ReadTopasResults(self):
-        """
-        Read in topas results and extract quantities of interest
-
-        Returns two parameters:
-        BeamletWidth (double, mm)
-        MaxDose (double, AU)
-        """
-
-        DataLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'Results')
-
-        # use similar triangles to derive desired beamlet width at surface
-        TargToIso = self.PhaserGeom.VirtSourceToIso - self.PhaserGeom.SourceToTarget
-        TargToSurface = TargToIso - self.TopasScript.WT_PhantomSize
-        desiredBWsurface = (self.TargetBeamWidth * TargToSurface) / TargToIso
-        Dose = WaterTankData(DataLocation, self.CurrentWTdata,
-                             AbsDepthDose=True, MirrorData=False,
-                             DesiredBeamletWidthAtSurface=desiredBWsurface,
-                             FourierFilterIsoPlanData=False)
-        # store the relevant quantities:
-        self.BeamletWidth = Dose.BeamletWidthsManual[0]
-        # round beamlet width to beamlet width precision:
-        self.CrossChannelLeakage = Dose.CrossChannelLeakageRatio[0] * 100  # convert to %
-        print(f'cross channel leakage is {self.CrossChannelLeakage}')
-        self.MaxDoseGauss = Dose.MaxDoseAtIsoplaneGauss[0]
-        self.MaxDose = Dose.DosePerCoulomb[0]/1e3  # starts in Gy/C so this makes is Gy/mC or kGy/C
-        self.DmaxToD100 = Dose.DmaxToD100[0]
-        self.RelOutOfFieldSurfDose = Dose.RelOutOfFieldSurfDose[0]
-
     def UpdateOptimisationLogs(self, x, OF):
         """
         Just a simple function to keep track of the objective function in the logs folder
@@ -331,11 +302,7 @@ class TopasOptBaseClass:
             Entry = f'Itteration: {self.Itteration}'
             for i, Parameter in enumerate(self.ParameterNames):
                 Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
-            Entry = Entry + f', BeamletWidth: {self.BeamletWidth: 1.2f}'
-            Entry = Entry + f', Dose: {self.MaxDose: 1.2f}'
-            Entry = Entry + f', CrossChannelLeakage: {self.CrossChannelLeakage: 1.2f}'
-            Entry = Entry + f', Dmax/D100: {self.DmaxToD100: 1.2f}'
-            Entry = Entry + f', OutOfFieldSurface: {self.RelOutOfFieldSurfDose: 1.2f}'
+
             try:
                 Entry = Entry + f', target_prediction_mean: {self.target_prediction_mean[-1]: 1.2f}'
                 Entry = Entry + f', target_prediction_std: {self.target_prediction_std[-1]: 1.2f}'
@@ -348,10 +315,6 @@ class TopasOptBaseClass:
                 Entry = Entry + f', target_prediction_std: NaN'
 
             Entry = Entry + f', ObjectiveFunction: {OF: 1.2f}\n'
-            if self.BoundaryViolation:
-                Entry = Entry + '^^ BOUNDS VIOLATION DETECTED!\n'
-            if self.WallThicknessError:
-                Entry = Entry + '^^ WALL THICKNESS VIOLATION DETECTED!\n'
             f.write(Entry)
         print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
 
@@ -359,51 +322,35 @@ class TopasOptBaseClass:
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
 
-        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
-        axs[0].plot(ItterationVector, self.AllObjectiveFunctionValues, 'C1')
-        axs[0].set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
-        axs[0].set_ylabel('Objecti'
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+        axs.plot(ItterationVector, self.AllObjectiveFunctionValues, 'C1')
+        axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
+        axs.set_ylabel('Objecti'
                           've function', fontsize=FigureSpecs.LabelFontSize)
-        axs[0].grid(True)
+        axs.grid(True)
 
         try:
             target_prediction = -1 * np.array(self.target_prediction_mean, )
-            axs[0].plot(ItterationVector, target_prediction, 'C0')
-            axs[0].fill_between(ItterationVector,
+            axs.plot(ItterationVector, target_prediction, 'C0')
+            axs.fill_between(ItterationVector,
                                 target_prediction + self.target_prediction_std,
                                 target_prediction - self.target_prediction_std, alpha=0.15, color='C0')
-            axs[0].legend(['Actual', 'Predicted', r'$\sigma$'])
+            axs.legend(['Actual', 'Predicted', r'$\sigma$'])
         except AttributeError:
-            # predicted isn't always available
+            # predicted isn't  available for optimisers
             pass
 
         MinValue = np.argmin(self.AllObjectiveFunctionValues)
-        axs[0].plot(ItterationVector[MinValue], self.AllObjectiveFunctionValues[MinValue], 'r-x')
-        axs[0].set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
+        axs.plot(ItterationVector[MinValue], self.AllObjectiveFunctionValues[MinValue], 'r-x')
+        axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
 
-        LegendStrings = []
-        for i, ParameterVals in enumerate(self.AllParameterValues.T):
-            LegendStrings.append(f'{self.ParameterNames[i]}: InitVal = {self.StartingValues[i]}')
-            try:
-                ParameterVals = ParameterVals / ParameterVals[0]
-            except FloatingPointError:
-                logger.error(f'got that weird error...ParameterVals were {ParameterVals}.\nnot normalising parameters...')
-            axs[1].plot(ItterationVector, ParameterVals)
-
-        axs[1].legend(LegendStrings)
-
-        axs[1].plot(ItterationVector[MinValue], ParameterVals[MinValue], 'r-x')
-        axs[1].set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
-        axs[1].set_ylabel('Relative parameter values', fontsize=FigureSpecs.LabelFontSize)
-        axs[1].grid(True)
-        axs[1].set_title('Parameter values', fontsize=FigureSpecs.TitleFontSize)
 
         SaveLoc = Path(self.BaseDirectory) / self.SimulationName
         SaveLoc = SaveLoc / 'logs'
-        plt.savefig(SaveLoc / 'Results.png')
+        plt.savefig(SaveLoc / 'ConvergencePlot.png')
         plt.close(fig)
 
-    def CalculateObjectiveFunction(self):
+    def xxx_CalculateObjectiveFunction(self):
         """
         Calculate and log the objective function for the current itteration
         """
@@ -465,7 +412,7 @@ class TopasOptBaseClass:
         self.Itteration = self.Itteration + 1
         self.OF = OF
 
-    def CalculateBoundaryViolationTerm(self):
+    def xxx_CalculateBoundaryViolationTerm(self):
         """
         Depending on the optimiser chosen, the limits may or may not be enforced by the optimiser.
         If they are enforced, this function always returns 0.
@@ -538,7 +485,7 @@ class TopasOptBaseClass:
 
         return NewVariableDict
 
-    def GetAllbinFiles(self, AnalysisPath):
+    def xxx_GetAllbinFiles(self, AnalysisPath):
         """
         quick script to just collect all the files in the Analysis path
         """
@@ -602,7 +549,7 @@ class TopasOptBaseClass:
             OF = (-w1 * self.MaxDose) + (DeltaBeamletWidth * w2) + (w3 * self.RelativeCollimatorThickness) \
                  + (w5 * self.OutOfFieldDoseTerm)
 
-    def CopyResultsToServer(self):
+    def xxx_CopyResultsToServer(self):
         """
         Will attempt to copy the results to RDS.
         """
@@ -779,78 +726,23 @@ class TopasOptBaseClass:
         plt.tight_layout()
         plt.show()
 
-    def PlotLogFile_BayesianClusters(self, LogFileLoc, ClusterThreshold=10):
+    def BlackBoxFunction(self, x_new):
         """
-        Read in a log file from the Bayesian optimiser, group points together according to the ClusterThreshold,
-        and plot the actual versus predicted objective function.
-        I'm going to code it to start with two points: the best it found and the worst point. In principle, this points
-        variable could be an input, or even something automatically determined by a clustering algorithm. this is the
-        quick(ish) and dirty version!
-
-        :param LogFileLoc: the path to the log dile
-        :type LogFileLoc: string
-        :param ClusterThreshold: percentage that points should be within each other to count as clustered
-        :type ClusterThreshold: double
+        Called Black Box function in the spirit of bayesian optimisation, this function simply takes the most recent
+        parameter guesses, and solves the model.
         """
 
-        ResultsDict = self.ReadInLogFile(LogFileLoc)
-        OF = np.array(ResultsDict.pop('ObjectiveFunction'))
-        # remove stuff we don't want: whats left should be our variables (unfortunately not robust to changes in log file format)
-        Itteration = np.array(ResultsDict.pop('Itteration'))
-        Dose = np.array(ResultsDict.pop('Dose'))
-        CrossChannelLeakage = np.array(ResultsDict.pop('CrossChannelLeakage'))
-        BeamletWidth = np.array(ResultsDict.pop('BeamletWidth'))
-        try:
-            prediction = -1 * np.array(ResultsDict.pop('target_prediction_mean'))
-            prediction_std = -1 * np.array(ResultsDict.pop('target_prediction_std'))
-        except KeyError:
-            logger.error('Log file does not contain target_prediction_mean')
-            return
+        self.ConvertDictToVariables(x_new)
+        self.CreateVariableDictionary(self.x)
+        self.GenerateTopasModel(self.x)
+        self.RunTopasModel()
+        self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results', self.Itteration)
+        self.AllObjectiveFunctionValues.append(self.OF)
+        self.UpdateOptimisationLogs(self.x, self.OF)
+        self.PlotResults()
+        self.Itteration = self.Itteration + 1
 
-        # identify points:
-        ind_best = np.argmin(OF)
-        ind_worst = np.argmax(OF)
-        print(
-            f'Reading in log file: The following parameters have been identified as the variables: {ResultsDict.keys()}')
-        OptimisationVariables = np.array(list(ResultsDict.values()))
-        BestPoint = OptimisationVariables[:, ind_best]
-        WorstPoint = OptimisationVariables[:, ind_worst]
-
-        BestPointThresholdUpper = (1 + ClusterThreshold / 100) * BestPoint
-        BestPointThresholdLower = (1 - ClusterThreshold / 100) * BestPoint
-        WorstPointThresholdUpper = (1 + ClusterThreshold / 100) * WorstPoint
-        WorstPointThresholdLower = (1 - ClusterThreshold / 100) * WorstPoint
-
-        ind_bestCluster = np.zeros(OptimisationVariables.shape)
-        ind_worstCluster = np.zeros(OptimisationVariables.shape)
-        for i in range(OptimisationVariables.shape[0]):
-            # get the points within +/- ClusterThreshold in a loop
-            ind_bestCluster[i, :] = np.logical_and(OptimisationVariables[i, :] < BestPointThresholdUpper[i],
-                                                   OptimisationVariables[i, :] > BestPointThresholdLower[i])
-            ind_worstCluster[i, :] = np.logical_and(OptimisationVariables[i, :] < WorstPointThresholdUpper[i],
-                                                    OptimisationVariables[i, :] > WorstPointThresholdLower[i])
-        ind_bestCluster = np.sum(ind_bestCluster, axis=0) == OptimisationVariables.shape[0]
-        ind_worstCluster = np.sum(ind_worstCluster, axis=0) == OptimisationVariables.shape[0]
-
-        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
-        axs[0].plot(Itteration[ind_bestCluster], OF[ind_bestCluster], '-x', color='C1')
-        axs[0].plot(Itteration[ind_bestCluster], prediction[ind_bestCluster], '-x', color='C0')
-        axs[0].fill_between(Itteration[ind_bestCluster],
-                            prediction[ind_bestCluster] + prediction_std[ind_bestCluster],
-                            prediction[ind_bestCluster] - prediction_std[ind_bestCluster], alpha=0.15, color='C0')
-        axs[0].legend(['Actual', 'Predicted', r'$\sigma$'])
-        axs[0].set_title('Best points cluster')
-        axs[0].legend(['Real', 'Predicted'])
-
-        axs[1].plot(Itteration[ind_worstCluster], OF[ind_worstCluster], '-x')
-        axs[1].plot(Itteration[ind_worstCluster], prediction[ind_worstCluster], '-x')
-        axs[1].fill_between(Itteration[ind_worstCluster],
-                            prediction[ind_worstCluster] + prediction_std[ind_worstCluster],
-                            prediction[ind_worstCluster] - prediction_std[ind_worstCluster], alpha=0.15, color='C0')
-        axs[1].legend(['Actual', 'Predicted', r'$\sigma$'])
-        axs[1].set_title('Worst points cluster')
-        axs[1].legend(['Real', 'Predicted'])
-        plt.show()
+        return -self.OF
 
 
 class NealderMeadOptimiser(TopasOptBaseClass):
@@ -1199,26 +1091,6 @@ class BayesianOptimiser(TopasOptBaseClass):
             x.append(x_new[self.ParameterNames[i]])
         self.x = np.array(x, ndmin=2)
 
-    def BlackBoxFunction(self, x_new):
-        """
-        Called Black Box function in the spirit of bayesian optimisation, this function simply takes the most recent
-        parameter guesses, and solves the model.
-        """
-
-        self.ConvertDictToVariables(x_new)
-        self.CreateVariableDictionary(self.x)
-        self.GenerateTopasModel(self.x)
-        if not self.WallThicknessError:
-            '''
-            Since this code takes bounds, if the use entered these sensibly, this shouldn't occur...
-            '''
-            self.RunTopasModel()
-            self.ReadTopasResults()
-        # Now assess the objective function:
-        self.CalculateObjectiveFunction()
-
-        return -self.OF
-
     def PlotResultsRetrospective(self, optimizer):
         """
         This will read in a log file and produce a version of the convergence plot using the input gaussian process
@@ -1376,9 +1248,6 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         for point in range(self.Itteration,self.MaxItterations):
             utility.update_params()
-            if self.UseBoundsTransformer:
-                if point > (self.BoundsTransformer_delay):
-                    optimizer.set_bounds(optimizer._bounds_transformer.transform(optimizer._space))
             if (self.Nsuggestions is not None) and (self.SuggestionsProbed < self.Nsuggestions):
                 # evaluate any suggested solutions first
                 next_point_to_probe = self.Suggestions[self.SuggestionsProbed]
@@ -1437,7 +1306,7 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         self.RunOptimisation()
 
-    def debug_LoadPreviousLogFile(self, LogFileLocation):
+    def xxx_debug_LoadPreviousLogFile(self, LogFileLocation):
         """
         This will load a previously generated .json log file, read the results into a model,
         and return the model. You can then play around with the model and for examples see

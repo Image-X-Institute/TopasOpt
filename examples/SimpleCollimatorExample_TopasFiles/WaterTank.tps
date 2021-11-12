@@ -37,7 +37,7 @@ s:Ge/Magic/DrawingStyle = "wireframe"
 s:So/Example/Type                            = "PhaseSpace"
 s:So/Example/PhaseSpaceFileName              = "Results/coll_PhaseSpace"
 s:So/Example/Component                       = "World"
-i:So/Example/PhaseSpaceMultipleUse          = 300
+i:So/Example/PhaseSpaceMultipleUse          = 1
 b:So/Example/PhaseSpaceIncludeEmptyHistories = "False"
 # i:So/Example/NumberOfHistoriesInRun = 10 # set PhaseSpaceMultipleUse to 0 to enable this option
 

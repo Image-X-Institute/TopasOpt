@@ -16,7 +16,8 @@ optimisation_params['ParameterNames'] = ['SomeVariable']
 optimisation_params['start_point'] = np.array([1])
 optimisation_params['UpperBounds'] = np.array([2])
 optimisation_params['LowerBounds'] = np.array([0.5])
-optimisation_params['Nitterations'] = 40
+optimisation_params['Nitterations'] = 5
+optimisation_params['Suggestions'] = np.array([[1.1],[1.2]])
 
 Optimiser = tpbo.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
 Optimiser.RunOptimisation()

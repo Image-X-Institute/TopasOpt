@@ -96,8 +96,27 @@ Finally, create a file called TopasObjectiveFunction.py. The name of this **does
 
 The only things this file **must** do is
 
-1. Receive the location of the latest results from the optimiser
+1. Receive two inptuts from the optimiser: the location of the results, and the current iteration
 2. Return a value for the objective function to the optimiser. 
+
+A very simple example of a function which meets these requirements is below:
+
+```python
+import numpy as np
+
+def TopasObjectiveFunction(ResultsLocation, iteration):
+    return np.random.randn()
+```
+
+Of course, this is pretty useless as an objective function since it returns a random number that has 
+nothing to do with the results! But it illustrates a very useful prinicple: all this function
+has to do is take two parameters and return a number. You can do whatever you want in between.
+
+A more sensible objective function must do a few more things:
+read in the results, extract some metrics from them, and calculate an objective value based on those results.
+A function meeting these criteria is below:
+
+
 
 Between these two things, you can do whatever you want. However, what we will be doing in this example, and what is in general a good template to follow, is:
 
