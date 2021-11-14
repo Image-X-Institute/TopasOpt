@@ -55,6 +55,16 @@ def import_from_absolute_path(fullpath, global_name=None):
     finally:
         del sys.path[0]
 
+class newJSONLogger(JSONLogger):
+    """
+    To avoid the annoying behaviour where the logs get deleted on restart.
+    Thanks to: https://github.com/fmfn/BayesianOptimization/issues/159
+    """
+
+    def __init__(self, path):
+        self._path = None
+        super(JSONLogger, self).__init__()
+        self._path = path if path[-5:] == ".json" else path + ".json"
 
 class TopasOptBaseClass:
     """
@@ -1214,6 +1224,13 @@ class BayesianOptimiser(TopasOptBaseClass):
         For explanation of the various parameters and commands, start with the
         """
 
+        # set up directory structure
+        FullSimName = Path(self.BaseDirectory) / self.SimulationName
+        if not os.path.isdir(FullSimName):
+            os.mkdir(FullSimName)
+        if not self.__RestartMode:
+            self.EmptySimulationFolder()
+            os.mkdir(self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs')
         # instantiate optimizer:
 
         optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
@@ -1221,32 +1238,31 @@ class BayesianOptimiser(TopasOptBaseClass):
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.GP_alpha)  # tuning of the gaussian parameters...
         utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
                                   kappa_decay=self.kappa_decay)
-        bayes_opt_logger = JSONLogger(path=self.__BayesOptLogLoc)
-        optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
+        logger.warning('setting numpy to ignore underflow errors.')
+        np.seterr(under='ignore')
+
         if self.__RestartMode:
             # then load the previous log files:
-            logger.warning('setting numpy to ignore underflow errors.')
-            np.seterr(under='ignore')
             load_logs(optimizer, logs=[self.__PreviousBayesOptLogLoc])
-            Filename = Path(self.BaseDirectory) / Path(self.SimulationName) / 'gah.json'
-            Attributes = jsonpickle.encode(optimizer, unpicklable=False, max_depth=5)
-            f = open(str(Filename), 'w')
-            f.write(Attributes)
+            bayes_opt_logger = newJSONLogger(path=self.__BayesOptLogLoc)
+            optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             optimizer._gp.fit(optimizer._space.params, optimizer._space.target)
             self.Itteration = len(optimizer.space.target)
             self.ItterationStart = len(optimizer.space.target)
             utility._iters_counter = self.ItterationStart
-            if self.Itteration >= self.MaxItterations:
+            if self.Itteration >= self.MaxItterations-1:
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
         else:
+            bayes_opt_logger = JSONLogger(path=self.__BayesOptLogLoc)
+            optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             # first guess is nonsense but we need the vectors to be the same length
             self.target_prediction_mean.append(0)
             self.target_prediction_std.append(0)
             target = self.BlackBoxFunction(self.VariableDict)
             optimizer.register(self.VariableDict, target=target)
 
-        for point in range(self.Itteration,self.MaxItterations):
+        for point in range(self.Itteration, self.MaxItterations):
             utility.update_params()
             if (self.Nsuggestions is not None) and (self.SuggestionsProbed < self.Nsuggestions):
                 # evaluate any suggested solutions first
@@ -1300,10 +1316,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         to make sure there is one previous log file at bayes_opt_logs.json that represents all iterations to date.
         """
         self.__RestartMode = True
-        self.SimulationName = self.SimulationName + '_restart'
         self.__PreviousBayesOptLogLoc = self.__BayesOptLogLoc
-        self.__BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs2.json'
-
         self.RunOptimisation()
 
     def xxx_debug_LoadPreviousLogFile(self, LogFileLocation):
