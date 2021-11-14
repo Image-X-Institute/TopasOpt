@@ -906,7 +906,7 @@ class BayesianOptimiser(TopasOptBaseClass):
     def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                  TargetBeamWidth=7, debug=True, Nthreads=-6,
                  StartingSimplexRelativeVal=None, length_scales=None,
-                 UseKappaDecay=False):
+                 KappaDecayIterations=10):
         """
         :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
         :type optimisation_params: list
@@ -931,12 +931,9 @@ class BayesianOptimiser(TopasOptBaseClass):
         :type StartingSimplexRelativeVal: double, optional
         :param MaxItterations: this is defined in optimisation_params['Nitterations']. Note that nealder mead will always
             assess the starting simplex first before checking this (mostly a debugging problem)
-        :param UseKappaDecay: if True, can implement kappt to start decaying, and hence the algorithm becoming more
-            explotive, after kappa_decay_delay iterations. UCBKappa_final determines the last value of Kappa.
-        :type UseKappaDecay: Boolean
-        :param UseBoundsTransformer: if True, use bounds transformation as described
-            `here <https://github.com/fmfn/BayesianOptimization/blob/master/examples/domain_reduction.ipynb>`_
-        :type UseBoundsTransformer: Boolean
+        :param KappaDecayIterations: Over the last N iterations, kappa will decay to be almost 0 (highly exploitive). For
+            explantion of kappa decay see `here <https://github.com/fmfn/BayesianOptimization/pull/221>`_
+        :type KappaDecayIterations: int
         :param OptimisationDirectory: location that TopasObjectiveFunction and GenerateTopasScript are located
         :type OptimisationDirectory: string or Path
         """
@@ -994,20 +991,18 @@ class BayesianOptimiser(TopasOptBaseClass):
         self.Matern_Nu = 1.5  # see here https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern
         self.UCBkappa = 5  # higher kappa = more exploration. lower kappa = more exploitation
         self.n_restarts_optimizer = 20  # this controls the gaussian process fitting. 20 seems to be a good number.
-        self.UseKappaDecay = UseKappaDecay
-        if self.UseKappaDecay:
-            # we use kappa decay such the algorithm becomes more exploritive
-            # https://github.com/fmfn/BayesianOptimization/pull/221
-            self.UCBKappa_final = 0.1
-            self.kappa_decay_delay = 180  # this many exploritive iterations will be carried out before kappa begins to decay
-            if self.kappa_decay_delay > self.MaxItterations:
-                logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
+        self.KappaDecayIterations = KappaDecayIterations
+        self.UCBKappa_final = 0.1
+        self.kappa_decay_delay = self.MaxItterations - self.KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
+
+        if self.kappa_decay_delay >= self.MaxItterations:
+            logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
                                f'than MaxItterations ({self.MaxItterations}), decay will never occur...')
+            self.kappa_decay = 1
+        else:
             self.kappa_decay = (self.UCBKappa_final/self.UCBkappa) ** (1/(self.MaxItterations - self.kappa_decay_delay))
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
-        else:
-            self.kappa_decay = 1
-            self.kappa_decay_delay = 0
+
 
         super().__init__()  # get anything we need from base class
         self.CheckInputData()
