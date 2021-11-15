@@ -66,6 +66,7 @@ class newJSONLogger(JSONLogger):
         super(JSONLogger, self).__init__()
         self._path = path if path[-5:] == ".json" else path + ".json"
 
+
 class TopasOptBaseClass:
     """
     We provide two different method's for performing optimisation: Downhill Simplex, and Bayesian with Gausian Processes.
@@ -87,15 +88,7 @@ class TopasOptBaseClass:
         self.AllObjectiveFunctionValues = []
         self.BadSolutionOF = 70  # this is the max value returned by the OF. To help the bayesian optimiser, it should be
         # on the same order of magntiude as the expected minimum OF.
-        FullSimName = Path(self.BaseDirectory) / self.SimulationName
-        if not os.path.isdir(FullSimName):
-            os.mkdir(FullSimName)
-        self.EmptySimulationFolder()
-        os.mkdir(Path(FullSimName) / 'logs')
-        os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
-        os.mkdir(Path(FullSimName) / 'logs' / 'SingleParameterPlots')
-        os.mkdir(Path(FullSimName) / 'TopasScripts')
-        os.mkdir(Path(FullSimName) / 'Results')
+
 
         self.TopasLocation = '~/topas37/'
 
@@ -940,8 +933,6 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         # attempt the absolute imports from the optimisation directory:
 
-
-
         if StartingSimplexRelativeVal is not None:
             logger.warning(
                 f'You have attempted to use the variable StartingSimplexRelativeVal, but this does nothing'
@@ -949,9 +940,6 @@ class BayesianOptimiser(TopasOptBaseClass):
                 f' and ignoring this parameter')
 
         self.__RestartMode = False  # don't change!
-
-        self.Nthreads = Nthreads
-        self.name = 'topas_interface'
         self.BaseDirectory = BaseDirectory
         self.OptimisationDirectory = OptimisationDirectory
         if not os.path.isdir(BaseDirectory):
@@ -1002,7 +990,6 @@ class BayesianOptimiser(TopasOptBaseClass):
         else:
             self.kappa_decay = (self.UCBKappa_final/self.UCBkappa) ** (1/(self.MaxItterations - self.kappa_decay_delay))
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
-
 
         super().__init__()  # get anything we need from base class
         self.CheckInputData()
@@ -1225,7 +1212,11 @@ class BayesianOptimiser(TopasOptBaseClass):
             os.mkdir(FullSimName)
         if not self.__RestartMode:
             self.EmptySimulationFolder()
-            os.mkdir(self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs')
+            os.mkdir(Path(FullSimName) / 'logs')
+            os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
+            os.mkdir(Path(FullSimName) / 'logs' / 'SingleParameterPlots')
+            os.mkdir(Path(FullSimName) / 'TopasScripts')
+            os.mkdir(Path(FullSimName) / 'Results')
         # instantiate optimizer:
 
         optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
