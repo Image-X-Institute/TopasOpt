@@ -28,5 +28,6 @@ ShellScriptHeader = '# !/bin/bash\n\n# This script sets up the topas environment
                     '\nmodule load gcc/9.1.0 >/dev/null 2>&1\n\n'
 
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, ShellScriptHeader=ShellScriptHeader)
+                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, ShellScriptHeader=ShellScriptHeader,
+                                 Overwrite=True)
 Optimiser.RunOptimisation()

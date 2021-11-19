@@ -57,10 +57,9 @@ def import_from_absolute_path(fullpath, global_name=None):
 
 class newJSONLogger(JSONLogger):
     """
-    To avoid the annoying behaviour where the logs get deleted on restart.
+    To avoid the annoying behaviour where the bayesian logs get deleted on restart.
     Thanks to: https://github.com/fmfn/BayesianOptimization/issues/159
     """
-
     def __init__(self, path):
         self._path = None
         super(JSONLogger, self).__init__()
@@ -1024,8 +1023,8 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         # instantiate optimizer:
 
-        optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.length_scales, nu=self.Matern_Nu),
+        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
+        self.optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.length_scales, nu=self.Matern_Nu),
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.GP_alpha)  # tuning of the gaussian parameters...
         utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
                                   kappa_decay=self.kappa_decay)
@@ -1034,24 +1033,24 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         if self.__RestartMode:
             # then load the previous log files:
-            load_logs(optimizer, logs=[self.__PreviousBayesOptLogLoc])
+            load_logs(self.optimizer, logs=[self.__PreviousBayesOptLogLoc])
             bayes_opt_logger = newJSONLogger(path=self.BayesOptLogLoc)
-            optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
-            optimizer._gp.fit(optimizer._space.params, optimizer._space.target)
-            self.Itteration = len(optimizer.space.target)
-            self.ItterationStart = len(optimizer.space.target)
+            self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
+            self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
+            self.Itteration = len(self.optimizer.space.target)
+            self.ItterationStart = len(self.optimizer.space.target)
             utility._iters_counter = self.ItterationStart
             if self.Itteration >= self.MaxItterations-1:
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
         else:
             bayes_opt_logger = JSONLogger(path=self.BayesOptLogLoc)
-            optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
+            self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             # first guess is nonsense but we need the vectors to be the same length
             self.target_prediction_mean.append(0)
             self.target_prediction_std.append(0)
             target = self.BlackBoxFunction(self.VariableDict)
-            optimizer.register(self.VariableDict, target=target)
+            self.optimizer.register(self.VariableDict, target=target)
 
         for point in range(self.Itteration, self.MaxItterations):
             utility.update_params()
@@ -1060,15 +1059,15 @@ class BayesianOptimiser(TopasOptBaseClass):
                 next_point_to_probe = self.Suggestions[self.SuggestionsProbed]
                 self.SuggestionsProbed += 1
             else:
-                next_point_to_probe = optimizer.suggest(utility)
+                next_point_to_probe = self.optimizer.suggest(utility)
 
             NextPointValues = np.array(list(next_point_to_probe.values()))
-            mean, std = optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)
+            mean, std = self.optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)
             self.target_prediction_mean.append(mean[0])
             self.target_prediction_std.append(std[0])
             target = self.BlackBoxFunction(next_point_to_probe)
             try:
-                optimizer.register(params=next_point_to_probe, target=target)
+                self.optimizer.register(params=next_point_to_probe, target=target)
             except KeyError:
                 try:
                     self.RepeatedPointsProbed = self.RepeatedPointsProbed + 1
@@ -1081,11 +1080,11 @@ class BayesianOptimiser(TopasOptBaseClass):
                     self.RepeatedPointsProbed = 1
 
             self.PlotPredictedVersusActualCorrelation()
-            self.Plot_ConvergenceRetrospective(optimizer)
-            self.PlotSingleVariableObjective(optimizer)
+            self.Plot_ConvergenceRetrospective(self.optimizer)
+            self.PlotSingleVariableObjective(self.optimizer)
 
         # update the logs with the best value:
-        best = optimizer.max
+        best = self.optimizer.max
         best['target'] = -1 * best['target']  # min/max paradigm...
         LogFile = Path(self.BaseDirectory) / self.SimulationName
         LogFile = LogFile / 'logs'
