@@ -78,7 +78,7 @@ class TopasOptBaseClass:
                  TargetBeamWidth=7, ReadMeText = None,
                  StartingSimplexRelativeVal=None, length_scales=None,
                  KappaDecayIterations=10, TopasLocation='~/topas/',
-                 ShellScriptHeader=None, Overwrite=False):
+                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.1):
         """
         :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
         :type optimisation_params: list
@@ -129,8 +129,7 @@ class TopasOptBaseClass:
         self.Itteration = 0
         self.ItterationStart = 0
         # the starting values of our optimisation parameters are defined from the default geometry
-        self.ParameterNames = optimisation_params[
-            'ParameterNames']
+        self.ParameterNames = optimisation_params['ParameterNames']
         self.StartingValues = optimisation_params['start_point']
         if self.StartingValues is None:
             logger.error('you must define a start point')
@@ -179,7 +178,7 @@ class TopasOptBaseClass:
             # Bayesian optimisation settings:
             self.target_prediction_mean = []  # keep track of what the optimiser expects to get
             self.target_prediction_std = []  # keep track of what the optimiser expects to get
-            self.GP_alpha = .1  # this tells the GPM the expected ammount of noise in the objective function
+            self.GP_alpha = GP_alpha  # this tells the GPM the expected ammount of noise in the objective function
             # see here: https://github.com/fmfn/BayesianOptimization/issues/202
             self.Matern_Nu = 1.5  # see here https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern
             self.UCBkappa = 5  # higher kappa = more exploration. lower kappa = more exploitation
@@ -209,7 +208,7 @@ class TopasOptBaseClass:
                 self.GenerateStartingSimplex()
 
         self.CheckInputData()
-        self.CopySelf()
+
 
     def CreateVariableDictionary(self, x):
         """
@@ -473,76 +472,9 @@ class TopasOptBaseClass:
 
         Filename = Path(self.BaseDirectory) / Path(self.SimulationName) / 'OptimisationSettings.json'
 
-        Attributes = jsonpickle.encode(self, unpicklable=True, max_depth=3)
+        Attributes = jsonpickle.encode(self, unpicklable=True, max_depth=4)
         f = open(str(Filename), 'w')
         f.write(Attributes)
-
-    def xxx_targ_Thicknesses_toList(self):
-        """
-        Because the target thicknesses are entered into PhaserBeamLine as a list instead of floats,
-        we need to do some clever wrangling to convert them into an appropriate format before we create that
-        instance
-        """
-        NewVariableDict = {}
-        targ_Thicknesses_list = []
-        SortedKeys = sorted(self.VariableDict.keys())  # this ensures any targ_Thicknesses terms are ordred correctly
-        for key in self.VariableDict.keys():
-            if 'targ_Thicknesses' in key:
-                targ_Thicknesses_list.append(self.VariableDict[key])
-            else:
-                # no change needed
-                NewVariableDict[key] = self.VariableDict[key]
-        if targ_Thicknesses_list:  # not empty evaluates as true
-            NewVariableDict['coll_targ_Thicknesses'] = targ_Thicknesses_list
-
-        return NewVariableDict
-
-    def xxx_RewindResults(self):
-        """
-        This function allows you to read in previously calculated water tank files and calculate the objective function
-        it can be useful for fine tuning and optimising the objective function but is not part of the normal optimisation
-        workflow.
-        You should check to actual objective function matches the one below since they are independant
-
-        It requires manual input below to specifiy where the files are. And it won't work
-        for cases where there is a wall thickness violation or boundary violation. it's basically fiddly and ugly :-)
-        """
-        self.BaseDirectory = '/project/Phaser/PhaserSims/topas/'
-        self.SimulationName = 'BayesianOptimisation_Hard'
-        AnalysisPath = self.BaseDirectory + self.SimulationName + '/Results'
-        # self.StartingDoseFile='/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PaulGeom_BSI_2_6_5/Results/WT_xAng_0.00_yAng_0.00_BSI_2.0.bin',
-        # self.ReadTopasResults(StartingDoseFile=self.StartingDoseFile)
-        # self.StartingValuesProvided = True
-        FilesToAnalyse = self.GetAllbinFiles(AnalysisPath)
-        FilesToAnalyse = ['WT_xAng_0.00_yAng_0.00_run_78.bin']
-
-        FilesToAnalyse.sort()
-        self.TargetBeamWidth = 7
-        self.Itteration = 0
-
-        w1 = 30  # max dose weight
-        w2 = 50  # Beamlet width weight
-        w3 = 1  # Collimator Thickness
-        w4 = 5  # minimise out of field surface dose (electron scatter)
-        w5 = 5  # CrossChannelLeakageTerm
-        w6 = 20  # electron contamination dose
-
-        for file in FilesToAnalyse:
-            self.CurrentWTdata = file
-            self.ReadTopasResults()
-            if abs(self.TargetBeamWidth - self.BeamletWidth) < self.BeamletWidthPrecision:
-                DeltaBeamletWidth = 0
-            else:
-                DeltaBeamletWidth = abs(self.TargetBeamWidth - self.BeamletWidth)
-
-            if self.CrossChannelLeakage > self.CrossChannelLeakageLimit:
-                self.OutOfFieldDoseTerm = self.CrossChannelLeakage
-            else:
-                self.OutOfFieldDoseTerm = 0
-            print(f'Out of field dose term is {w5 * self.OutOfFieldDoseTerm}')
-
-            OF = (-w1 * self.MaxDose) + (DeltaBeamletWidth * w2) + (w3 * self.RelativeCollimatorThickness) \
-                 + (w5 * self.OutOfFieldDoseTerm)
 
     def ReadInLogFile(self, LogFileLoc):
         """
@@ -718,17 +650,16 @@ class TopasOptBaseClass:
 
     def SetUpDirectoryStructure(self):
         """
-        Method to set up directory structure.
-        Also writes the readme text if that exists
-        Returns:
-
+        Method to set up directory structure. This will attempt to empty the directory if it already exists.
+        If Overwrite=False, it will ask first, otherwise just do it.
+        Also writes the readme text if that exists, and copies all attributes of self to a json file.
         """
 
         FullSimName = Path(self.BaseDirectory) / self.SimulationName
         if not os.path.isdir(FullSimName):
             os.mkdir(FullSimName)
-
         self.EmptySimulationFolder()
+        self.CopySelf()
         os.mkdir(Path(FullSimName) / 'logs')
         os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
         if 'BayesianOptimiser' in str(self.__class__):
