@@ -12,11 +12,15 @@ OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:
 optimisation_params = {}
-optimisation_params['ParameterNames'] = ['SomeVariable']
-optimisation_params['start_point'] = np.array([1])
-optimisation_params['UpperBounds'] = np.array([2])
+optimisation_params['ParameterNames'] = ['AppertureSize']
+
+optimisation_params['UpperBounds'] = np.array([10])
 optimisation_params['LowerBounds'] = np.array([0.5])
-optimisation_params['Nitterations'] = 10
+# generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
+random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])[0]
+optimisation_params['start_point'] = np.array([random_start_point])
+# note that true value should be 5
+optimisation_params['Nitterations'] = 20
 # optimisation_params['Suggestions'] = np.array([[1.1],[1.2]])
 ReadMeText = 'This is a public service announcement, this is only a test'
 

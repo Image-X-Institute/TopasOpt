@@ -209,7 +209,6 @@ class TopasOptBaseClass:
 
         self.CheckInputData()
 
-
     def CreateVariableDictionary(self, x):
         """
         Use the input information to create a dictionary of geometric inputs. This creates an elegant method to
@@ -237,7 +236,7 @@ class TopasOptBaseClass:
         If there is already stuff in the simulation folder, ask for user permission to empty and continue
         """
         SimName = str(Path(self.BaseDirectory) / self.SimulationName)
-        if os.listdir(SimName):
+        if os.listdir(SimName) and (not self.Overwrite):
             logger.warning(f'Directory {SimName} is not empty; if you continue it will be emptied.'
                            f'\nType y to continue.'
                            f'\nYou can set Overwrite=True to disable this warning')
