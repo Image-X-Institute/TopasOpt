@@ -157,7 +157,6 @@ class TopasOptBaseClass:
             print(f'{bcolors.FAIL} size of UpperBounds does not match size of LowerBounds{bcolors.ENDC}')
             sys.exit(1)
 
-        MinTargThicknessValues = []  # keep track of this below
         for i, Paramter in enumerate(self.ParameterNames):
             try:
                 if self.StartingValues[0][i] < self.LowerBounds[i]:
@@ -175,16 +174,6 @@ class TopasOptBaseClass:
                 elif self.StartingValues[i] > self.UpperBounds[i]:
                     print(f'{bcolors.FAIL}For {Paramter}, Starting value {self.StartingValues[i]} is greater '
                           f'than upper bound {self.UpperBounds[i]}{bcolors.ENDC}')
-
-            if 'targ_Thicknesses' in Paramter:
-                # need to make sure we have at least one layer with a non zero minimum
-                MinTargThicknessValues.append(self.LowerBounds[i])
-
-        if MinTargThicknessValues:  # check list is not empty
-            if (np.array(MinTargThicknessValues) == 0).all():
-                logger.error('At least one target layer must have a non zero minimum; '
-                             '\nrunning simulations with no target makes no sense and wont work. Quitting')
-                sys.exit(1)
 
         if (self.StartingValues == 0).any():
             Names = np.asarray(self.ParameterNames, dtype=object)
