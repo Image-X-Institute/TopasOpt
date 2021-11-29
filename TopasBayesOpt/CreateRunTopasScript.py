@@ -97,21 +97,29 @@ class CreateTopasScript:
                     # extract everything on the RHS of the equals sign:
                     RHS = include_file_line.lstrip().split('=')[1]
                     RHS = RHS.split('#')[0]  #remove anything after a comment symbol
-                    AllFiles = RHS.split(' ')
-                    for file in AllFiles:
+                    AllIncludeFiles = RHS.split(' ')
+                    new_include_file_line = 'includeFile = '
+                    for j, file in enumerate(AllIncludeFiles):
                         if file == '' or file =='\n':
                             continue
                         temp_include_file_line = 'includeFile = ' + file
                         include_OriginalFileLocation_line = self.HandleIncludeFileLine(OriginalFileLocation, temp_include_file_line)
-
-                        # now we need to update this line in the copied script:
-                        copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
-                        f2 = open(copied_file_location, 'r')
-                        old_lines = f2.readlines()
-                        old_lines[i] = 'includeFile = ' + include_file_line
+                        new_include_file_line = new_include_file_line + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + file + ' '
+                    # now we need to update this line in the copied script:
+                    copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
+                    f2 = open(copied_file_location, 'r')
+                    old_lines = f2.readlines()
+                    new_lines = old_lines.copy()
+                    new_lines[i] = new_include_file_line
+                    f2 = open(copied_file_location, 'w')
+                    f2.writelines(new_lines)
 
         # 3) update the line to point to the new storage location.
-        line = 'includeFile = ' + str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
+        # if any([os.path.split(OriginalFileLocation)[1] in input_file for input_file in self.TopasScriptLocation]):
+            # check if the current file under consideration is one of the input files
+        line = 'includeFile = ' + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + IncludeFileName
+        # else:
+        #     line = 'includeFile = ' + IncludeFileName
 
         return line
 
@@ -238,7 +246,16 @@ class CreateTopasScript:
         ReturnStatementString = ReturnStatementString + ']'
         ReturnStatementString = ReturnStatementString + ', ' + str(ScriptNames)
         TopasScriptGenerator.append('\n    return ' + ReturnStatementString)
-        f2 = open(outputFile, 'w+')
-        for line in TopasScriptGenerator:
-            f2.writelines(line)
+
+        TopasScriptGenerator.append('\n\nif __name__ == "__main__":\n')
+        TopasScriptGenerator.append('    Scripts, ScriptNames = GenerateTopasScripts(".", 1)\n')
+        TopasScriptGenerator.append('    for i, script in enumerate(Scripts):\n')
+        TopasScriptGenerator.append('        filename = ScriptNames[i] + ".tps"\n')
+        TopasScriptGenerator.append('        f = open(filename, "w")\n')
+        TopasScriptGenerator.append('        for line in script:\n')
+        TopasScriptGenerator.append('            f.write(line)\n')
+        TopasScriptGenerator.append('            f.write("\n"")\n')
+        TopasScriptGenerator.append('f2 = open(outputFile, "w+")\n')
+        TopasScriptGenerator.append('for line in TopasScriptGenerator:\n')
+        TopasScriptGenerator.append('    f2.writelines(line)\n')
 
