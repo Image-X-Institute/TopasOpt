@@ -19,8 +19,7 @@ from bayes_opt.event import Events
 from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from utilities import bcolors
-from utilities import FigureSpecs
+from utilities import bcolors, FigureSpecs, import_from_absolute_path, newJSONLogger
 import stat
 
 ch = logging.StreamHandler()
@@ -31,39 +30,6 @@ logger.addHandler(ch)
 logger.setLevel(logging.INFO)  # This toggles all the logging in your app
 logger.propagate = False
 
-
-def import_from_absolute_path(fullpath, global_name=None):
-    """
-    Dynamic script import using full path.
-    This is required to enable mapping to the location of the script generation function and the objective funciton,
-    which are not known in advance.
-    (credit here)[https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders]
-    """
-    import os
-    import sys
-
-    script_dir, filename = os.path.split(fullpath)
-    script, ext = os.path.splitext(filename)
-
-    sys.path.insert(0, script_dir)
-    try:
-        module = __import__(script)
-        if global_name is None:
-            global_name = script
-        globals()[global_name] = module
-        sys.modules[global_name] = module
-    finally:
-        del sys.path[0]
-
-class newJSONLogger(JSONLogger):
-    """
-    To avoid the annoying behaviour where the bayesian logs get deleted on restart.
-    Thanks to: https://github.com/fmfn/BayesianOptimization/issues/159
-    """
-    def __init__(self, path):
-        self._path = None
-        super(JSONLogger, self).__init__()
-        self._path = path if path[-5:] == ".json" else path + ".json"
 
 
 class TopasOptBaseClass:
@@ -364,16 +330,9 @@ class TopasOptBaseClass:
 
         # set up the environment etc.
         if self.ShellScriptHeader is None:
-            f.write('# !/bin/bash\n\n')
-            f.write('# This script sets up the topas environment then runs all listed files\n\n')
-            f.write('# ensure that any errors cause the script to stop executing:\n')
-            f.write('set - e\n\n')
-            f.write('export TOPAS_G4_DATA_DIR=~/G4Data\n')
-            # f.write('export LD_LIBRARY_PATH=~/topas' + self.TopasVersion + '/lib/:~/topas-dev/'
-            #             'gdcm-install/lib:~topas-dev/geant4.10.06.p03-install:$LD_LIBRARY_PATH\n\n')
-            # # just in case
-            f.write('module unload gcc >/dev/null 2>&1  # will fail on non artemis systems, output is surpressed\n')
-            f.write('module load gcc/9.1.0 >/dev/null 2>&1\n\n')
+            f.write('# !/bin/bash')
+            f.write('\n\n# This script sets up the topas environment then runs all listed files\n\n')
+            f.write('\nexport TOPAS_G4_DATA_DIR=~/G4Data\n')
         else:
             f.write(self.ShellScriptHeader)
 
