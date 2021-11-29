@@ -72,54 +72,58 @@ class CreateTopasScript:
         # first, check that this include file exists... the user may have used a relative or an absolute path...
         # see if relative paths points to a OriginalFileLocation:
         FileLocation, dum = os.path.split(OriginalFileLocation)
-        IncludeFileName = re.findall('(?<==).*$', line)[0] # extract the file name with regular expression
-        IncludeFileName = IncludeFileName.replace(' ','')  # replace any spaces with strings
-        if os.path.isfile(FileLocation + '/' + IncludeFileName):
-            IncludeFileLocation = Path(FileLocation) / IncludeFileName
-        elif os.path.isfile(IncludeFileName):  # check for use with absolute paths
-            IncludeFileLocation = Path(FileLocation) / IncludeFileName
-            dum, IncludeFileName = os.path.split(IncludeFileName)
-        else:
-            logger.error(f'could not find include file defined on this line:\n{line}'
-                         f'\nSearched locations:'
-                         f'\n{FileLocation + "/" + IncludeFileName}'
-                         f'\n{IncludeFileName}'
-                         f'\nQuitting')
-            sys.exit(1)
+        IncludeFileNames = re.findall('(?<==).*$', line)[0] # extract the file name with regular expression
+        IncludeFileNames = IncludeFileNames.split('#')[0]  # ignore anything after a comment symbol
+        IncludeFileNames = IncludeFileNames.split(' ')
+        line = 'includeFile = '
+        for IncludeFileName in IncludeFileNames:  # have to handle the potential for multiple include files on one line
+            if IncludeFileName == '' or IncludeFileName == '\n':
+                continue
+            IncludeFileName = IncludeFileName.replace(' ','')  # replace any spaces with strings
+            if os.path.isfile(FileLocation + '/' + IncludeFileName):
+                IncludeFileLocation = Path(FileLocation) / IncludeFileName
+            elif os.path.isfile(IncludeFileName):  # check for use with absolute paths
+                IncludeFileLocation = Path(FileLocation) / IncludeFileName
+                dum, IncludeFileName = os.path.split(IncludeFileName)
+            else:
+                logger.error(f'could not find include file defined on this line:\n{line}'
+                             f'\nSearched locations:'
+                             f'\n{FileLocation + "/" + IncludeFileName}'
+                             f'\n{IncludeFileName}'
+                             f'\nQuitting')
+                sys.exit(1)
 
-        # assuming we found the file, we have to 1) copy it
-        shutil.copy2(IncludeFileLocation, str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName)
-        # 2) check if it itself contains any include files! This happens recursively (this function calls itself)
-        f = open(IncludeFileLocation)
-        for i, include_file_line in enumerate(f):
-            if 'includeFile'.lower() in include_file_line.lower():
-                if not include_file_line.lstrip()[0] == '#':  # ignore comments
-                    # extract everything on the RHS of the equals sign:
-                    RHS = include_file_line.lstrip().split('=')[1]
-                    RHS = RHS.split('#')[0]  #remove anything after a comment symbol
-                    AllIncludeFiles = RHS.split(' ')
-                    new_include_file_line = 'includeFile = '
-                    for j, file in enumerate(AllIncludeFiles):
-                        if file == '' or file =='\n':
-                            continue
-                        temp_include_file_line = 'includeFile = ' + file
-                        include_OriginalFileLocation_line = self.HandleIncludeFileLine(OriginalFileLocation, temp_include_file_line)
-                        new_include_file_line = new_include_file_line + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + file + ' '
-                    # now we need to update this line in the copied script:
-                    copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
-                    f2 = open(copied_file_location, 'r')
-                    old_lines = f2.readlines()
-                    new_lines = old_lines.copy()
-                    new_lines[i] = new_include_file_line
-                    f2 = open(copied_file_location, 'w')
-                    f2.writelines(new_lines)
+            # assuming we found the file, we have to 1) copy it
+            shutil.copy2(IncludeFileLocation, str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName)
+            # 2) check if it itself contains any include files! This happens recursively (this function calls itself)
+            f = open(IncludeFileLocation)
+            for i, include_file_line in enumerate(f):
+                if 'includeFile'.lower() in include_file_line.lower():
+                    if not include_file_line.lstrip()[0] == '#':  # ignore comments
+                        # extract everything on the RHS of the equals sign:
+                        RHS = include_file_line.lstrip().split('=')[1]
+                        RHS = RHS.split('#')[0]  #remove anything after a comment symbol
+                        AllIncludeFiles = RHS.split(' ')
+                        new_include_file_line = 'includeFile = '
+                        for j, file in enumerate(AllIncludeFiles):
+                            if file == '' or file =='\n':
+                                continue
+                            temp_include_file_line = 'includeFile = ' + file
+                            include_OriginalFileLocation_line = self.HandleIncludeFileLine(IncludeFileLocation, temp_include_file_line)
+                            new_include_file_line = new_include_file_line + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + file + ' '
+                        if AllIncludeFiles[-1] == '\n':
+                            new_include_file_line = new_include_file_line + '\n'
+                        # now we need to update this line in the copied script:
+                        copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
+                        f2 = open(copied_file_location, 'r')
+                        old_lines = f2.readlines()
+                        new_lines = old_lines.copy()
+                        new_lines[i] = new_include_file_line
+                        f2 = open(copied_file_location, 'w')
+                        f2.writelines(new_lines)
 
-        # 3) update the line to point to the new storage location.
-        # if any([os.path.split(OriginalFileLocation)[1] in input_file for input_file in self.TopasScriptLocation]):
-            # check if the current file under consideration is one of the input files
-        line = 'includeFile = ' + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + IncludeFileName
-        # else:
-        #     line = 'includeFile = ' + IncludeFileName
+            # 3) update the line to point to the new storage location.
+            line = line + ' ' + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + IncludeFileName
 
         return line
 
@@ -255,7 +259,7 @@ class CreateTopasScript:
         TopasScriptGenerator.append('        for line in script:\n')
         TopasScriptGenerator.append('            f.write(line)\n')
         TopasScriptGenerator.append('            f.write("\n"")\n')
-        TopasScriptGenerator.append('f2 = open(outputFile, "w+")\n')
-        TopasScriptGenerator.append('for line in TopasScriptGenerator:\n')
-        TopasScriptGenerator.append('    f2.writelines(line)\n')
+        f2 = open(outputFile, "w+")
+        for line in TopasScriptGenerator:
+            f2.writelines(line)
 
