@@ -10,7 +10,10 @@ logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
 
 class CreateTopasScript:
     """
-    This code will take a single topas script, and create a python function that will write it.
+    This code will take a list topas scripts, and create a python function that returns a list for each script.
+    Each list element contains one line of the topas script, which can be used to automatically regenerate that script.
+    This class will also attempt to handle input/output lines in the topas language such as include lines and input
+    and output of phase space lines.
     """
 
     def __init__(self,OutputDirectory,TopasScriptLocation, RequiredIncludeFiles=None, IncludeFileStorageDirectory=None,

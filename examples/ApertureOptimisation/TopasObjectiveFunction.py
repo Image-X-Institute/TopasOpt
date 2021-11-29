@@ -13,7 +13,6 @@ def ReadInTopasResults(ResultsLocation):
     Dose = WaterTankData(path, file)  # WaterTank data is built on topas2numpy
     return Dose
 
-
 def AnalyseTopasResults(TopasResults):
     """
     In this example, for metrics I am going to calculate the RMS error between the desired and actual
@@ -34,24 +33,36 @@ def AnalyseTopasResults(TopasResults):
 
     OriginalProfile = OriginalResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
     OriginalProfileNorm = OriginalProfile * 100 / OriginalProfile.max()
-
     CurrentProfile = TopasResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
     CurrentProfileNorm = CurrentProfile * 100 / CurrentProfile.max()
+    ProfileDifference = OriginalProfileNorm - CurrentProfileNorm
 
-    ProfileDiffere = OriginalProfileNorm - CurrentProfileNorm
+    # define the points we want to collect our DD at:
+    Zpts = OriginalResults.z
+    Xpts = np.zeros(Zpts.shape)
+    Ypts = np.zeros(Zpts.shape)
 
-    return 1
+    OriginalDepthDose = OriginalResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
+    CurrentDepthDose = TopasResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
+    OriginalDepthDoseNorm = OriginalDepthDose * 100 /np.max(OriginalDepthDose)
+    CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
+    DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
+
+    return np.mean(abs(ProfileDifference)), np.mean(abs(DepthDoseDifference))
 
 def CalculateObjectiveFunction(Metrics):
-    pass
+    for metric in Metrics:
+        assert metric >=0  # our OF is based on this assumption so might as well check it
+    OF = Metrics[0] + Metrics[1]
+    return OF
 
 def TopasObjectiveFunction(ResultsLocation, iteration):
 
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     TopasResults = ReadInTopasResults(ResultsFile)
     Metrics = AnalyseTopasResults(TopasResults)
-    # OF = CalculateObjectiveFunction(Metrics)
-    return np.random.randn()
+    OF = CalculateObjectiveFunction(Metrics)
+    return OF
 
 if __name__ == '__main__':
     TopasObjectiveFunction('/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/MVLinac/Dose.bin')

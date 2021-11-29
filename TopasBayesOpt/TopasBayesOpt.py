@@ -19,8 +19,7 @@ from bayes_opt.event import Events
 from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from utilities import bcolors
-from utilities import FigureSpecs
+from utilities import bcolors, FigureSpecs, import_from_absolute_path, newJSONLogger
 import stat
 
 ch = logging.StreamHandler()
@@ -32,66 +31,88 @@ logger.setLevel(logging.INFO)  # This toggles all the logging in your app
 logger.propagate = False
 
 
-def import_from_absolute_path(fullpath, global_name=None):
-    """
-    Dynamic script import using full path.
-    This is required to enable mapping to the location of the script generation function and the objective funciton,
-    which are not known in advance.
-    (credit here)[https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders]
-    """
-    import os
-    import sys
-
-    script_dir, filename = os.path.split(fullpath)
-    script, ext = os.path.splitext(filename)
-
-    sys.path.insert(0, script_dir)
-    try:
-        module = __import__(script)
-        if global_name is None:
-            global_name = script
-        globals()[global_name] = module
-        sys.modules[global_name] = module
-    finally:
-        del sys.path[0]
-
-class newJSONLogger(JSONLogger):
-    """
-    To avoid the annoying behaviour where the logs get deleted on restart.
-    Thanks to: https://github.com/fmfn/BayesianOptimization/issues/159
-    """
-
-    def __init__(self, path):
-        self._path = None
-        super(JSONLogger, self).__init__()
-        self._path = path if path[-5:] == ".json" else path + ".json"
-
 
 class TopasOptBaseClass:
     """
-    We provide two different method's for performing optimisation: Downhill Simplex, and Bayesian with Gausian Processes.
+    There are many overlapping functionalities required by all optimisation algorithms: logging, calculation of objective function,
+    generation of models...etc. All of these common methods are contained this base class which other optimisation methods inherit.
 
-    However, there are many overlapping functinoalities between these two methods: logging, calculation of objective function,
-    generation of models...etc.
-    To avoid duplication and ensure consistency between the two methods, we store all of these methods in a base class
-    which the two different optimisation methods inherit.
-    This class also contains various methods for plotting the results of log files output by the optimisers, which can
-    be useful for analysis and debugging
+    This class is not intended to be used in isolation and won't work if you try.
     """
 
-    def __init__(self):
-        self.Overwrite = False
-        self.BeamletWidthPrecision = 0.25  # in mm. Results are rounded to the nearerst BeamletWidthPrecision,
-        # AND, differences smaller than this are ignored.
-        self.Nparticles = 10000000  # primary particles in topas sim
-        self.CrossChannelLeakageLimit = 5  # Defined as NeighborDose * 100 /MainDose
+    def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                 TargetBeamWidth=7, ReadMeText = None,
+                 StartingSimplexRelativeVal=None, length_scales=None,
+                 KappaDecayIterations=10, TopasLocation='~/topas/',
+                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.1):
+        """
+        :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
+        :type optimisation_params: list
+        :param BaseDirectory: Place where all the topas simulation results are stored
+        :type BaseDirectory: string
+        :param SimulationName: Specific folder for this simulation
+        :type SimulationName: string
+        :param TargetBeamWidth: desired beam width in mm
+        :type TargetBeamWidth: double
+        :param debug: will try and use a quick phase space. won't produce meaningful results but will be quick. Default is True.
+        type debug: Boolean, optional
+        param Nthreads: Number of threads to run.
+        type Nthreads: double, optional
+        :param StartingDoseFile: If supplied, results will be normalised to this. if not, they will be normalised to the
+            starting parameters
+        :type StartingDoseFile: string, optional
+        :param StartingCollimatorThickness: Thickness of collimator used in StartingDoseFile. If StartingDoseFile is supplied
+            this MUST be supplied, otherwise not.
+        :type StartingCollimatorThickness: double, optional
+        :param StartingSimplexRelativeVal: This does nothing here; it is only here to enable complete compatability between
+            the Bayesian and Nealder-Mead methods
+        :type StartingSimplexRelativeVal: double, optional
+        :param MaxItterations: this is defined in optimisation_params['Nitterations']. Note that nealder mead will always
+            assess the starting simplex first before checking this (mostly a debugging problem)
+        :param KappaDecayIterations: Over the last N iterations, kappa will decay to be almost 0 (highly exploitive). For
+            explantion of kappa decay see `here <https://github.com/fmfn/BayesianOptimization/pull/221>`_
+        :type KappaDecayIterations: int
+        :param OptimisationDirectory: location that TopasObjectiveFunction and GenerateTopasScript are located
+        :type OptimisationDirectory: string or Path
+        """
+
+        if 'TopasOptBaseClass' in str(self.__class__):
+            logger.error('TopasOptBaseClass should not be called directly; it only exists for other optimisers'
+                         'to inherit. Quitting')
+            sys.exit(1)
+
+        self.ReadMeText = ReadMeText  # this gets written to base directory
+        self.ShellScriptHeader = ShellScriptHeader
+        # attempt the absolute imports from the optimisation directory:
+        self.BaseDirectory = BaseDirectory
+        self.OptimisationDirectory = OptimisationDirectory
+        if not os.path.isdir(BaseDirectory):
+            logger.error(
+                f'{bcolors.FAIL}Input BaseDirectory "{BaseDirectory}" does not exist. Exiting. {bcolors.ENDC}')
+            sys.exit()
+        self.SimulationName = SimulationName
+        self.TargetBeamWidth = TargetBeamWidth
+        self.Itteration = 0
+        self.ItterationStart = 0
+        # the starting values of our optimisation parameters are defined from the default geometry
+        self.ParameterNames = optimisation_params['ParameterNames']
+        self.StartingValues = optimisation_params['start_point']
+        if self.StartingValues is None:
+            logger.error('you must define a start point')
+            sys.exit()
+        else:
+            self.x = self.StartingValues
+        self.UpperBounds = optimisation_params['UpperBounds']
+        self.LowerBounds = optimisation_params['LowerBounds']
+        self.MaxItterations = optimisation_params['Nitterations']
+        self.CreateVariableDictionary([self.StartingValues])
+        self.SuggestionsProbed = 0  # always starts at 0
+        self.Overwrite = Overwrite
         self.AllObjectiveFunctionValues = []
-        self.BadSolutionOF = 70  # this is the max value returned by the OF. To help the bayesian optimiser, it should be
-        # on the same order of magntiude as the expected minimum OF.
 
-
-        self.TopasLocation = '~/topas37/'
-
+        if '~' in TopasLocation:
+            TopasLocation = os.path.expanduser(TopasLocation)
+        self.TopasLocation = Path(TopasLocation)
         try:
             import_from_absolute_path(Path(self.OptimisationDirectory) / 'GenerateTopasScripts.py')
         except ModuleNotFoundError:
@@ -106,6 +127,53 @@ class TopasOptBaseClass:
             sys.exit(1)
         self.TopasScriptGenerator = GenerateTopasScripts.GenerateTopasScripts
         self.TopasObjectiveFunction = TopasObjectiveFunction.TopasObjectiveFunction
+
+        # put optimiser specific stuff in blocks like this:
+        if 'BayesianOptimiser' in str(self.__class__):
+            if StartingSimplexRelativeVal is not None:
+                logger.warning(
+                    f'You have attempted to use the variable StartingSimplexRelativeVal, but this does nothing'
+                    f'in the Bayesian optimiser - it only works with the Nealder-Mead optimiser. Continuing'
+                    f' and ignoring this parameter')
+            self.BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs.json'
+            self._BayesianOptimiser__RestartMode = False  # don't change!
+            self.CreatePbounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
+            self.CreateSuggestedPointsToProbe(optimisation_params)
+            self.DeriveLengthScales(length_scales)
+
+            # Bayesian optimisation settings:
+            self.target_prediction_mean = []  # keep track of what the optimiser expects to get
+            self.target_prediction_std = []  # keep track of what the optimiser expects to get
+            self.GP_alpha = GP_alpha  # this tells the GPM the expected ammount of noise in the objective function
+            # see here: https://github.com/fmfn/BayesianOptimization/issues/202
+            self.Matern_Nu = 1.5  # see here https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern
+            self.UCBkappa = 5  # higher kappa = more exploration. lower kappa = more exploitation
+            self.n_restarts_optimizer = 20  # this controls the gaussian process fitting. 20 seems to be a good number.
+            self.KappaDecayIterations = KappaDecayIterations
+            self.UCBKappa_final = 0.1
+            self.kappa_decay_delay = self.MaxItterations - self.KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
+
+            if self.kappa_decay_delay >= self.MaxItterations:
+                logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
+                                   f'than MaxItterations ({self.MaxItterations}), decay will never occur...')
+                self.kappa_decay = 1
+            else:
+                self.kappa_decay = (self.UCBKappa_final/self.UCBkappa) ** (1/(self.MaxItterations - self.kappa_decay_delay))
+                # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
+
+        if 'NealderMeadOptimiser' in str(self.__class__):
+            if length_scales is not None:
+                logger.warning(
+                    f'You have attempted to set length_scales, but this does nothing'
+                    f'in the NealderMeadO optimiser - it only works with the Bayesian optimiser. Continuing'
+                    f' and ignoring this parameter')
+
+            self.StartingSimplexSupplied = False
+            self.StartingSimplexRelativeVal = StartingSimplexRelativeVal
+            if self.StartingSimplexRelativeVal:  # nb None evaluates as False
+                self.GenerateStartingSimplex()
+
+        self.CheckInputData()
 
     def CreateVariableDictionary(self, x):
         """
@@ -134,22 +202,21 @@ class TopasOptBaseClass:
         If there is already stuff in the simulation folder, ask for user permission to empty and continue
         """
         SimName = str(Path(self.BaseDirectory) / self.SimulationName)
-        if os.listdir(SimName):
-            logger.warning(f'Directory {SimName} is not empty; if you continue it will be emptied.')
+        if os.listdir(SimName) and (not self.Overwrite):
+            logger.warning(f'Directory {SimName} is not empty; if you continue it will be emptied.'
+                           f'\nType y to continue.'
+                           f'\nYou can set Overwrite=True to disable this warning')
 
-            try:
-                if self.Overwrite:
-                    UserOverwrite = 'y'
-                else:
-                    UserOverwrite = input()
-            except AttributeError:
-                print(f'\nPlease enter y/n:')
+            if self.Overwrite:
+                UserOverwrite = 'y'
+            else:
                 UserOverwrite = input()
+
             if (UserOverwrite.lower() == 'n') or (UserOverwrite.lower() == 'no'):
-                logger.warning('quitting')
+                logger.warning('Not overwriting and quitting')
                 sys.exit()
             elif (UserOverwrite.lower() == 'y') or (UserOverwrite.lower() == 'yes'):
-                print('emptying simulation folder')
+                logger.warning('emptying simulation folder')
                 for filename in os.listdir(SimName):
                     file_path = os.path.join(SimName, filename)
                     try:
@@ -168,6 +235,7 @@ class TopasOptBaseClass:
         - Checks if the number of parameters in ParameterNames, StartingValues, UpperBounds, LowerBounds match
         - Checks that StartingValues is actually within the provided bounds
         """
+
         # do the number of parameters match?
         if not np.size(self.ParameterNames) == np.size(self.StartingValues):
             logger.error(f'{bcolors.FAIL} size of ParameterNames does not match size of StartingValues{bcolors.ENDC}')
@@ -219,7 +287,13 @@ class TopasOptBaseClass:
             sys.exit(1)
 
         self.CreateVariableDictionary(self.StartingValues)
-        NewVariableDict = self.targ_Thicknesses_toList()  # converts targ_Thicknesses terms to list if they exist
+
+        # make sure topas binary exists
+        if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
+            logger.error(f'could not find topas binary at \n{self.TopasLocation}'
+                         f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
+                         f'\nQuitting')
+            sys.exit(1)
 
     def GenerateTopasModel(self, x):
         """
@@ -251,28 +325,22 @@ class TopasOptBaseClass:
         self.ShellScriptLocation = ShellScriptLocation
 
 
-        WriteHeader = True
         f = open(ShellScriptLocation, 'w+')
 
         # set up the environment etc.
-        if WriteHeader:
-            f.write('# !/bin/bash\n\n')
-            f.write('# This script sets up the topas environment then runs all listed files\n\n')
-            f.write('# ensure that any errors cause the script to stop executing:\n')
-            f.write('set - e\n\n')
-            f.write('export TOPAS_G4_DATA_DIR=~/G4Data\n')
-            # f.write('export LD_LIBRARY_PATH=~/topas' + self.TopasVersion + '/lib/:~/topas-dev/'
-            #             'gdcm-install/lib:~topas-dev/geant4.10.06.p03-install:$LD_LIBRARY_PATH\n\n')
-            # # just in case
-            f.write('module unload gcc >/dev/null 2>&1  # will fail on non artemis systems, output is surpressed\n')
-            f.write('module load gcc/9.1.0 >/dev/null 2>&1\n\n')
+        if self.ShellScriptHeader is None:
+            f.write('# !/bin/bash')
+            f.write('\n\n# This script sets up the topas environment then runs all listed files\n\n')
+            f.write('\nexport TOPAS_G4_DATA_DIR=~/G4Data\n')
+        else:
+            f.write(self.ShellScriptHeader)
 
         # add in all topas scripts which need to be run:
         for script_name in self.ScriptsToRun:
             file_loc = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / script_name)
             f.write('echo "Beginning analysis of: ' + script_name + '"')
             f.write('\n')
-            f.write('(time ' + self.TopasLocation + '/bin/topas ' + script_name + ') &> ../logs/TopasLogs/' + script_name)
+            f.write('(time ' + str(self.TopasLocation) + '/bin/topas ' + script_name + ') &> ../logs/TopasLogs/' + script_name)
             f.write('\n')
         # change file permissions:
         st = os.stat(ShellScriptLocation)
@@ -321,7 +389,7 @@ class TopasOptBaseClass:
             f.write(Entry)
         print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
 
-    def PlotResults(self):
+    def Plot_Convergence(self):
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
 
@@ -353,109 +421,6 @@ class TopasOptBaseClass:
         plt.savefig(SaveLoc / 'ConvergencePlot.png')
         plt.close(fig)
 
-    def xxx_CalculateObjectiveFunction(self):
-        """
-        Calculate and log the objective function for the current itteration
-        """
-
-        w1 = 22  # max dose weight
-        w2 = 50  # Beamlet width weight
-        w3 = 1e-2  # Collimator Thickness - note collimator thickness is in mm. So this returns 2.5 for a 250 mm collimator
-        w4 = 5  # minimise out of field surface dose (electron scatter)
-        w5 = 5  # CrossChannelLeakageTerm
-        w6 = 20  # electron contamination dose
-
-        self.CalculateBoundaryViolationTerm()
-        if self.WallThicknessError or (self.BoundaryViolationTerm > 0) or (self.CrossChannelLeakage > 30):
-            # just return a constant high value (set in self.BadSolutionOF) for these really bad solutions.
-            # Otherwise the OF can get very spiky and discontinuous.
-            self.OF = self.BadSolutionOF
-            self.AllObjectiveFunctionValues.append(self.OF)
-            self.AllParameterValues = np.vstack([self.AllParameterValues, self.x])
-            self.UpdateOptimisationLogs(self.x, self.BadSolutionOF)
-            self.PlotResults()
-            self.Itteration = self.Itteration + 1
-            return
-        if abs(self.TargetBeamWidth - self.BeamletWidth) < self.BeamletWidthPrecision:
-            DeltaBeamletWidth = 0
-        else:
-            DeltaBeamletWidth = abs(self.TargetBeamWidth - self.BeamletWidth)
-
-        if self.CrossChannelLeakage > self.CrossChannelLeakageLimit:
-            self.CrossChannelLeakageTerm = self.CrossChannelLeakage
-        else:
-            self.CrossChannelLeakageTerm = 0
-
-        if self.DmaxToD100 < 2.5:
-            self.eContaminationTerm = 0
-        else:
-            self.eContaminationTerm = self.DmaxToD100
-
-        if self.RelOutOfFieldSurfDose < 1:
-            # ~1% seems to be the value at least to the eye where there is no electron contamination to speak of
-            self.RelOutOfFieldSurfDose = 0
-
-        if 'coll_CollimatorThickness' in self.VariableDict.keys():
-            collimatorThickness = self.VariableDict['coll_CollimatorThickness']
-        else:
-            collimatorThickness = 0
-
-        OF = (-w1 * self.MaxDose) + (DeltaBeamletWidth * w2) + (w3 *collimatorThickness) \
-             + (w4 * self.RelOutOfFieldSurfDose) + (w5 * self.CrossChannelLeakageTerm) + (w6 * self.eContaminationTerm)
-        if OF > self.BadSolutionOF:
-            OF = self.BadSolutionOF
-
-        self.AllObjectiveFunctionValues.append(OF)
-        try:
-            self.AllParameterValues = np.vstack([self.AllParameterValues, self.x])
-        except AttributeError:
-            self.AllParameterValues = self.x
-        self.UpdateOptimisationLogs(self.x, OF)
-        self.PlotResults()
-        self.Itteration = self.Itteration + 1
-        self.OF = OF
-
-    def xxx_CalculateBoundaryViolationTerm(self):
-        """
-        Depending on the optimiser chosen, the limits may or may not be enforced by the optimiser.
-        If they are enforced, this function always returns 0.
-        If thay are not and the bounds are violated, returns a positive value proportional to the extent of the violation
-        if outside the bounds.
-        I've normalised parameter values to their starting values, such that a 10% violation in variable 1 is penalised
-        the same way as variable 2. Note that this value is also multiplied by a weight in CalculateObjectiveFunction;
-        by using a high weight, we should ensure that violations do not occur
-        """
-        self.BoundaryViolation = False
-        try:
-            test = self.StartingValues[0][1]
-            StartingValues = self.StartingValues[0]
-        except IndexError:
-            StartingValues = self.StartingValues
-
-        self.BoundaryViolationTerm = int(0)
-        RelativeParameters = np.divide(self.x[0], StartingValues)
-        RelativeUpperLimit = np.divide(self.UpperBounds, StartingValues)
-        RelativeLowerLimit = np.divide(self.LowerBounds, StartingValues)
-        for i, ParameterName in enumerate(self.ParameterNames):
-
-            index = self.ParameterNames.index(ParameterName)
-            ParameterUpperLimit = RelativeUpperLimit[index]
-            ParameterLowerLimit = RelativeLowerLimit[index]
-            self.BoundaryViolationTerm = self.BoundaryViolationTerm + \
-                                         (min(0, ParameterUpperLimit - RelativeParameters[index]) ** 2) + \
-                                         np.sqrt(abs(min(0, RelativeParameters[index] - ParameterLowerLimit)))
-
-            if self.x[0][i] < self.LowerBounds[i]:
-                print(f'{bcolors.WARNING}For {ParameterName}, Value {self.x[0][i]} is less than '
-                      f'Lower bound {self.LowerBounds[i]}{bcolors.ENDC}')
-            elif self.x[0][i] > self.UpperBounds[i]:
-                print(f'{bcolors.WARNING}For {ParameterName}, Starting value {self.x[0][i]} is greater '
-                      f'than upper bound {self.UpperBounds[i]}{bcolors.ENDC}')
-
-        if self.BoundaryViolationTerm > 0:
-            self.BoundaryViolation = True
-            print('Boundary violation detected')
-
     def CopySelf(self):
         """
         Copies all class attributes to a a (human readable) json file called 'SimulationSettings'.
@@ -464,116 +429,9 @@ class TopasOptBaseClass:
 
         Filename = Path(self.BaseDirectory) / Path(self.SimulationName) / 'OptimisationSettings.json'
 
-        Attributes = jsonpickle.encode(self, unpicklable=True, max_depth=3)
+        Attributes = jsonpickle.encode(self, unpicklable=True, max_depth=4)
         f = open(str(Filename), 'w')
         f.write(Attributes)
-
-    def targ_Thicknesses_toList(self):
-        """
-        Because the target thicknesses are entered into PhaserBeamLine as a list instead of floats,
-        we need to do some clever wrangling to convert them into an appropriate format before we create that
-        instance
-        """
-        NewVariableDict = {}
-        targ_Thicknesses_list = []
-        SortedKeys = sorted(self.VariableDict.keys())  # this ensures any targ_Thicknesses terms are ordred correctly
-        for key in self.VariableDict.keys():
-            if 'targ_Thicknesses' in key:
-                targ_Thicknesses_list.append(self.VariableDict[key])
-            else:
-                # no change needed
-                NewVariableDict[key] = self.VariableDict[key]
-        if targ_Thicknesses_list:  # not empty evaluates as true
-            NewVariableDict['coll_targ_Thicknesses'] = targ_Thicknesses_list
-
-        return NewVariableDict
-
-    def xxx_GetAllbinFiles(self, AnalysisPath):
-        """
-        quick script to just collect all the files in the Analysis path
-        """
-
-        if not os.path.isdir(AnalysisPath):
-            logger.error(f'invalid path supplied; {AnalysisPath} does not exist')
-        AllCSVFiles = glob.glob(AnalysisPath + '/*.bin')
-        File = []
-        for file in AllCSVFiles:
-            head, tail = os.path.split(file)
-            File.append(tail)
-        if not File:
-            logger.error(f'no bin files in {AnalysisPath}')
-            sys.exit()
-        return File
-
-    def RewindResults(self):
-        """
-        This function allows you to read in previously calculated water tank files and calculate the objective function
-        it can be useful for fine tuning and optimising the objective function but is not part of the normal optimisation
-        workflow.
-        You should check to actual objective function matches the one below since they are independant
-
-        It requires manual input below to specifiy where the files are. And it won't work
-        for cases where there is a wall thickness violation or boundary violation. it's basically fiddly and ugly :-)
-        """
-        self.BaseDirectory = '/project/Phaser/PhaserSims/topas/'
-        self.SimulationName = 'BayesianOptimisation_Hard'
-        AnalysisPath = self.BaseDirectory + self.SimulationName + '/Results'
-        # self.StartingDoseFile='/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PaulGeom_BSI_2_6_5/Results/WT_xAng_0.00_yAng_0.00_BSI_2.0.bin',
-        # self.ReadTopasResults(StartingDoseFile=self.StartingDoseFile)
-        # self.StartingValuesProvided = True
-        FilesToAnalyse = self.GetAllbinFiles(AnalysisPath)
-        FilesToAnalyse = ['WT_xAng_0.00_yAng_0.00_run_78.bin']
-
-        FilesToAnalyse.sort()
-        self.TargetBeamWidth = 7
-        self.Itteration = 0
-
-        w1 = 30  # max dose weight
-        w2 = 50  # Beamlet width weight
-        w3 = 1  # Collimator Thickness
-        w4 = 5  # minimise out of field surface dose (electron scatter)
-        w5 = 5  # CrossChannelLeakageTerm
-        w6 = 20  # electron contamination dose
-
-        for file in FilesToAnalyse:
-            self.CurrentWTdata = file
-            self.ReadTopasResults()
-            if abs(self.TargetBeamWidth - self.BeamletWidth) < self.BeamletWidthPrecision:
-                DeltaBeamletWidth = 0
-            else:
-                DeltaBeamletWidth = abs(self.TargetBeamWidth - self.BeamletWidth)
-
-            if self.CrossChannelLeakage > self.CrossChannelLeakageLimit:
-                self.OutOfFieldDoseTerm = self.CrossChannelLeakage
-            else:
-                self.OutOfFieldDoseTerm = 0
-            print(f'Out of field dose term is {w5 * self.OutOfFieldDoseTerm}')
-
-            OF = (-w1 * self.MaxDose) + (DeltaBeamletWidth * w2) + (w3 * self.RelativeCollimatorThickness) \
-                 + (w5 * self.OutOfFieldDoseTerm)
-
-    def xxx_CopyResultsToServer(self):
-        """
-        Will attempt to copy the results to RDS.
-        """
-        ResultsCopied = False
-        if not self.CopyResultsToRemoteServer:
-            return
-
-        try:
-            for ServerPath in self.RemoteServerPaths:
-                # loop over all; use the first one that works
-                if os.path.isdir(ServerPath):
-                    BashCommand = 'cp -r ' + "'" + self.BaseDirectory + '/' + self.SimulationName + "' " + "'" + ServerPath + "'"
-                    subprocess.run(BashCommand, shell=True)
-                    ResultsCopied = True
-                if ResultsCopied:
-                    break
-        except:
-            pass
-
-        if not ResultsCopied:
-            logger.warning('failed to upload results to remote server.')
 
     def ReadInLogFile(self, LogFileLoc):
         """
@@ -742,93 +600,36 @@ class TopasOptBaseClass:
         self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results', self.Itteration)
         self.AllObjectiveFunctionValues.append(self.OF)
         self.UpdateOptimisationLogs(self.x, self.OF)
-        self.PlotResults()
+        self.Plot_Convergence()
         self.Itteration = self.Itteration + 1
 
         return -self.OF
 
-
-class NealderMeadOptimiser(TopasOptBaseClass):
-    """
-    the purpose of this code is to run a optimsiation of the central channel for the sphinx collimator.
-    The goal is to maximise the dose/dose rate while maintaining TargetBeamWidth. This is a work in progress.
-
-    .. figure:: ../doc_source/_static/07012021_BeamletWidths.png
-        :align: center
-        :alt: FreeCAD setup
-        :scale: 100%
-        :figclass: align-center
-    """
-
-    def __init__(self, optimisation_params, BaseDirectory, SimulationName, TargetBeamWidth=7, debug=True, Nthreads=-6,
-                 StartingSimplexRelativeVal=None, length_scales=None):
+    def SetUpDirectoryStructure(self):
         """
-        Set up the parameters to be optimised and bounds.
-
-        :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
-        :type optimisation_params: list
-        :param BaseDirectory: Place where all the topas simulation results are stored
-        :type BaseDirectory: string
-        :param SimulationName: Specific folder for this simulation
-        :type SimulationName: string
-        :param TargetBeamWidth: desired beam width in mm
-        :type TargetBeamWidth: double
-        :param debug: will try and use a quick phase space. won't produce meaningful results but will be quick. Default is True.
-        type debug: Boolean, optional
-        param Nthreads: Number of threads to run.
-        type Nthreads: double, optional
-        :param StartingDoseFile: If supplied, results will be normalised to this. if not, they will be normalised to the
-            starting parameters
-        :type StartingDoseFile: string, optional
-        :param StartingCollimatorThickness: Thickness of collimator used in StartingDoseFile. If StartingDoseFile is supplied
-            this MUST be supplied, otherwise not.
-        :type StartingCollimatorThickness: double, optional
-        :param StartingSimplexRelativeVal: If supplied, will construct the starting simplex around the starting values
-            using this number. By default, scipy uses 0.05, which creates a simplex 0.05 around the starting values.
-            If this seems to small (e.g. your answer is likely to be further away from the starting point than that),
-            you can increase this number here.
-        :type StartingSimplexRelativeVal: double, optional
-        :param MaxItterations: this is defined in optimisation_params['Nitterations']. Note that nealder mead will always
-            assess the starting simplex first before checking this (mostly a debugging problem)
+        Method to set up directory structure. This will attempt to empty the directory if it already exists.
+        If Overwrite=False, it will ask first, otherwise just do it.
+        Also writes the readme text if that exists, and copies all attributes of self to a json file.
         """
 
-        if length_scales is not None:
-            logger.warning(
-                f'You have attempted to use the variable length_scales, but this does nothing'
-                f'in the NealderMeadO optimiser - it only works with the Bayesian optimiser. Continuing'
-                f' and ignoring this parameter')
-
-        self.Nthreads = Nthreads
-        # set up folder structure:
-        self.BaseDirectory = BaseDirectory
-        if not os.path.isdir(BaseDirectory):
-            print(f'{bcolors.FAIL}Input BaseDirectory "{BaseDirectory}" does not exist. Exiting. {bcolors.ENDC}')
-            sys.exit()
-        self.SimulationName = SimulationName
-        SimName = Path(self.BaseDirectory) / self.SimulationName
-
-        self.TargetBeamWidth = TargetBeamWidth
-        self.Itteration = 0
-        self.MaxItterations = optimisation_params['Nitterations']
-        # the starting values of our optimisation parameters are defined from the default geometry
-        self.ParameterNames = optimisation_params['ParameterNames']
-        self.StartingValues = optimisation_params['start_point']
-        self.UpperBounds = optimisation_params['UpperBounds']
-        self.LowerBounds = optimisation_params['LowerBounds']
-        self.CheckInputData()
-        self.CreateVariableDictionary(self.StartingValues)  # puts the above two parameters into a dictionary.
-        self.StartingSimplexSupplied = False
-        self.StartingSimplexRelativeVal = StartingSimplexRelativeVal
-        if self.StartingSimplexRelativeVal:  # nb None evaluates as False
-            self.GenerateStartingSimplex()
-        self.WallThicknessError = False  # we assume the user inputs a valid set of starting parameters.
-
-        self.debug = debug
-        super().__init__()  # get anything we need from base class
-        if not os.path.isdir(SimName):
-            os.mkdir(SimName)
+        FullSimName = Path(self.BaseDirectory) / self.SimulationName
+        if not os.path.isdir(FullSimName):
+            os.mkdir(FullSimName)
         self.EmptySimulationFolder()
         self.CopySelf()
+        os.mkdir(Path(FullSimName) / 'logs')
+        os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
+        if 'BayesianOptimiser' in str(self.__class__):
+            os.mkdir(Path(FullSimName) / 'logs' / 'SingleParameterPlots')
+        os.mkdir(Path(FullSimName) / 'TopasScripts')
+        os.mkdir(Path(FullSimName) / 'Results')
+
+        if self.ReadMeText:
+            f = open(FullSimName / 'readme.txt','w')
+            f.write(self.ReadMeText)
+
+
+class NealderMeadOptimiser(TopasOptBaseClass):
 
     def GenerateStartingSimplex(self):
         """
@@ -895,108 +696,6 @@ class BayesianOptimiser(TopasOptBaseClass):
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
     This inherits most of its functionality from SphinxOptBaseClass
     """
-
-    def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                 TargetBeamWidth=7, debug=True, Nthreads=-6,
-                 StartingSimplexRelativeVal=None, length_scales=None,
-                 KappaDecayIterations=10):
-        """
-        :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
-        :type optimisation_params: list
-        :param BaseDirectory: Place where all the topas simulation results are stored
-        :type BaseDirectory: string
-        :param SimulationName: Specific folder for this simulation
-        :type SimulationName: string
-        :param TargetBeamWidth: desired beam width in mm
-        :type TargetBeamWidth: double
-        :param debug: will try and use a quick phase space. won't produce meaningful results but will be quick. Default is True.
-        type debug: Boolean, optional
-        param Nthreads: Number of threads to run.
-        type Nthreads: double, optional
-        :param StartingDoseFile: If supplied, results will be normalised to this. if not, they will be normalised to the
-            starting parameters
-        :type StartingDoseFile: string, optional
-        :param StartingCollimatorThickness: Thickness of collimator used in StartingDoseFile. If StartingDoseFile is supplied
-            this MUST be supplied, otherwise not.
-        :type StartingCollimatorThickness: double, optional
-        :param StartingSimplexRelativeVal: This does nothing here; it is only here to enable complete compatability between
-            the Bayesian and Nealder-Mead methods
-        :type StartingSimplexRelativeVal: double, optional
-        :param MaxItterations: this is defined in optimisation_params['Nitterations']. Note that nealder mead will always
-            assess the starting simplex first before checking this (mostly a debugging problem)
-        :param KappaDecayIterations: Over the last N iterations, kappa will decay to be almost 0 (highly exploitive). For
-            explantion of kappa decay see `here <https://github.com/fmfn/BayesianOptimization/pull/221>`_
-        :type KappaDecayIterations: int
-        :param OptimisationDirectory: location that TopasObjectiveFunction and GenerateTopasScript are located
-        :type OptimisationDirectory: string or Path
-        """
-
-        # attempt the absolute imports from the optimisation directory:
-
-        if StartingSimplexRelativeVal is not None:
-            logger.warning(
-                f'You have attempted to use the variable StartingSimplexRelativeVal, but this does nothing'
-                f'in the Bayesian optimiser - it only works with the Nealder-Mead optimiser. Continuing'
-                f' and ignoring this parameter')
-
-        self.__RestartMode = False  # don't change!
-        self.BaseDirectory = BaseDirectory
-        self.OptimisationDirectory = OptimisationDirectory
-        if not os.path.isdir(BaseDirectory):
-            logger.error(
-                f'{bcolors.FAIL}Input BaseDirectory "{BaseDirectory}" does not exist. Exiting. {bcolors.ENDC}')
-            sys.exit()
-        self.SimulationName = SimulationName
-        self.__BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs.json'
-        SimName = Path(self.BaseDirectory) / self.SimulationName
-        self.TargetBeamWidth = TargetBeamWidth
-        self.Itteration = 0
-        self.ItterationStart = 0
-        # the starting values of our optimisation parameters are defined from the default geometry
-        self.ParameterNames = optimisation_params[
-            'ParameterNames']
-        self.StartingValues = optimisation_params['start_point']
-        if self.StartingValues is None:
-            logger.error('you must define a start point')
-            sys.exit()
-        else:
-            self.x = self.StartingValues
-        self.UpperBounds = optimisation_params['UpperBounds']
-        self.LowerBounds = optimisation_params['LowerBounds']
-        self.MaxItterations = optimisation_params['Nitterations']
-        self.CreateVariableDictionary([self.StartingValues])
-        self.CreatePbounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
-        self.CreateSuggestedPointsToProbe(optimisation_params)
-        self.DeriveLengthScales(length_scales)
-        self.WallThicknessError = False  # we assume the user inputs a valid set of starting parameters.
-        self.target_prediction_mean = []  # keep track of what the optimiser expects to get
-        self.target_prediction_std = []  # keep track of what the optimiser expects to get
-        self.SuggestionsProbed = 0  # always starts at 0
-        self.debug = debug
-        # Bayesian optimisation settings:
-        self.GP_alpha = .1  # this tells the GPM the expected ammount of noise in the objective function
-        # see here: https://github.com/fmfn/BayesianOptimization/issues/202
-        self.Matern_Nu = 1.5  # see here https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern
-        self.UCBkappa = 5  # higher kappa = more exploration. lower kappa = more exploitation
-        self.n_restarts_optimizer = 20  # this controls the gaussian process fitting. 20 seems to be a good number.
-        self.KappaDecayIterations = KappaDecayIterations
-        self.UCBKappa_final = 0.1
-        self.kappa_decay_delay = self.MaxItterations - self.KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
-
-        if self.kappa_decay_delay >= self.MaxItterations:
-            logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
-                               f'than MaxItterations ({self.MaxItterations}), decay will never occur...')
-            self.kappa_decay = 1
-        else:
-            self.kappa_decay = (self.UCBKappa_final/self.UCBkappa) ** (1/(self.MaxItterations - self.kappa_decay_delay))
-            # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
-
-        super().__init__()  # get anything we need from base class
-        self.CheckInputData()
-
-        # setup the devices name (input controls)
-        self.pvs = np.array(optimisation_params['ParameterNames'])
-        self.CopySelf()
 
     def DeriveLengthScales(self, length_scales):
         """
@@ -1083,12 +782,12 @@ class BayesianOptimiser(TopasOptBaseClass):
             x.append(x_new[self.ParameterNames[i]])
         self.x = np.array(x, ndmin=2)
 
-    def PlotResultsRetrospective(self, optimizer):
+    def Plot_ConvergenceRetrospective(self, optimizer):
         """
         This will read in a log file and produce a version of the convergence plot using the input gaussian process
         model to predict the objective function at each itteration.
         This allows a comparison between the prospective and retrospective performance of the GPM. the plot produced
-        in real time (SphinxOptBaseClass.PlotResults) will show the performance of the model in 'real time'.
+        in real time (SphinxOptBaseClass.Plot_Convergence) will show the performance of the model in 'real time'.
          this will show the performance
         of the final model.
 
@@ -1207,20 +906,13 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
 
         # set up directory structure
-        FullSimName = Path(self.BaseDirectory) / self.SimulationName
-        if not os.path.isdir(FullSimName):
-            os.mkdir(FullSimName)
         if not self.__RestartMode:
-            self.EmptySimulationFolder()
-            os.mkdir(Path(FullSimName) / 'logs')
-            os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
-            os.mkdir(Path(FullSimName) / 'logs' / 'SingleParameterPlots')
-            os.mkdir(Path(FullSimName) / 'TopasScripts')
-            os.mkdir(Path(FullSimName) / 'Results')
+            self.SetUpDirectoryStructure()
+
         # instantiate optimizer:
 
-        optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.length_scales, nu=self.Matern_Nu),
+        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
+        self.optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.length_scales, nu=self.Matern_Nu),
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.GP_alpha)  # tuning of the gaussian parameters...
         utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
                                   kappa_decay=self.kappa_decay)
@@ -1229,24 +921,24 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         if self.__RestartMode:
             # then load the previous log files:
-            load_logs(optimizer, logs=[self.__PreviousBayesOptLogLoc])
-            bayes_opt_logger = newJSONLogger(path=self.__BayesOptLogLoc)
-            optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
-            optimizer._gp.fit(optimizer._space.params, optimizer._space.target)
-            self.Itteration = len(optimizer.space.target)
-            self.ItterationStart = len(optimizer.space.target)
+            load_logs(self.optimizer, logs=[self.__PreviousBayesOptLogLoc])
+            bayes_opt_logger = newJSONLogger(path=self.BayesOptLogLoc)
+            self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
+            self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
+            self.Itteration = len(self.optimizer.space.target)
+            self.ItterationStart = len(self.optimizer.space.target)
             utility._iters_counter = self.ItterationStart
             if self.Itteration >= self.MaxItterations-1:
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
         else:
-            bayes_opt_logger = JSONLogger(path=self.__BayesOptLogLoc)
-            optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
+            bayes_opt_logger = JSONLogger(path=self.BayesOptLogLoc)
+            self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             # first guess is nonsense but we need the vectors to be the same length
             self.target_prediction_mean.append(0)
             self.target_prediction_std.append(0)
             target = self.BlackBoxFunction(self.VariableDict)
-            optimizer.register(self.VariableDict, target=target)
+            self.optimizer.register(self.VariableDict, target=target)
 
         for point in range(self.Itteration, self.MaxItterations):
             utility.update_params()
@@ -1255,15 +947,15 @@ class BayesianOptimiser(TopasOptBaseClass):
                 next_point_to_probe = self.Suggestions[self.SuggestionsProbed]
                 self.SuggestionsProbed += 1
             else:
-                next_point_to_probe = optimizer.suggest(utility)
+                next_point_to_probe = self.optimizer.suggest(utility)
 
             NextPointValues = np.array(list(next_point_to_probe.values()))
-            mean, std = optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)
+            mean, std = self.optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)
             self.target_prediction_mean.append(mean[0])
             self.target_prediction_std.append(std[0])
             target = self.BlackBoxFunction(next_point_to_probe)
             try:
-                optimizer.register(params=next_point_to_probe, target=target)
+                self.optimizer.register(params=next_point_to_probe, target=target)
             except KeyError:
                 try:
                     self.RepeatedPointsProbed = self.RepeatedPointsProbed + 1
@@ -1276,11 +968,11 @@ class BayesianOptimiser(TopasOptBaseClass):
                     self.RepeatedPointsProbed = 1
 
             self.PlotPredictedVersusActualCorrelation()
-            self.PlotResultsRetrospective(optimizer)
-            self.PlotSingleVariableObjective(optimizer)
+            self.Plot_ConvergenceRetrospective(self.optimizer)
+            self.PlotSingleVariableObjective(self.optimizer)
 
         # update the logs with the best value:
-        best = optimizer.max
+        best = self.optimizer.max
         best['target'] = -1 * best['target']  # min/max paradigm...
         LogFile = Path(self.BaseDirectory) / self.SimulationName
         LogFile = LogFile / 'logs'
@@ -1302,7 +994,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         to make sure there is one previous log file at bayes_opt_logs.json that represents all iterations to date.
         """
         self.__RestartMode = True
-        self.__PreviousBayesOptLogLoc = self.__BayesOptLogLoc
+        self.__PreviousBayesOptLogLoc = self.BayesOptLogLoc
         self.RunOptimisation()
 
     def xxx_debug_LoadPreviousLogFile(self, LogFileLocation):
