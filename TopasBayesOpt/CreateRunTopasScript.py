@@ -93,13 +93,22 @@ class CreateTopasScript:
         f = open(IncludeFileLocation)
         for i, include_file_line in enumerate(f):
             if 'includeFile'.lower() in include_file_line.lower():
-                include_OriginalFileLocation_line = self.HandleIncludeFileLine(OriginalFileLocation, include_file_line)
+                if not include_file_line.lstrip()[0] == '#':  # ignore comments
+                    # extract everything on the RHS of the equals sign:
+                    RHS = include_file_line.lstrip().split('=')[1]
+                    RHS = RHS.split('#')[0]  #remove anything after a comment symbol
+                    AllFiles = RHS.split(' ')
+                    for file in AllFiles:
+                        if file == '' or file =='\n':
+                            continue
+                        temp_include_file_line = 'includeFile = ' + file
+                        include_OriginalFileLocation_line = self.HandleIncludeFileLine(OriginalFileLocation, temp_include_file_line)
 
-                # now we need to update this line in the copied script:
-                copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
-                f2 = open(copied_file_location, 'r')
-                old_lines = f2.readlines()
-                old_lines[i] = 'includeFile = ' + include_file_line
+                        # now we need to update this line in the copied script:
+                        copied_file_location = str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
+                        f2 = open(copied_file_location, 'r')
+                        old_lines = f2.readlines()
+                        old_lines[i] = 'includeFile = ' + include_file_line
 
         # 3) update the line to point to the new storage location.
         line = 'includeFile = ' + str(self.IncludeFileStorageDirectory) + '/' + IncludeFileName
