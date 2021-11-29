@@ -80,7 +80,7 @@ class TopasOptBaseClass:
     """
 
     def __init__(self):
-        self.Overwrite = True
+        self.Overwrite = False
         self.BeamletWidthPrecision = 0.25  # in mm. Results are rounded to the nearerst BeamletWidthPrecision,
         # AND, differences smaller than this are ignored.
         self.Nparticles = 10000000  # primary particles in topas sim
