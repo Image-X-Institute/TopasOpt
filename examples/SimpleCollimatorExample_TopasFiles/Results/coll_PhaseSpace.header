@@ -1,8 +1,8 @@
 TOPAS Binary Phase Space
 
-Number of Original Histories: 1
-Number of Original Histories that Reached Phase Space: 0
-Number of Scored Particles: 0
+Number of Original Histories: 1000
+Number of Original Histories that Reached Phase Space: 2
+Number of Scored Particles: 2
 Number of Bytes per Particle: 34
 
 Byte order of each record is as follows:
@@ -17,5 +17,8 @@ i4: Particle Type (in PDG Format)
 b1: Flag to tell if Third Direction Cosine is Negative (1 means true)
 b1: Flag to tell if this is the First Scored Particle from this History (1 means true)
 
+Number of gamma: 2
 
+Minimum Kinetic Energy of gamma: 1.42117 MeV
 
+Maximum Kinetic Energy of gamma: 5.05859 MeV

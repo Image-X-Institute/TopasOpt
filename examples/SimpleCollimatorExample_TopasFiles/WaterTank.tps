@@ -1,7 +1,7 @@
 # Set threading self:
 ------------------------------------------------------------
 i:Ts/NumberOfThreads = 0  # defaults to 1
-i:Ts/ShowHistoryCountAtInterval = 10000000
+i:Ts/ShowHistoryCountAtInterval = 100000
 
 
 # Add World:
@@ -10,27 +10,11 @@ s:Ge/World/Type = "TsBox"
 s:Ge/World/Material = "Vacuum"
 d:Ge/World/HLX = 250 mm # Half Length
 d:Ge/World/HLY = 250 mm
-d:Ge/World/HLZ = 1000.0 mm
+d:Ge/World/HLZ = 1200.0 mm
 d:Ge/World/RotX = 0. deg
 d:Ge/World/RotY = 0. deg
 d:Ge/World/RotZ = 0. deg
 
-# Add phase space scorer below collimator:
-------------------------------------------------------------
-s:Ge/Magic/Type     = "TsBox"
-s:Ge/Magic/Parent   = "World"
-s:Ge/Magic/Material = "Vacuum"
-d:Ge/Magic/HLX      = 50 mm
-d:Ge/Magic/HLY      = 50 mm
-d:Ge/Magic/HLZ      = 1 mm
-d:Ge/Magic/TransX   = 0. cm
-d:Ge/Magic/TransY   = 0. cm
-d:Ge/Magic/TransZ   = 580 mm
-d:Ge/Magic/RotX     = 0. deg
-d:Ge/Magic/RotY     = 0. deg
-d:Ge/Magic/RotZ     = 0. deg
-s:Ge/Magic/Color    = "skyblue"
-s:Ge/Magic/DrawingStyle = "wireframe"
 
 # Phase Space source:
 ------------------------------------------------------------
