@@ -50,7 +50,7 @@ s:Ge/PrimaryCollimator/Color      = "Blue"
 s:Ge/SecondaryCollimator/Parent     = "World" #IEC gantry coordinate
 s:Ge/SecondaryCollimator/Material   = "G4_Pb"
 s:Ge/SecondaryCollimator/Type       = "G4Cons"
-d:Ge/SecondaryCollimator/RMin1      = 3 mm
+d:Ge/SecondaryCollimator/RMin1      = 2.5 mm
 d:Ge/SecondaryCollimator/RMax1      = 50 mm #Portions of collimator axis within 4 cm of air
 d:Ge/SecondaryCollimator/RMin2      = 1.82 mm
 d:Ge/SecondaryCollimator/RMax2      = 50 mm
@@ -82,7 +82,7 @@ dc:So/Beam/BeamAngularCutoffX = 5 deg
 dc:So/Beam/BeamAngularCutoffY = 5 deg
 dc:So/Beam/BeamAngularSpreadX = 0.07 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 1000
+ic:So/Beam/NumberOfHistoriesInRun = 500000 
 
 # # Electron source position
 # ------------------------------------------------------------
@@ -97,7 +97,7 @@ sc:Ge/ElectronSource/DrawingStyle = "Solid"
 
 # Variance reduction in target
 # ------------------------------------------------------------
-b:Vr/UseVarianceReduction = "False"
+b:Vr/UseVarianceReduction = "True"
 s:Ge/Target/AssignToRegionNamed = "VarianceReduction"
 s:Vr/ParticleSplit/Type = "SecondaryBiasing"
 sv:Vr/ParticleSplit/ForRegion/VarianceReduction/ProcessesNamed = 1 "eBrem"
@@ -105,7 +105,7 @@ uv:Vr/ParticleSplit/ForRegion/VarianceReduction/SplitNumber = 1 1000
 dv:Vr/ParticleSplit/ForRegion/VarianceReduction/MaximumEnergies = 1 10.0 MeV
 s:Vr/ParticleSplit/ReferenceComponent = "Target"
 dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitLimits = 1 -1 * Ge/Target/TransZ mm
-dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitRadius = 1 100 mm
+dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitRadius = 1 50 mm
 
 # # Add phase space scorer below collimator:
 # ------------------------------------------------------------
