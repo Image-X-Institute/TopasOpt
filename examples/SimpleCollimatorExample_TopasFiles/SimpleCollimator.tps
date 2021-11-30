@@ -82,7 +82,7 @@ dc:So/Beam/BeamAngularCutoffX = 5 deg
 dc:So/Beam/BeamAngularCutoffY = 5 deg
 dc:So/Beam/BeamAngularSpreadX = 0.07 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 1
+ic:So/Beam/NumberOfHistoriesInRun = 1000
 
 # # Electron source position
 # ------------------------------------------------------------
@@ -148,7 +148,7 @@ s:Sc/PhaseSpaceFromColl/IfOutputFileAlreadyExists   = "Overwrite"
 
 # Graphics View and trajectory filters:
 ------------------------------------------------------------
-b:Gr/Enable = "True"  # Enable/Disable graphics
+b:Gr/Enable = "False"  # Enable/Disable graphics
 s:Gr/ViewA/Type              = "OpenGL"
 d:Gr/ViewA/Theta            = 90 deg
 d:Gr/ViewA/Phi              = 0 deg
