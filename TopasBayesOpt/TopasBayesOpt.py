@@ -16,10 +16,9 @@ from bayes_opt import UtilityFunction
 from bayes_opt.logger import JSONLogger
 from bayes_opt.util import load_logs
 from bayes_opt.event import Events
-from bayes_opt import SequentialDomainReductionTransformer
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from utilities import bcolors, FigureSpecs, import_from_absolute_path, newJSONLogger
+from utilities import bcolors, FigureSpecs, newJSONLogger
 import stat
 
 ch = logging.StreamHandler()
@@ -31,6 +30,28 @@ logger.setLevel(logging.INFO)  # This toggles all the logging in your app
 logger.propagate = False
 
 
+def import_from_absolute_path(fullpath, global_name=None):
+    """
+    Dynamic script import using full path.
+    This is required to enable mapping to the location of the script generation function and the objective funciton,
+    which are not known in advance.
+    (credit here)[https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders]
+    """
+    import os
+    import sys
+
+    script_dir, filename = os.path.split(fullpath)
+    script, ext = os.path.splitext(filename)
+
+    sys.path.insert(0, script_dir)
+    try:
+        module = __import__(script)
+        if global_name is None:
+            global_name = script
+        globals()[global_name] = module
+        sys.modules[global_name] = module
+    finally:
+        del sys.path[0]
 
 class TopasOptBaseClass:
     """
@@ -207,26 +228,26 @@ class TopasOptBaseClass:
                            f'\nType y to continue.'
                            f'\nYou can set Overwrite=True to disable this warning')
 
-            if self.Overwrite:
-                UserOverwrite = 'y'
-            else:
-                UserOverwrite = input()
+        if self.Overwrite:
+            UserOverwrite = 'y'
+        else:
+            UserOverwrite = input()
 
-            if (UserOverwrite.lower() == 'n') or (UserOverwrite.lower() == 'no'):
-                logger.warning('Not overwriting and quitting')
-                sys.exit()
-            elif (UserOverwrite.lower() == 'y') or (UserOverwrite.lower() == 'yes'):
-                logger.warning('emptying simulation folder')
-                for filename in os.listdir(SimName):
-                    file_path = os.path.join(SimName, filename)
-                    try:
-                        if os.path.isfile(file_path) or os.path.islink(file_path):
-                            os.unlink(file_path)
-                        elif os.path.isdir(file_path):
-                            shutil.rmtree(file_path)
-                    except Exception as e:
-                        logger.error(f'Failed to delete {file_path}. Reason: {e}. Quitting')
-                        sys.exit(1)
+        if (UserOverwrite.lower() == 'n') or (UserOverwrite.lower() == 'no'):
+            logger.warning('Not overwriting and quitting')
+            sys.exit(1)
+        elif (UserOverwrite.lower() == 'y') or (UserOverwrite.lower() == 'yes'):
+            logger.warning('emptying simulation folder')
+            for filename in os.listdir(SimName):
+                file_path = os.path.join(SimName, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    logger.error(f'Failed to delete {file_path}. Reason: {e}. Quitting')
+                    sys.exit(1)
 
     def CheckInputData(self):
         """

@@ -206,7 +206,7 @@ class CreateTopasScript:
         TopasScriptGenerator = []
         TopasScriptGenerator.append('from pathlib import Path\n')
         TopasScriptGenerator.append('\n')
-        TopasScriptGenerator.append('def GenerateTopasScripts(BaseDirectory, iteration, **vars):\n')
+        TopasScriptGenerator.append('def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):\n')
         TopasScriptGenerator.append(TopasScriptGeneratorReadMe)
 
         ScriptNames = []
@@ -258,7 +258,7 @@ class CreateTopasScript:
         TopasScriptGenerator.append('        f = open(filename, "w")\n')
         TopasScriptGenerator.append('        for line in script:\n')
         TopasScriptGenerator.append('            f.write(line)\n')
-        TopasScriptGenerator.append('            f.write("\n"")\n')
+        TopasScriptGenerator.append('            f.write("\\n")\n')
         f2 = open(outputFile, "w+")
         for line in TopasScriptGenerator:
             f2.writelines(line)

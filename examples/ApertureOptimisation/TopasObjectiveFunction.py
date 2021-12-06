@@ -1,11 +1,8 @@
 import sys
 import os
-import topas2numpy as tp
 sys.path.append('../../TopasBayesOpt')
 from WaterTankAnalyser import WaterTankData
-from matplotlib import pyplot as plt
 import numpy as np
-from pathlib import Path
 
 
 def ReadInTopasResults(ResultsLocation):
@@ -13,7 +10,7 @@ def ReadInTopasResults(ResultsLocation):
     Dose = WaterTankData(path, file)  # WaterTank data is built on topas2numpy
     return Dose
 
-def AnalyseTopasResults(TopasResults):
+def CalculateObjectiveFunction(TopasResults):
     """
     In this example, for metrics I am going to calculate the RMS error between the desired and actual
     profile and PDD.
@@ -48,22 +45,14 @@ def AnalyseTopasResults(TopasResults):
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
-    return np.mean(abs(ProfileDifference)), np.mean(abs(DepthDoseDifference))
+    ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
+    return ObjectiveFunction
 
-def CalculateObjectiveFunction(Metrics):
-    for metric in Metrics:
-        assert metric >=0  # our OF is based on this assumption so might as well check it
-    OF = Metrics[0] + Metrics[1]
-    return OF
 
 def TopasObjectiveFunction(ResultsLocation, iteration):
 
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     TopasResults = ReadInTopasResults(ResultsFile)
-    Metrics = AnalyseTopasResults(TopasResults)
-    OF = CalculateObjectiveFunction(Metrics)
+    OF = CalculateObjectiveFunction(TopasResults)
     return OF
-
-if __name__ == '__main__':
-    TopasObjectiveFunction('/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/MVLinac/Dose.bin')
 

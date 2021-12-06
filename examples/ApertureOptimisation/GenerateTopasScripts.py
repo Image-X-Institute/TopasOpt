@@ -1,6 +1,6 @@
 from pathlib import Path
 
-def GenerateTopasScripts(BaseDirectory, iteration, **vars):
+def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     """
     This file simply returns a list object, where each list entry corresponds to
     a line in the topas script.
@@ -61,10 +61,10 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     SimpleCollimator.append('s:Ge/SecondaryCollimator/Parent     = "World" ')
     SimpleCollimator.append('s:Ge/SecondaryCollimator/Material   = "G4_Pb"')
     SimpleCollimator.append('s:Ge/SecondaryCollimator/Type       = "G4Cons"')
-    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = 3 mm')
+    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_dict['UpStreamApertureRadius']) + ' mm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/RMax1      = 50 mm ')
-    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = 1.82 mm')
-    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMax2      = 50 mm')
+    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = ' + str(variable_dict['DownStreamApertureRadius']) + ' mm')
+    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMax2      = ' + str(variable_dict['CollimatorThickness']) + ' mm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/HL         = 27 mm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/Pos        = 1.7 cm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/temp_TransZ1 = Ge/PrimaryCollimator/TransZ - Ge/PrimaryCollimator/HL  mm')
@@ -93,7 +93,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     SimpleCollimator.append('dc:So/Beam/BeamAngularCutoffY = 5 deg')
     SimpleCollimator.append('dc:So/Beam/BeamAngularSpreadX = 0.07 deg')
     SimpleCollimator.append('dc:So/Beam/BeamAngularSpreadY = 0.07 deg')
-    SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 10000000')
+    SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 50000')
     SimpleCollimator.append('')
     SimpleCollimator.append('# # Electron source position')
     SimpleCollimator.append('# ------------------------------------------------------------')
@@ -108,7 +108,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     SimpleCollimator.append('')
     SimpleCollimator.append('# Variance reduction in target')
     SimpleCollimator.append('# ------------------------------------------------------------')
-    SimpleCollimator.append('b:Vr/UseVarianceReduction = "False"')
+    SimpleCollimator.append('b:Vr/UseVarianceReduction = "True"')
     SimpleCollimator.append('s:Ge/Target/AssignToRegionNamed = "VarianceReduction"')
     SimpleCollimator.append('s:Vr/ParticleSplit/Type = "SecondaryBiasing"')
     SimpleCollimator.append('sv:Vr/ParticleSplit/ForRegion/VarianceReduction/ProcessesNamed = 1 "eBrem"')
@@ -116,7 +116,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     SimpleCollimator.append('dv:Vr/ParticleSplit/ForRegion/VarianceReduction/MaximumEnergies = 1 10.0 MeV')
     SimpleCollimator.append('s:Vr/ParticleSplit/ReferenceComponent = "Target"')
     SimpleCollimator.append('dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitLimits = 1 -1 * Ge/Target/TransZ mm')
-    SimpleCollimator.append('dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitRadius = 1 100 mm')
+    SimpleCollimator.append('dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitRadius = 1 50 mm')
     SimpleCollimator.append('')
     SimpleCollimator.append('# # Add phase space scorer below collimator:')
     SimpleCollimator.append('# ------------------------------------------------------------')
@@ -207,7 +207,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     WaterTank.append('s:So/Example/Type                            = "PhaseSpace"')
     WaterTank.append('s:So/Example/PhaseSpaceFileName               =  "../Results/coll_PhaseSpace_itt_' + str(iteration) + '"')
     WaterTank.append('s:So/Example/Component                       = "World"')
-    WaterTank.append('i:So/Example/PhaseSpaceMultipleUse          = 100')
+    WaterTank.append('i:So/Example/PhaseSpaceMultipleUse          = 200')
     WaterTank.append('b:So/Example/PhaseSpaceIncludeEmptyHistories = "False"')
     WaterTank.append('# i:So/Example/NumberOfHistoriesInRun = 10 # set PhaseSpaceMultipleUse to 0 to enable this option')
     WaterTank.append('')
@@ -227,8 +227,8 @@ def GenerateTopasScripts(BaseDirectory, iteration, **vars):
     WaterTank.append('dc:Ge/Phantom/RotX = 0. deg')
     WaterTank.append('dc:Ge/Phantom/RotY = 0. deg')
     WaterTank.append('dc:Ge/Phantom/RotZ = 0. deg')
-    WaterTank.append('ic:Ge/Phantom/XBins = 30')
-    WaterTank.append('ic:Ge/Phantom/YBins = 30')
+    WaterTank.append('ic:Ge/Phantom/XBins = 50')
+    WaterTank.append('ic:Ge/Phantom/YBins = 50')
     WaterTank.append('ic:Ge/Phantom/ZBins = 60')
     WaterTank.append('sc:Ge/Phantom/Color    = "green"')
     WaterTank.append('sc:Ge/Phantom/DrawingStyle = "Solid"')
@@ -288,5 +288,4 @@ if __name__ == "__main__":
         f = open(filename, "w")
         for line in script:
             f.write(line)
-            f.write("
-"")
+            f.write("\n")
