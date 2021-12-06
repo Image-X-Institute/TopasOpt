@@ -3,19 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Template's documentation!
-====================================
+Bayesian Optimisation for Topas
+===============================
+
+This repository integrates the open source bayesian optimisation code `Bayesian Optimisation <https://github.com/fmfn/BayesianOptimization>`_ with the monte carlo radiation transport code `TopasMC <http://www.topasmc.org/>`_, hence enabling users to apply the power of formal mathematical optimisation with the well established use cases for monte carlo modelling.
+
+The quickest way to get started is to go through the worked examples.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Language Examples:
-
-   python_docs
-   matlab_docs
+   /worked_examples
 
 Indices and tables
 ==================

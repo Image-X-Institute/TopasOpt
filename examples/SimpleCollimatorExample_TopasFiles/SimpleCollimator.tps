@@ -1,10 +1,8 @@
 # Set threading self:
 ------------------------------------------------------------
 i:Ts/NumberOfThreads = 0  # defaults to 1
-i:Ts/ShowHistoryCountAtInterval = 10000000
+i:Ts/ShowHistoryCountAtInterval = 1000000
 b:Ts/ShowHistoryCountOnSingleLine = "True"
-
-includeFile = IncludeFileDemo.tps
 
 # Add World:
 ------------------------------------------------------------
@@ -12,12 +10,61 @@ s:Ge/World/Type = "TsBox"
 s:Ge/World/Material = "Vacuum"
 d:Ge/World/HLX = 250 mm # Half Length
 d:Ge/World/HLY = 250 mm
-d:Ge/World/HLZ = 1000.0 mm
+d:Ge/World/HLZ = 1200.0 mm
 d:Ge/World/RotX = 0. deg
 d:Ge/World/RotY = 0. deg
 d:Ge/World/RotZ = 0. deg
 
-# Beam parameters (paramterised source):
+d:Ge/SID = 1000 mm
+d:Ge/SecondaryCollimatorOffset = 20 mm
+
+Target
+------------------------------------------------------------
+s:Ge/Target/Type 			= "TsCylinder"
+s:Ge/Target/Parent 			= "World"
+s:Ge/Target/Material 			= "G4_W"
+d:Ge/Target/RMax   			= 50 mm
+d:Ge/Target/HL  			= 2 mm
+d:Ge/Target/TransZ 			= Ge/SID + Ge/Target/HL mm
+sc:Ge/Target/DrawingStyle 		= "Solid"
+sc:Ge/Target/Color 			= "magenta"
+
+# primary collimator (abuts target)
+------------------------------------------------------------
+s:Ge/PrimaryCollimator/Parent     = "World" #IEC gantry coordinate
+s:Ge/PrimaryCollimator/Material   = "G4_W"
+s:Ge/PrimaryCollimator/Type       = "G4Cons"
+d:Ge/PrimaryCollimator/RMin1      = 5 mm
+d:Ge/PrimaryCollimator/RMax1      = 50 mm #Portions of collimator axis within 4 cm of air
+d:Ge/PrimaryCollimator/RMin2      = 3 mm
+d:Ge/PrimaryCollimator/RMax2      = 50 mm
+d:Ge/PrimaryCollimator/HL         = 48 mm
+d:Ge/PrimaryCollimator/Pos        = 1.7 cm
+d:Ge/PrimaryCollimator/TransZ     = Ge/SID - Ge/PrimaryCollimator/HL  mm
+sc:Ge/PrimaryCollimator/DrawingStyle 		= "Solid"
+s:Ge/PrimaryCollimator/Color      = "Blue"
+
+
+# Secondary collimator
+------------------------------------------------------------
+s:Ge/SecondaryCollimator/Parent     = "World" #IEC gantry coordinate
+s:Ge/SecondaryCollimator/Material   = "G4_Pb"
+s:Ge/SecondaryCollimator/Type       = "G4Cons"
+d:Ge/SecondaryCollimator/RMin1      = 2.5 mm
+d:Ge/SecondaryCollimator/RMax1      = 50 mm #Portions of collimator axis within 4 cm of air
+d:Ge/SecondaryCollimator/RMin2      = 1.82 mm
+d:Ge/SecondaryCollimator/RMax2      = 50 mm
+d:Ge/SecondaryCollimator/HL         = 27 mm
+d:Ge/SecondaryCollimator/Pos        = 1.7 cm
+d:Ge/SecondaryCollimator/temp_TransZ1 = Ge/PrimaryCollimator/TransZ - Ge/PrimaryCollimator/HL  mm
+d:Ge/SecondaryCollimator/temp_TransZ2 = Ge/SecondaryCollimator/temp_TransZ1 - Ge/SecondaryCollimator/HL mm
+d:Ge/SecondaryCollimator/TransZ     = Ge/SecondaryCollimator/temp_TransZ2 - Ge/SecondaryCollimatorOffset mm
+sc:Ge/SecondaryCollimator/DrawingStyle 		= "Solid"
+s:Ge/SecondaryCollimator/Color      = "green"
+
+
+
+# # Beam parameters (paramterised source):
 ------------------------------------------------------------
 s:So/Beam/Type                     = "Beam"
 sc:So/Beam/Component                = "ElectronSource"
@@ -27,81 +74,64 @@ uc:So/Beam/BeamEnergySpread         = 0
 sc:So/Beam/BeamPositionDistribution = "Gaussian" # None, Flat or Gaussian
 sc:So/Beam/BeamAngularDistribution  = "Gaussian" # None, Flat or Gaussian
 sc:So/Beam/BeamPositionCutoffShape = "Ellipse"
-dc:So/Beam/BeamPositionCutoffX = 1 mm
-dc:So/Beam/BeamPositionCutoffY = 1 mm
+dc:So/Beam/BeamPositionCutoffX = 2 mm
+dc:So/Beam/BeamPositionCutoffY = 2 mm
 dc:So/Beam/BeamPositionSpreadX = 0.3 mm
 dc:So/Beam/BeamPositionSpreadY = 0.3 mm
 dc:So/Beam/BeamAngularCutoffX = 5 deg
 dc:So/Beam/BeamAngularCutoffY = 5 deg
 dc:So/Beam/BeamAngularSpreadX = 0.07 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 500000
+ic:So/Beam/NumberOfHistoriesInRun = 500000 
 
-
-# Electron source position
-------------------------------------------------------------
+# # Electron source position
+# ------------------------------------------------------------
 s:Ge/ElectronSource/Parent = "World"
-s:Ge/ElectronSource/Type="Group"
-d:Ge/ElectronSource/TransZ = 800 mm
+s:Ge/ElectronSource/Type="TsSPhere"
+d:Ge/ElectronSource/Rmax = 5 mm
+d:Ge/ElectronSource/TransZ = 1100 mm
 d:Ge/ElectronSource/RotX = 180. deg
 s:Ge/ElectronSource/Material = Ge/World/Material
 s:Ge/ElectronSource/Color = "yellow"
 sc:Ge/ElectronSource/DrawingStyle = "Solid"
 
-
-
-
-Target
-------------------------------------------------------------
-# Target is implemented as a separate component from the TsApertureArray
-# so that one can independently score on it
-# But all of its parameters are derived from Sphinx parameters above
-s:Ge/Target/Type 			= "TsCylinder"
-s:Ge/Target/Parent 			= "World"
-s:Ge/Target/Material 			= "G4_W"
-d:Ge/Target/RMax   			= 50 mm
-d:Ge/Target/HL  			= 1 mm
-d:Ge/Target/TransZ 			= 703 mm
-sc:Ge/Target/DrawingStyle 		= "Solid"
-sc:Ge/Target/Color 			= "magenta"
-
-Variance reduction in target
-------------------------------------------------------------
-b:Vr/UseVarianceReduction = "true"
+# Variance reduction in target
+# ------------------------------------------------------------
+b:Vr/UseVarianceReduction = "True"
 s:Ge/Target/AssignToRegionNamed = "VarianceReduction"
 s:Vr/ParticleSplit/Type = "SecondaryBiasing"
 sv:Vr/ParticleSplit/ForRegion/VarianceReduction/ProcessesNamed = 1 "eBrem"
-uv:Vr/ParticleSplit/ForRegion/VarianceReduction/SplitNumber = 1 1000
-# why would I not want to split all particles?
+uv:Vr/ParticleSplit/ForRegion/VarianceReduction/SplitNumber = 1 1000 
 dv:Vr/ParticleSplit/ForRegion/VarianceReduction/MaximumEnergies = 1 10.0 MeV
 s:Vr/ParticleSplit/ReferenceComponent = "Target"
 dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitLimits = 1 -1 * Ge/Target/TransZ mm
-dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitRadius = 1 100 mm
+dv:Vr/ParticleSplit/ForRegion/VarianceReduction/DirectionalSplitRadius = 1 50 mm
 
-
-# Add phase space scorer below collimator:
-------------------------------------------------------------
-s:Ge/Magic/Type     = "TsBox"
-s:Ge/Magic/Parent   = "World"
-s:Ge/Magic/Material = "Vacuum"
-d:Ge/Magic/HLX      = Ge/Collimator/RMax mm
-d:Ge/Magic/HLY      = Ge/Collimator/RMax mm
-d:Ge/Magic/HLZ      = 1 mm
-d:Ge/Magic/TransX   = 0. cm
-d:Ge/Magic/TransY   = 0. cm
-d:Ge/Magic/TransZ   = 580 mm
-d:Ge/Magic/RotX     = 0. deg
-d:Ge/Magic/RotY     = 0. deg
-d:Ge/Magic/RotZ     = 0. deg
-s:Ge/Magic/Color    = "skyblue"
-s:Ge/Magic/DrawingStyle = "wireframe"
+# # Add phase space scorer below collimator:
+# ------------------------------------------------------------
+s:Ge/PhaseSpaceScorer/Type     = "TsBox"
+s:Ge/PhaseSpaceScorer/Parent   = "World"
+s:Ge/PhaseSpaceScorer/Material = "Vacuum"
+d:Ge/PhaseSpaceScorer/HLX      = Ge/SecondaryCollimator/RMax2 mm
+d:Ge/PhaseSpaceScorer/HLY      = Ge/SecondaryCollimator/RMax2 mm
+d:Ge/PhaseSpaceScorer/HLZ      = 1 mm
+d:Ge/PhaseSpaceScorer/TransX   = 0. cm
+d:Ge/PhaseSpaceScorer/TransY   = 0. cm
+d:Ge/PhaseSpaceScorer/temp_TranZ1   = Ge/SecondaryCollimator/TransZ mm
+d:Ge/PhaseSpaceScorer/temp_TranZ2   = Ge/PhaseSpaceScorer/temp_TranZ1 - Ge/SecondaryCollimator/HL   mm
+d:Ge/PhaseSpaceScorer/TransZ   = Ge/PhaseSpaceScorer/temp_TranZ2 - 10  mm
+d:Ge/PhaseSpaceScorer/RotX     = 0. deg
+d:Ge/PhaseSpaceScorer/RotY     = 0. deg
+d:Ge/PhaseSpaceScorer/RotZ     = 0. deg
+s:Ge/PhaseSpaceScorer/Color    = "skyblue"
+s:Ge/PhaseSpaceScorer/DrawingStyle = "wireframe"
 
 
 s:Sc/PhaseSpaceFromColl/Quantity                    = "PhaseSpace"
 b:Sc/PhaseSpaceFromColl/OutputToConsole             = "False"
-s:Sc/PhaseSpaceFromColl/Surface                     = "Magic/ZMinusSurface"
+s:Sc/PhaseSpaceFromColl/Surface                     = "PhaseSpaceScorer/ZMinusSurface"
 s:Sc/PhaseSpaceFromColl/OutputType                  = "Binary" # ASCII, Binary, Limited or ROOT
-s:Sc/PhaseSpaceFromColl/OutputFile                  = "Results/coll_PhaseSpace_opt0_VarRed"
+s:Sc/PhaseSpaceFromColl/OutputFile                  = "Results/coll_PhaseSpace"
 i:Sc/PhaseSpaceFromColl/OutputBufferSize            = 1000
 #s:Sc/PhaseSpaceFromColl/OnlyIncludeParticlesGoing  = "In"
 b:Sc/PhaseSpaceFromColl/IncludeTOPASTime            = "False"
@@ -118,7 +148,7 @@ s:Sc/PhaseSpaceFromColl/IfOutputFileAlreadyExists   = "Overwrite"
 
 # Graphics View and trajectory filters:
 ------------------------------------------------------------
-b:Gr/Enable = "True"  # Enable/Disable graphics
+b:Gr/Enable = "False"  # Enable/Disable graphics
 s:Gr/ViewA/Type              = "OpenGL"
 d:Gr/ViewA/Theta            = 90 deg
 d:Gr/ViewA/Phi              = 0 deg
@@ -129,7 +159,6 @@ d:Gr/ViewA/PerspectiveAngle = 60 deg
 u:Gr/ViewA/Zoom             = 1
 b:Gr/ViewA/IncludeStepPoints = "False"
 b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
-sv:Gr/OnlyIncludeParticlesNamed = 1 "gamma"
 
 # Physics
 ------------------------------------------------------------
