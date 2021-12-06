@@ -24,8 +24,12 @@ def CalculateObjectiveFunction(TopasResults):
     OriginalResults = WaterTankData(OriginalDataLoc, File)
 
     OriginalDoseCube = OriginalResults.DoseCube
-    CurrentDoseCube = TopasResults.DoseCube * 10  # Im going to explot the fact that i know how how many particles have been run in each case
+    OriginalDoseMax = np.mean(np.sort(OriginalDoseCube)[-5:])
+    OriginalDoseCube = OriginalDoseCube * 100 / OriginalDoseMax
 
+    CurrentDoseCube = TopasResults.DoseCube
+    CurrentDoseMax = np.mean(np.sort(CurrentDoseCube)[-5:])
+    CurrentDoseCube = CurrentDoseCube * 100 / CurrentDoseMax
 
     ObjectiveFunction = np.mean(np.abs(OriginalDoseCube - CurrentDoseCube))  # match to every point
     return ObjectiveFunction

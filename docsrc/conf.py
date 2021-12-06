@@ -12,7 +12,21 @@
 #
 import os
 import sys
+import shutil
+from pathlib import Path
 sys.path.insert(0, os.path.abspath('..'))
+
+# copy the example readmes to this directory
+this_directory = Path(__file__).parent
+example_directory = this_directory.parent / 'examples'
+example_readmes = [example_directory / 'ApertureOptimisation' / 'README.md',
+                   example_directory / 'PhaseSpaceOptimisation' / 'README.md']
+
+for read_me in example_readmes:
+    try:
+        shutil.copy(read_me, (this_directory / os.path.split(read_me.parent)[1]).with_suffix('.md'))
+    except FileNotFoundError:
+        print(f'Could not find ApertureOptimisation readme at {read_me}.]n continuing...')
 
 # -- Project information -----------------------------------------------------
 

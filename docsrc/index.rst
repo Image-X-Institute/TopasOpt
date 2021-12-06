@@ -15,6 +15,8 @@ The quickest way to get started is to go through the worked examples.
    :caption: Contents:
 
    /worked_examples
+   /next_steps.md
+   /code_docs
 
 Indices and tables
 ==================

@@ -2,8 +2,9 @@ Worked Examples
 ===============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Contents:
 
 
-   /AperttureOptimisation.md
+   /ApertureOptimisation.md
+   /PhaseSpaceOptimisation.md

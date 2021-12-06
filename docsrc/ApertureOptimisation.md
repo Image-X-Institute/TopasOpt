@@ -16,12 +16,12 @@ from pathlib import Path
 
 this_directory = Path(__file__).parent
 
-# nb: the order of input files is important to make sure that a phase space files are correctly classified
+# nb: the order is important to make sure that a phase space files are correctly classified
 CreateTopasScript(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',   '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
 
 ```
 
-If it worked, you will now have a python function in your Optimisation Directory called GenerateTopasScript.py.
+Replace the second line with the equivalent path in your topas installation, and run the file. If it works, you will now have a python function in your Optimisation Directory called GenerateTopasScript.py.
 
 If you open this script up, you will see that all it has done it copied the contents of the topas file you input into a list, which it returns. At the moment, it's not very useful because every time it's called it will copy out exactly the same script! We will change that a bit later; but first it's a good idea to test this script and see if it actually works. 
 
