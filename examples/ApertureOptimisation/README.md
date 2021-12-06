@@ -48,17 +48,15 @@ In general, you should think of the script created at this point as a first draf
 
 ## Creating RunOptimisation.py
 
-Create a new file called RunOptimisation.py (or whatever you want, the name isn't important). Copy the below code into it:
+Create a new file called RunOptimisation_main.py (or whatever you want, the name isn't important). Copy the below code into it:
 
 ```python
-# main script for running the optimisation
-
 import sys
 import os
 import numpy as np
 from pathlib import Path
-sys.path.append('../../TopasBayesOpt')
-from TopasBayesOpt import TopasBayesOpt as to
+sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/TopasBayesOpt')
+import TopasBayesOpt as to
 
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
@@ -73,13 +71,14 @@ optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
 random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
-optimisation_params['Nitterations'] = 30
+optimisation_params['Nitterations'] = 20
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
+                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, length_scales=0.1)
 Optimiser.RunOptimisation()
+
 ```
 
 An explanation of what is happening in this script:
@@ -125,11 +124,7 @@ SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 500000')
 SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 50000')
 ```
 
-> **Hint:** Figuring out the optimal tradeoff between simulation time and simulation noise is something that can take quite a while to get right! 
-
-
-
-
+> **Hint:** Figuring out the optimal trade-off between simulation time and simulation noise is something that can take quite a while to get right! 
 
 ## Creating TopasObjectiveFunction.py
 
@@ -155,17 +150,17 @@ nothing to do with the results! But it illustrates a very useful principle: all 
 has to do is take two parameters and return a number. You can do whatever you want in between.
 
 A more sensible objective function must do a few more things:
-read in the results, extract some metrics from them, and calculate an objective value based on those results. The actual objective function we will use in this example is copied below:
+
+- Read in the results,
+- Extract some metrics from them
+- Calculate an objective value based on those results. The actual objective function we will use in this example is copied below:
 
 ```python
 import sys
 import os
-import topas2numpy as tp
 sys.path.append('../../TopasBayesOpt')
 from WaterTankAnalyser import WaterTankData
-from matplotlib import pyplot as plt
 import numpy as np
-from pathlib import Path
 
 
 def ReadInTopasResults(ResultsLocation):
@@ -173,15 +168,7 @@ def ReadInTopasResults(ResultsLocation):
     Dose = WaterTankData(path, file)  # WaterTank data is built on topas2numpy
     return Dose
 
-def AnalyseTopasResults(TopasResults):
-    """
-    In this example, for metrics I am going to calculate the RMS error between the desired and actual
-    profile and PDD.
-
-    - I will use normalised values to account for the fact that there may be different numbers of particles
-    - I will use
-    """
-
+def CalculateObjectiveFunction(TopasResults):
     OriginalDataLoc = os.path.realpath('../SimpleCollimatorExample_TopasFiles/Results')
     File = 'WaterTank'
     OriginalResults = WaterTankData(OriginalDataLoc, File)
@@ -208,23 +195,14 @@ def AnalyseTopasResults(TopasResults):
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
-    return np.mean(abs(ProfileDifference)), np.mean(abs(DepthDoseDifference))
-
-def CalculateObjectiveFunction(Metrics):
-    for metric in Metrics:
-        assert metric >=0  # our OF is based on this assumption so might as well check it
-    OF = Metrics[0] + Metrics[1]
-    return OF
+    ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
+    return ObjectiveFunction
 
 def TopasObjectiveFunction(ResultsLocation, iteration):
-    """
-    Th
-    """
 
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     TopasResults = ReadInTopasResults(ResultsFile)
-    Metrics = AnalyseTopasResults(TopasResults)
-    OF = CalculateObjectiveFunction(Metrics)
+    OF = CalculateObjectiveFunction(TopasResults)
     return OF
 ```
 
@@ -243,6 +221,22 @@ $$
 OF = mean(abs(CurrentProfile - OriginalProfile)) + mean(abs(CurrentDepthDose - OriginalDepthDose))
 $$
 Note that both the current and original data are normalised to account for the fact that different numbers of primary particles are being used. 
+
+## Running the example
+
+You now have all the building blocks in place to run this example. To do so, you simply need to run RunOptimisation_main.py:
+
+```bash
+# from a command window:
+python3 RunOptimisation_main.py 
+```
+
+
+
+A few notes however:
+
+- Although I have tried to make a relatively light weight example here, it still requires a substantial server to run on. I ran this example on a server with 16 multi-threaded CPUs and it took around 5 minutes per iteration.
+- Your command window has to have the appropriate environment set up. Setting up and managing python environments is beyond the scope of this code, but we will provide a detail
 
 
 

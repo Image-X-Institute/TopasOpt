@@ -732,9 +732,10 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
         ParameterNames = sorted(self.pbounds.keys())
         if length_scales is None:
-            self.length_scales = 1.0
-            logger.info(f'{bcolors.OKGREEN}Length scales unset, using defaults{bcolors.ENDC}')
-            return
+            length_scales = 0.1
+            for paramter_name in ParameterNames:
+                length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * length_scales
+                self.length_scales.append(length_scale_temp)
         elif type(length_scales) is float:
             self.length_scales = []
             for paramter_name in ParameterNames:
