@@ -2,10 +2,8 @@
 import subprocess
 import jsonpickle
 from matplotlib import pyplot as plt
-# matplotlib.use('Agg')  # having trouble with generating figures through ssh, hopefiully this resolves...
-from matplotlib import rcParams
+# matplotlib.use('Agg')  # if having trouble with generating figures through ssh, this resolves...
 import shutil
-import glob
 from scipy.optimize import minimize
 from scipy import stats
 from pathlib import Path
