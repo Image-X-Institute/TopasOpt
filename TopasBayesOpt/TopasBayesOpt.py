@@ -917,7 +917,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             mean, std = optimizer._gp.predict(PointsToTest_temp.T, return_std=True)
             mean = -1 * mean
             std = -1 * std
-            plt.figure()
+            fig = plt.figure()
             plt.plot(PointsToVary, mean)
             plt.fill_between(PointsToVary, mean + std, mean - std, alpha=0.5, color='C0')
             plt.xlabel(param)
@@ -926,6 +926,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             plt.grid()
             SaveName = PlotSavePath + f'/{param}.png'
             plt.savefig(SaveName)
+            plt.close(fig)
 
     def RunOptimisation(self):
         """
