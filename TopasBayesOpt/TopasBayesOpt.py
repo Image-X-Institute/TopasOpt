@@ -309,9 +309,9 @@ class TopasOptBaseClass:
 
         # make sure topas binary exists
         if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
-            logger.error(f'could not find topas binary at \n{self.TopasLocation}'
+            logger.error(f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation}'
                          f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
-                         f'\nQuitting')
+                         f'\nQuitting{bcolors.ENDC}')
             sys.exit(1)
 
     def GenerateTopasModel(self, x):
@@ -412,8 +412,16 @@ class TopasOptBaseClass:
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
 
+        # create lowest val at each iteration
+        LowestVal = np.ones(np.size(self.AllObjectiveFunctionValues)) * self.AllObjectiveFunctionValues[0]
+        for i, val in enumerate(LowestVal):
+            if self.AllObjectiveFunctionValues[i] < LowestVal[i]:
+                LowestVal[i:] = self.AllObjectiveFunctionValues[i]
+
+
         fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-        axs.plot(ItterationVector, self.AllObjectiveFunctionValues, 'C1')
+        axs.plot(ItterationVector, LowestVal, '-k', linewidth=2)
+        axs.plot(ItterationVector, self.AllObjectiveFunctionValues, 'C6')
         axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
         axs.set_ylabel('Objecti'
                           've function', fontsize=FigureSpecs.LabelFontSize)
@@ -425,10 +433,10 @@ class TopasOptBaseClass:
             axs.fill_between(ItterationVector,
                                 target_prediction + self.target_prediction_std,
                                 target_prediction - self.target_prediction_std, alpha=0.15, color='C0')
-            axs.legend(['Actual', 'Predicted', r'$\sigma$'])
+            axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'])
         except AttributeError:
             # predicted isn't  available for optimisers
-            pass
+            axs.legend(['Best', 'Current'])
 
         MinValue = np.argmin(self.AllObjectiveFunctionValues)
         axs.plot(ItterationVector[MinValue], self.AllObjectiveFunctionValues[MinValue], 'r-x')
@@ -1064,5 +1072,6 @@ class BayesianOptimiser(TopasOptBaseClass):
         # load logs:
         load_logs(new_optimizer, logs=[LogFileLocation])
         new_optimizer._gp.fit(new_optimizer._space.params, new_optimizer._space.target)
+
         return new_optimizer, utility
 

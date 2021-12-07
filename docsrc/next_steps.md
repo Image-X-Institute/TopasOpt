@@ -59,3 +59,4 @@ The Base class contains all the basic functionality an optimser will need, such 
 
 You can look through the source code to see how the different optimisers are implemented.
 
+## Assess and handle noise in the objective function

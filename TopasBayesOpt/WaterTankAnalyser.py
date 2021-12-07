@@ -8,16 +8,10 @@ import topas2numpy as tp
 import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import linregress
-from scipy import optimize
-from scipy.ndimage import fourier_gaussian
-from scipy.signal import resample
-import re
-import glob
 from pathlib import Path
-import json
 plt.interactive(False)
 np.seterr(divide='raise')
-from utilities import FigureSpecs
+from utilities import FigureSpecs, bcolors
 
 
 class WaterTankData:
@@ -168,7 +162,7 @@ class WaterTankData:
             self.dose.data['Sum'] = self.dose.data['Sum'] * DoseConverter
 
         except FileNotFoundError:
-            logging.warning(f'Could not find one of the input files or file header: {self.CurrentFile}\n')
+            logging.warning(f'{bcolors.FAIL}Could not find one of the input files or file header: {self.CurrentFile}{bcolors.ENDC}\n')
             sys.exit(1)
 
         if np.max(self.dose.data['Sum'])<1e-16:

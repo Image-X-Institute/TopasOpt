@@ -15,6 +15,7 @@ The quickest way to get started is to go through the worked examples.
    :caption: Contents:
 
    /worked_examples
+   /python_env_setup.md
    /next_steps.md
    /code_docs
 
