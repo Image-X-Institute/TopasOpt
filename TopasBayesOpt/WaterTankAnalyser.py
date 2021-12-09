@@ -289,34 +289,6 @@ class WaterTankData:
                 logging.warning(f'you seem to have divded by zero for files {self.FileToAnalyse[-1]}, which indicates that there is no actual dose '
                                 'in the dose file')
 
-    def __GenerateProfileData(self):
-        """
-        generate the data for plotting profiles.
-        Note that this operates on each beamlet, NOT on the integral Dose Cube data
-        """
-        # X profile
-        Xinterp = self.x
-        Yinterp = np.zeros(Xinterp.shape)
-        Zinterp = self.PhantomSizeZ * np.ones(Xinterp.shape)
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
-        self.ProfileDose_X = self.__DoseGridInterpolator(pts)
-        # Y profile
-        Yinterp = self.y
-        Xinterp = np.zeros(Yinterp.shape)
-        Zinterp = self.PhantomSizeZ * np.ones(Xinterp.shape)
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
-        self.ProfileDose_Y = self.__DoseGridInterpolator(pts)
-
-        if not self.AbsDepthDose:
-            try:
-                self.ProfileDose_X = self.ProfileDose_X * 100/max(self.ProfileDose_X)
-                self.ProfileDose_Y = self.ProfileDose_Y * 100 / max(self.ProfileDose_Y)
-            except FloatingPointError:
-                logging.warning(f'you seem to have divded by zero for files {self.FileToAnalyse[-1]}, which indicates that there is no actual dose '
-                                'in the dose file')
-
     # Public methods:
 
     def ExtractDataFromDoseCube(self, Xpts, Ypts, Zpts):

@@ -6,8 +6,9 @@ Management of virtual environments in python is a detailed and complex topic whi
 
 This assumes you already have python3 installed, and that the python3 alias will call the version you want to use (e.g. 3.7).  At least on ubunutu, this is true by default.
 
-- Open a new terminal window
+> This repository requires python3.7 or greater!! 
 
+- Open a new terminal window
 - make a new directory called TopasBayesOptVenv
 
 ```bash
@@ -20,6 +21,10 @@ python3 -m venv ~/python/TopasBayesOptVenvTest
 
 ```bash
 source ~/python/TopasBayesOptVenvTest/bin/activate
+# sometimes you may also have to upgrade pip
+pip3 install -U pip
+pip3 install pybind11
+pip3 install 
 ```
 
 - If this is the first time you used the environment, you will need to install the TopasBayesOpt package

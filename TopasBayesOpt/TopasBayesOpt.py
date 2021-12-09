@@ -1015,12 +1015,8 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
         Sometimes for whatever reason an optimisation is stopped prematurely.
         This function allows you to restart the optimisation by loading the previous log files.
-        You just have to change Optimiser.RunOptimisation() to Optimiser.RestartOptimisation(PreviousSimulationLocation)
-        in your optimisation script; the code will do the rest automatically. The restarted siulations will be at
-        OriginalSimulationName_restart
-
-        Note this will only work once. If you have to restart a third time, you have to do some copying and pasting
-        to make sure there is one previous log file at bayes_opt_logs.json that represents all iterations to date.
+        You just have to change Optimiser.RunOptimisation() to Optimiser.RestartOptimisation()
+        in your optimisation script; the code will do the rest automatically.
         """
         self.__RestartMode = True
         self.__PreviousBayesOptLogLoc = self.BayesOptLogLoc
