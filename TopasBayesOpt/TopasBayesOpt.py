@@ -2,10 +2,8 @@
 import subprocess
 import jsonpickle
 from matplotlib import pyplot as plt
-# matplotlib.use('Agg')  # having trouble with generating figures through ssh, hopefiully this resolves...
-from matplotlib import rcParams
+# matplotlib.use('Agg')  # if having trouble with generating figures through ssh, this resolves...
 import shutil
-import glob
 from scipy.optimize import minimize
 from scipy import stats
 from pathlib import Path
@@ -300,9 +298,9 @@ class TopasOptBaseClass:
 
         # make sure topas binary exists
         if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
-            logger.error(f'could not find topas binary at \n{self.TopasLocation}'
+            logger.error(f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation}'
                          f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
-                         f'\nQuitting')
+                         f'\nQuitting{bcolors.ENDC}')
             sys.exit(1)
 
     def GenerateTopasModel(self, x):
@@ -403,8 +401,16 @@ class TopasOptBaseClass:
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
 
+        # create lowest val at each iteration
+        LowestVal = np.ones(np.size(self.AllObjectiveFunctionValues)) * self.AllObjectiveFunctionValues[0]
+        for i, val in enumerate(LowestVal):
+            if self.AllObjectiveFunctionValues[i] < LowestVal[i]:
+                LowestVal[i:] = self.AllObjectiveFunctionValues[i]
+
+
         fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-        axs.plot(ItterationVector, self.AllObjectiveFunctionValues, 'C1')
+        axs.plot(ItterationVector, LowestVal, '-k', linewidth=2)
+        axs.plot(ItterationVector, self.AllObjectiveFunctionValues, 'C6')
         axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
         axs.set_ylabel('Objecti'
                           've function', fontsize=FigureSpecs.LabelFontSize)
@@ -416,10 +422,10 @@ class TopasOptBaseClass:
             axs.fill_between(ItterationVector,
                                 target_prediction + self.target_prediction_std,
                                 target_prediction - self.target_prediction_std, alpha=0.15, color='C0')
-            axs.legend(['Actual', 'Predicted', r'$\sigma$'])
+            axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'])
         except AttributeError:
             # predicted isn't  available for optimisers
-            pass
+            axs.legend(['Best', 'Current'])
 
         MinValue = np.argmin(self.AllObjectiveFunctionValues)
         axs.plot(ItterationVector[MinValue], self.AllObjectiveFunctionValues[MinValue], 'r-x')
@@ -900,7 +906,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             mean, std = optimizer._gp.predict(PointsToTest_temp.T, return_std=True)
             mean = -1 * mean
             std = -1 * std
-            plt.figure()
+            fig = plt.figure()
             plt.plot(PointsToVary, mean)
             plt.fill_between(PointsToVary, mean + std, mean - std, alpha=0.5, color='C0')
             plt.xlabel(param)
@@ -909,6 +915,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             plt.grid()
             SaveName = PlotSavePath + f'/{param}.png'
             plt.savefig(SaveName)
+            plt.close(fig)
 
     def RunOptimisation(self):
         """
@@ -997,12 +1004,8 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
         Sometimes for whatever reason an optimisation is stopped prematurely.
         This function allows you to restart the optimisation by loading the previous log files.
-        You just have to change Optimiser.RunOptimisation() to Optimiser.RestartOptimisation(PreviousSimulationLocation)
-        in your optimisation script; the code will do the rest automatically. The restarted siulations will be at
-        OriginalSimulationName_restart
-
-        Note this will only work once. If you have to restart a third time, you have to do some copying and pasting
-        to make sure there is one previous log file at bayes_opt_logs.json that represents all iterations to date.
+        You just have to change Optimiser.RunOptimisation() to Optimiser.RestartOptimisation()
+        in your optimisation script; the code will do the rest automatically.
         """
         self.__RestartMode = True
         self.__PreviousBayesOptLogLoc = self.BayesOptLogLoc
@@ -1055,5 +1058,6 @@ class BayesianOptimiser(TopasOptBaseClass):
         # load logs:
         load_logs(new_optimizer, logs=[LogFileLocation])
         new_optimizer._gp.fit(new_optimizer._space.params, new_optimizer._space.target)
+
         return new_optimizer, utility
 

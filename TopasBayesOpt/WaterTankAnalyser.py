@@ -8,16 +8,10 @@ import topas2numpy as tp
 import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import linregress
-from scipy import optimize
-from scipy.ndimage import fourier_gaussian
-from scipy.signal import resample
-import re
-import glob
 from pathlib import Path
-import json
 plt.interactive(False)
 np.seterr(divide='raise')
-from utilities import FigureSpecs
+from utilities import FigureSpecs, bcolors
 
 
 class WaterTankData:
@@ -168,7 +162,7 @@ class WaterTankData:
             self.dose.data['Sum'] = self.dose.data['Sum'] * DoseConverter
 
         except FileNotFoundError:
-            logging.warning(f'Could not find one of the input files or file header: {self.CurrentFile}\n')
+            logging.warning(f'{bcolors.FAIL}Could not find one of the input files or file header: {self.CurrentFile}{bcolors.ENDC}\n')
             sys.exit(1)
 
         if np.max(self.dose.data['Sum'])<1e-16:
@@ -291,34 +285,6 @@ class WaterTankData:
             dmax = np.max(self.DepthDose)
             try:
                 self.DepthDose = self.DepthDose * 100 / dmax
-            except FloatingPointError:
-                logging.warning(f'you seem to have divded by zero for files {self.FileToAnalyse[-1]}, which indicates that there is no actual dose '
-                                'in the dose file')
-
-    def __GenerateProfileData(self):
-        """
-        generate the data for plotting profiles.
-        Note that this operates on each beamlet, NOT on the integral Dose Cube data
-        """
-        # X profile
-        Xinterp = self.x
-        Yinterp = np.zeros(Xinterp.shape)
-        Zinterp = self.PhantomSizeZ * np.ones(Xinterp.shape)
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
-        self.ProfileDose_X = self.__DoseGridInterpolator(pts)
-        # Y profile
-        Yinterp = self.y
-        Xinterp = np.zeros(Yinterp.shape)
-        Zinterp = self.PhantomSizeZ * np.ones(Xinterp.shape)
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
-        self.ProfileDose_Y = self.__DoseGridInterpolator(pts)
-
-        if not self.AbsDepthDose:
-            try:
-                self.ProfileDose_X = self.ProfileDose_X * 100/max(self.ProfileDose_X)
-                self.ProfileDose_Y = self.ProfileDose_Y * 100 / max(self.ProfileDose_Y)
             except FloatingPointError:
                 logging.warning(f'you seem to have divded by zero for files {self.FileToAnalyse[-1]}, which indicates that there is no actual dose '
                                 'in the dose file')
