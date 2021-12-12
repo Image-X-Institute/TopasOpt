@@ -4,10 +4,10 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     """
     This file simply returns a list object, where each list entry corresponds to
     a line in the topas script.
-    When it is called from an Optimiser object,it will receive a dictionary that contains the current values of 
+    When it is called from an Optimiser object,it will receive a dictionary that contains the current values of
     the variables you set up in optimisation_params when you initialised the optimiser.
     """
-    
+
     SimpleCollimator = []
     SimpleCollimator.append('# Set threading self:')
     SimpleCollimator.append('------------------------------------------------------------')
@@ -64,8 +64,8 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_dict['UpStreamApertureRadius']) + ' mm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/RMax1      = 50 mm ')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = ' + str(variable_dict['DownStreamApertureRadius']) + ' mm')
-    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMax2      = ' + str(variable_dict['CollimatorThickness']) + ' mm')
-    SimpleCollimator.append('d:Ge/SecondaryCollimator/HL         = 27 mm')
+    SimpleCollimator.append('d:Ge/SecondaryCollimator/RMax2      = 50 mm')
+    SimpleCollimator.append('d:Ge/SecondaryCollimator/HL         = ' + str(variable_dict['CollimatorThickness']) + ' mm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/Pos        = 1.7 cm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/temp_TransZ1 = Ge/PrimaryCollimator/TransZ - Ge/PrimaryCollimator/HL  mm')
     SimpleCollimator.append('d:Ge/SecondaryCollimator/temp_TransZ2 = Ge/SecondaryCollimator/temp_TransZ1 - Ge/SecondaryCollimator/HL mm')
@@ -182,7 +182,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     SimpleCollimator.append('Ts/UseQt = Gr/Enable')
     SimpleCollimator.append('Ts/PauseBeforeQuit = Gr/Enable')
     SimpleCollimator.append('Ts/IncludeDefaultGeant4QtWidgets = "F"')
-    
+
     WaterTank = []
     WaterTank.append('# Set threading self:')
     WaterTank.append('------------------------------------------------------------')
