@@ -12,7 +12,7 @@ In this example, we will optimise the geometry of an X-ray collimator. The geome
 
 You will need the data from the original simulation to complete this example; it is available [here](https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles) 
 
-![](../../docsrc/_resources\Sketch.png)
+![](../../docsrc/_resources/Sketch.png)
 
 ## environment set up
 
