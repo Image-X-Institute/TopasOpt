@@ -701,7 +701,7 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         self.StartingSimplex = sim
         self.StartingSimplexSupplied = True
 
-    def setX(self, x_new):
+    def xxx_setX(self, x_new):
         """
         set's and run's the model with the latest state update
         """
@@ -719,6 +719,8 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         Use the scipy.optimize.minimize module to perform the optimisation.
         Note that most of the 'action' is happening in setX, which is repeated called by the optmizer
         """
+
+        self.SetUpDirectoryStructure()
         if self.StartingSimplexSupplied:
             StartingSimplex = self.StartingSimplex
         else:
