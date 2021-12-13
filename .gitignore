@@ -5,3 +5,4 @@ dist
 # Python
 __pycache__
 .pypirc
+*temp*

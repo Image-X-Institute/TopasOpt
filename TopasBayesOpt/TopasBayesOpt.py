@@ -655,6 +655,21 @@ class TopasOptBaseClass:
             f = open(FullSimName / 'readme.txt','w')
             f.write(self.ReadMeText)
 
+    def ConvertDictToVariables(self, x_new):
+        """
+        I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
+        the bayes code gives me into what the rest of my code expects
+
+        Note the bayes code sends in the dict in alphabetical order; this methods also corrects that such that the initial
+        order of variables is maintained
+        """
+        if not isinstance(x_new, dict):
+            # then no conversion needed
+            return
+        x = []
+        for i, paramNames in enumerate(x_new):
+            x.append(x_new[self.ParameterNames[i]])
+        self.x = np.array(x, ndmin=2)
 
 class NealderMeadOptimiser(TopasOptBaseClass):
 
@@ -691,12 +706,6 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         self.x = np.array(x_new, ndmin=2)
         self.CreateVariableDictionary(self.x)
         self.GenerateTopasModel(self.x)
-        if (not self.WallThicknessError):
-            '''
-            Since this code takes bounds, if the use entered these sensibly, this shouldn't occur...
-            '''
-            self.RunTopasModel()
-            self.ReadTopasResults()
         # Now assess the objective function:
         self.CalculateObjectiveFunction()
 
@@ -713,7 +722,8 @@ class NealderMeadOptimiser(TopasOptBaseClass):
             StartingSimplex = None
 
         bnds = tuple(zip(self.LowerBounds, self.UpperBounds))
-        res = minimize(self.setX, self.StartingValues, method='Nelder-Mead', bounds=bnds,
+
+        res = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
 
@@ -797,18 +807,7 @@ class BayesianOptimiser(TopasOptBaseClass):
                     suggestion_dict[key] = optimisation_params['Suggestions'][n, i]
                 self.Suggestions.append(suggestion_dict)
 
-    def ConvertDictToVariables(self, x_new):
-        """
-        I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
-        the bayes code gives me into what the rest of my code expects
 
-        Note the bayes code sends in the dict in alphabetical order; this methods also corrects that such that the initial
-        order of variables is maintained
-        """
-        x = []
-        for i, paramNames in enumerate(x_new):
-            x.append(x_new[self.ParameterNames[i]])
-        self.x = np.array(x, ndmin=2)
 
     def Plot_ConvergenceRetrospective(self, optimizer):
         """

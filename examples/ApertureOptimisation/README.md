@@ -287,11 +287,13 @@ Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you 
 
 After running this example for 40 iterations, I got the following results:
 
-| Parameter                | Original Value | Recovered Value |
-| ------------------------ | -------------- | --------------- |
-| CollimatorThickness      | 27 mm          | 12              |
-| UpStreamApertureRadius   | 1.82 mm        | 1.96            |
-| DownStreamApertureRadius | 2.5 mm         | 2.4             |
+Itteration: 0, UpStreamApertureRadius:  1.06, DownStreamApertureRadius:  1.72, CollimatorThickness:  39.02, target_prediction_mean:  0.00, target_prediction_std:  0.00, ObjectiveFunction:  13.42
+
+| Parameter                | Original Value | Random Starting Value | Recovered Value |
+| ------------------------ | -------------- | --------------------- | --------------- |
+| CollimatorThickness      | 27 mm          | 39                    | 12              |
+| UpStreamApertureRadius   | 1.82 mm        | 1.0                   | 1.96            |
+| DownStreamApertureRadius | 2.5 mm         | 1.7                   | 2.4             |
 
 This is pretty good! In just 40 iterations, we recovered the original values to within NUMBER of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations to achieve the same accuracy. 
 
