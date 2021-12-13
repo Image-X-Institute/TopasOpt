@@ -391,7 +391,10 @@ class TopasOptBaseClass:
         with open(LogFile, 'a') as f:
             Entry = f'Itteration: {self.Itteration}'
             for i, Parameter in enumerate(self.ParameterNames):
-                Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
+                try:
+                    Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
+                except IndexError:
+                    Entry = Entry + f', {Parameter}: {x[i]: 1.2f}'
 
             try:
                 Entry = Entry + f', target_prediction_mean: {self.target_prediction_mean[-1]: 1.2f}'
