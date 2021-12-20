@@ -668,6 +668,7 @@ class TopasOptBaseClass:
         """
         if not isinstance(x_new, dict):
             # then no conversion needed
+            self.x = x_new
             return
         x = []
         for i, paramNames in enumerate(x_new):
@@ -701,23 +702,10 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         self.StartingSimplex = sim
         self.StartingSimplexSupplied = True
 
-    def xxx_setX(self, x_new):
-        """
-        set's and run's the model with the latest state update
-        """
-
-        self.x = np.array(x_new, ndmin=2)
-        self.CreateVariableDictionary(self.x)
-        self.GenerateTopasModel(self.x)
-        # Now assess the objective function:
-        self.CalculateObjectiveFunction()
-
-        return self.OF
-
     def RunOptimisation(self):
         """
         Use the scipy.optimize.minimize module to perform the optimisation.
-        Note that most of the 'action' is happening in setX, which is repeated called by the optmizer
+        Note that most of the 'action' is happening in BlackBoxFunction, which is repeated called by the optmizer
         """
 
         self.SetUpDirectoryStructure()
@@ -728,10 +716,12 @@ class NealderMeadOptimiser(TopasOptBaseClass):
 
         bnds = tuple(zip(self.LowerBounds, self.UpperBounds))
 
-        res = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
+
+        self.NelderMeadRes = minimize(-1*self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
-
+        # nb: we take the negative of BlackBoxFunction, because Bayesian optimisation wants to maximise and this
+        # wants to minimise
 
 class BayesianOptimiser(TopasOptBaseClass):
     """
@@ -754,6 +744,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         ParameterNames = sorted(self.pbounds.keys())
         if length_scales is None:
             length_scales = 0.1
+            self.length_scales = []
             for paramter_name in ParameterNames:
                 length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * length_scales
                 self.length_scales.append(length_scale_temp)
@@ -1075,4 +1066,3 @@ class BayesianOptimiser(TopasOptBaseClass):
         new_optimizer._gp.fit(new_optimizer._space.params, new_optimizer._space.target)
 
         return new_optimizer, utility
-
