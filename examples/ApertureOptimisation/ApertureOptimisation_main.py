@@ -2,12 +2,12 @@ import sys
 import os
 import numpy as np
 from pathlib import Path
-sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/TopasBayesOpt')
-import TopasBayesOpt as to
+sys.path.append('../../TopasBayesOpt')
+from TopasBayesOpt import TopasBayesOpt as to
 
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-SimulationName = 'BayesianOptimisationTest'
+SimulationName = 'NM_OptimisationTest'
 OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:
@@ -25,9 +25,9 @@ ReadMeText = 'This is a public service announcement, this is only a test'
 # Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
 #                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, length_scales=0.1)
 
-# Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-#                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.4)
+Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.4)
 
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
+#Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+#                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
 Optimiser.RunOptimisation()

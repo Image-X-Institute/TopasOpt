@@ -633,7 +633,12 @@ class TopasOptBaseClass:
         self.Plot_Convergence()
         self.Itteration = self.Itteration + 1
 
-        return -self.OF
+        if 'BayesianOptimiser' in str(self.__class__):
+            # bit of a hack since bayesian optimise will seek maximum
+            return -self.OF
+        else:
+            return self.OF
+
 
     def SetUpDirectoryStructure(self):
         """
@@ -718,7 +723,7 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         bnds = tuple(zip(self.LowerBounds, self.UpperBounds))
 
 
-        self.NelderMeadRes = minimize(-1*self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
+        self.NelderMeadRes = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
         # nb: we take the negative of BlackBoxFunction, because Bayesian optimisation wants to maximise and this
