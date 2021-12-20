@@ -63,7 +63,7 @@ class TopasOptBaseClass:
                  TargetBeamWidth=7, ReadMeText = None,
                  StartingSimplexRelativeVal=None, length_scales=None,
                  KappaDecayIterations=10, TopasLocation='~/topas/',
-                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.1):
+                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.01):
         """
         :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
         :type optimisation_params: list
@@ -638,7 +638,6 @@ class TopasOptBaseClass:
             return -self.OF
         else:
             return self.OF
-
 
     def SetUpDirectoryStructure(self):
         """
