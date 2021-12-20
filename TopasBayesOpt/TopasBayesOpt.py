@@ -675,6 +675,7 @@ class TopasOptBaseClass:
             x.append(x_new[self.ParameterNames[i]])
         self.x = np.array(x, ndmin=2)
 
+
 class NealderMeadOptimiser(TopasOptBaseClass):
 
     def GenerateStartingSimplex(self):
@@ -722,6 +723,7 @@ class NealderMeadOptimiser(TopasOptBaseClass):
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
         # nb: we take the negative of BlackBoxFunction, because Bayesian optimisation wants to maximise and this
         # wants to minimise
+
 
 class BayesianOptimiser(TopasOptBaseClass):
     """
@@ -802,8 +804,6 @@ class BayesianOptimiser(TopasOptBaseClass):
                 for i, key in enumerate(optimisation_params['ParameterNames']):
                     suggestion_dict[key] = optimisation_params['Suggestions'][n, i]
                 self.Suggestions.append(suggestion_dict)
-
-
 
     def Plot_ConvergenceRetrospective(self, optimizer):
         """
