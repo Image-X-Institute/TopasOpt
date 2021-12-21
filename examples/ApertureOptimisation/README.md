@@ -6,19 +6,25 @@ If you are an experienced python and topas user, you should allow 1-2 hours to s
 
 Actually running this example will take ~12 hours on a decent computer. 
 
+## Base model and problem overview
+
+In this example, we will optimise the geometry of an X-ray collimator. The geometry is shown below, with the parameters targeted for optimisation shown in red. The original values for each of these parameters are: Collimator Thickness = 54 mm, Up-stream aperture radius = 1.82 mm, and Down-stream aperture radius = 2.5 mm. In this example, each of these parameters will firt be assigned a random value. We will then attempt to recover the original values by constructing a simple objective function based on the differences between the original data and the current iteration.
+
+You will need the data from the original simulation to complete this example; it is available [here](https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles) 
+
+![]([Root](/docsrc/_resources/Sketch.png))
+
 ## environment set up
 
-For tips on getting the environment set up properly, see HERE
+If you need help with getting an appropriate environment set up properly, see HERE
 
 ## directory set up
 
-To start with, create a folder somewhere called for instance 'ApertureOptExample' (or whatever). This is where you will store all the code necessary to tun the optimisation. The rest of the instructions assume you are in this working directory.
-
-
+To start with, create a folder somewhere called for instance 'ApertureOptExample' (or whatever). This is where you will store all the code necessary to run the optimisation. The rest of the instructions assume you are in this working directory.
 
 When you have finished working through this example you should have a working directory which looks like this:
 
-## Base model and problem overview
+![]([Root]/docsrc/_resources/ApertureDirectoryStructure.jpg)
 
 
 
@@ -80,9 +86,9 @@ import TopasBayesOpt as to
 
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-# Update this! ^^^
-SimulationName = 'BayesianOptimisationTest'
-OptimisationDirectory = Path(__file__).parent
+# Update this! ^^^ This needs to be an existing location onyour computer where you will store your sims
+SimulationName = 'BayesianOptimisationTest' 
+OptimisationDirectory = Path(__file__).parent  # points to whatever directory this script is in
 
 # set up optimisation params:
 optimisation_params = {}
@@ -92,7 +98,7 @@ optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
 random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
-optimisation_params['Nitterations'] = 20
+optimisation_params['Nitterations'] = 40
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
@@ -101,14 +107,6 @@ Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationN
 Optimiser.RunOptimisation()
 
 ```
-
-An explanation of what is happening in this script:
-
-- BaseDirectory is where all your different optimisations will be stored.
-- SimulationName is the folder which will contain this specific simulation. By default, if this folder already exists the code will crash. You can change this behaviour by setting ```overwrite-True``` in the initialisation of Optimiser.
-- optimisation_params is a dictionary. It contains the names of the parameters to be optimised, their starting values, and their allowed bounds. Although only one parameter is called here, you can add as many parameters as you want separated by a comma. 
-- ParameterNames is a label for you and the optimiser to keep track of the parameters. You can call your parameters whatever you want. 
-- Niterations defines how many iterations the optimiser will carry out. 
 
 A full list of the inputs for BayesianOptimiser is HERE, but the inputs we are using this case are described below:  
 
@@ -142,6 +140,8 @@ SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_
 SimpleCollimator.append('d:Ge/SecondaryCollimator/HL         = 27 mm')
 # to
 SimpleCollimator.append('d:Ge/SecondaryCollimator/HL      = ' + str(variable_dict['CollimatorThickness']) + ' mm')
+
+
 ```
 
 Notice that we have used the variable names that we set up RunOptimisation.py.
@@ -199,12 +199,6 @@ sys.path.append('../../TopasBayesOpt')
 from WaterTankAnalyser import WaterTankData
 import numpy as np
 
-
-def ReadInTopasResults(ResultsLocation):
-    path, file = os.path.split(ResultsLocation)
-    Dose = WaterTankData(path, file)  # WaterTank data is built on topas2numpy
-    return Dose
-
 def CalculateObjectiveFunction(TopasResults):
     OriginalDataLoc = os.path.realpath('../SimpleCollimatorExample_TopasFiles/Results')
     File = 'WaterTank'
@@ -238,7 +232,8 @@ def CalculateObjectiveFunction(TopasResults):
 def TopasObjectiveFunction(ResultsLocation, iteration):
 
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
-    TopasResults = ReadInTopasResults(ResultsFile)
+    path, file = os.path.split(ResultsLocation)
+    TopasResults = WaterTankData(path, file)  # WaterTank data is built on topas2numpy
     OF = CalculateObjectiveFunction(TopasResults)
     return OF
 ```
@@ -292,11 +287,13 @@ Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you 
 
 After running this example for 40 iterations, I got the following results:
 
-| Parameter                | Original Value | Recovered Value |
-| ------------------------ | -------------- | --------------- |
-| CollimatorThickness      | 27 mm          |                 |
-| UpStreamApertureRadius   | 1.82 mm        |                 |
-| DownStreamApertureRadius | 2.5 mm         |                 |
+Itteration: 0, UpStreamApertureRadius:  1.06, DownStreamApertureRadius:  1.72, CollimatorThickness:  39.02, target_prediction_mean:  0.00, target_prediction_std:  0.00, ObjectiveFunction:  13.42
+
+| Parameter                | Original Value | Random Starting Value | Recovered Value |
+| ------------------------ | -------------- | --------------------- | --------------- |
+| CollimatorThickness      | 27 mm          | 39                    | 12              |
+| UpStreamApertureRadius   | 1.82 mm        | 1.0                   | 1.96            |
+| DownStreamApertureRadius | 2.5 mm         | 1.7                   | 2.4             |
 
 This is pretty good! In just 40 iterations, we recovered the original values to within NUMBER of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations to achieve the same accuracy. 
 

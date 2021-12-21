@@ -16,7 +16,7 @@ from bayes_opt.util import load_logs
 from bayes_opt.event import Events
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from utilities import bcolors, FigureSpecs, newJSONLogger
+from .utilities import bcolors, FigureSpecs, newJSONLogger
 import stat
 
 ch = logging.StreamHandler()
@@ -63,7 +63,7 @@ class TopasOptBaseClass:
                  TargetBeamWidth=7, ReadMeText = None,
                  StartingSimplexRelativeVal=None, length_scales=None,
                  KappaDecayIterations=10, TopasLocation='~/topas/',
-                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.1):
+                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.01):
         """
         :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
         :type optimisation_params: list
@@ -380,7 +380,10 @@ class TopasOptBaseClass:
         with open(LogFile, 'a') as f:
             Entry = f'Itteration: {self.Itteration}'
             for i, Parameter in enumerate(self.ParameterNames):
-                Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
+                try:
+                    Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
+                except IndexError:
+                    Entry = Entry + f', {Parameter}: {x[i]: 1.2f}'
 
             try:
                 Entry = Entry + f', target_prediction_mean: {self.target_prediction_mean[-1]: 1.2f}'
@@ -619,7 +622,11 @@ class TopasOptBaseClass:
         self.Plot_Convergence()
         self.Itteration = self.Itteration + 1
 
-        return -self.OF
+        if 'BayesianOptimiser' in str(self.__class__):
+            # bit of a hack since bayesian optimise will seek maximum
+            return -self.OF
+        else:
+            return self.OF
 
     def SetUpDirectoryStructure(self):
         """
@@ -643,6 +650,23 @@ class TopasOptBaseClass:
         if self.ReadMeText:
             f = open(FullSimName / 'readme.txt','w')
             f.write(self.ReadMeText)
+
+    def ConvertDictToVariables(self, x_new):
+        """
+        I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
+        the bayes code gives me into what the rest of my code expects
+
+        Note the bayes code sends in the dict in alphabetical order; this methods also corrects that such that the initial
+        order of variables is maintained
+        """
+        if not isinstance(x_new, dict):
+            # then no conversion needed
+            self.x = x_new
+            return
+        x = []
+        for i, paramNames in enumerate(x_new):
+            x.append(x_new[self.ParameterNames[i]])
+        self.x = np.array(x, ndmin=2)
 
 
 class NealderMeadOptimiser(TopasOptBaseClass):
@@ -672,39 +696,26 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         self.StartingSimplex = sim
         self.StartingSimplexSupplied = True
 
-    def setX(self, x_new):
-        """
-        set's and run's the model with the latest state update
-        """
-
-        self.x = np.array(x_new, ndmin=2)
-        self.CreateVariableDictionary(self.x)
-        self.GenerateTopasModel(self.x)
-        if (not self.WallThicknessError):
-            '''
-            Since this code takes bounds, if the use entered these sensibly, this shouldn't occur...
-            '''
-            self.RunTopasModel()
-            self.ReadTopasResults()
-        # Now assess the objective function:
-        self.CalculateObjectiveFunction()
-
-        return self.OF
-
     def RunOptimisation(self):
         """
         Use the scipy.optimize.minimize module to perform the optimisation.
-        Note that most of the 'action' is happening in setX, which is repeated called by the optmizer
+        Note that most of the 'action' is happening in BlackBoxFunction, which is repeated called by the optmizer
         """
+
+        self.SetUpDirectoryStructure()
         if self.StartingSimplexSupplied:
             StartingSimplex = self.StartingSimplex
         else:
             StartingSimplex = None
 
         bnds = tuple(zip(self.LowerBounds, self.UpperBounds))
-        res = minimize(self.setX, self.StartingValues, method='Nelder-Mead', bounds=bnds,
+
+
+        self.NelderMeadRes = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
+        # nb: we take the negative of BlackBoxFunction, because Bayesian optimisation wants to maximise and this
+        # wants to minimise
 
 
 class BayesianOptimiser(TopasOptBaseClass):
@@ -728,6 +739,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         ParameterNames = sorted(self.pbounds.keys())
         if length_scales is None:
             length_scales = 0.1
+            self.length_scales = []
             for paramter_name in ParameterNames:
                 length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * length_scales
                 self.length_scales.append(length_scale_temp)
@@ -785,19 +797,6 @@ class BayesianOptimiser(TopasOptBaseClass):
                 for i, key in enumerate(optimisation_params['ParameterNames']):
                     suggestion_dict[key] = optimisation_params['Suggestions'][n, i]
                 self.Suggestions.append(suggestion_dict)
-
-    def ConvertDictToVariables(self, x_new):
-        """
-        I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
-        the bayes code gives me into what the rest of my code expects
-
-        Note the bayes code sends in the dict in alphabetical order; this methods also corrects that such that the initial
-        order of variables is maintained
-        """
-        x = []
-        for i, paramNames in enumerate(x_new):
-            x.append(x_new[self.ParameterNames[i]])
-        self.x = np.array(x, ndmin=2)
 
     def Plot_ConvergenceRetrospective(self, optimizer):
         """
@@ -1060,4 +1059,3 @@ class BayesianOptimiser(TopasOptBaseClass):
         new_optimizer._gp.fit(new_optimizer._space.params, new_optimizer._space.target)
 
         return new_optimizer, utility
-
