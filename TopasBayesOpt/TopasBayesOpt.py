@@ -16,7 +16,7 @@ from bayes_opt.util import load_logs
 from bayes_opt.event import Events
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from utilities import bcolors, FigureSpecs, newJSONLogger
+from .utilities import bcolors, FigureSpecs, newJSONLogger
 import stat
 
 ch = logging.StreamHandler()
@@ -264,6 +264,12 @@ class TopasOptBaseClass:
             sys.exit(1)
         if not np.size(self.UpperBounds) == np.size(self.LowerBounds):
             print(f'{bcolors.FAIL} size of UpperBounds does not match size of LowerBounds{bcolors.ENDC}')
+            sys.exit(1)
+
+        if not all([isinstance(self.StartingValues, np.ndarray), isinstance(self.UpperBounds, np.ndarray),
+                    isinstance(self.LowerBounds, np.ndarray)]):
+            logger.error('please use numpy arrays to specify optimisation_params, e.g. '
+                         '\noptimisation_params["UpperBounds"] = np.array([3, 3, 40])')
             sys.exit(1)
 
         MinTargThicknessValues = []  # keep track of this below
