@@ -24,7 +24,7 @@ To start with, create a folder somewhere called for instance 'ApertureOptExample
 
 When you have finished working through this example you should have a working directory which looks like this:
 
-![](../../docsrc/_resources/ApertureDirectoryStructure.jpg)
+![]([Root]/docsrc/_resources/ApertureDirectoryStructure.jpg)
 
 
 
