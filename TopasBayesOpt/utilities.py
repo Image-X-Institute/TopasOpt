@@ -2,6 +2,12 @@
 Supporting classes and functions
 """
 from bayes_opt.logger import JSONLogger
+import sys
+import os
+sys.path.append('.')
+# from WaterTankAnalyser import WaterTankData
+# import numpy as np
+# from matplotlib import pyplot as plt
 
 
 class bcolors:
@@ -38,6 +44,9 @@ class newJSONLogger(JSONLogger):
         self._path = None
         super(JSONLogger, self).__init__()
         self._path = path if path[-5:] == ".json" else path + ".json"
+
+
+
 
 
 
