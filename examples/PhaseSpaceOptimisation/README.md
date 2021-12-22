@@ -110,11 +110,39 @@ We are going to keep this relatively simple by just having four optimization par
 
 ## Analyzing the results
 
-| Parameter          | Ground Truth | Optimized |
-| ------------------ | ------------ | --------- |
-| BeamEnergy         | 10           | 10.1      |
-| BeamPositionCutoff | 2            | 2.7       |
-| BeamPositionSpread | 0.3          | .1        |
-| BeamAngularSpread  | .07          | .1        |
-| BeamAngularCutoff  | 5            | 1         |
+| Parameter          | Ground Truth | Allowed Range | Optimized |
+| ------------------ | ------------ | ------------- | --------- |
+| BeamEnergy         | 10           | 6-12          | 10.1      |
+| BeamPositionCutoff | 2            | 1-3           | 2.7       |
+| BeamPositionSpread | 0.3          | .1-1          | .1        |
+| BeamAngularSpread  | .07          | .01-1         | .1        |
+| BeamAngularCutoff  | 5            | 1-10          | 1         |
 
+... that's actually already really good!! 
+
+## Comparing the results:
+
+Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:
+
+```python
+import sys
+from pathlib import Path
+sys.path.append(str(Path('../../TopasBayesOpt').resolve()))
+from WaterTankAnalyser import compare_multiple_results
+
+# add all the files you want to compare to this list
+FilesToCompare = ['C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin',
+                  'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
+
+# abs_dose = True if you don't want to normalise the plots
+compare_multiple_results(FilesToCompare, abs_dose=False)
+```
+
+Comparing our best result with the ground truth yields the below plot:
+
+![](../../docsrc\_resources\PhaseSpaceOptimisationComparison.png)
+
+A few things to note about this plot:
+
+- although our optimiser didn't recover the exact parameters, the parameters it did recover gave a pretty good match to the ground truth
+- We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 
