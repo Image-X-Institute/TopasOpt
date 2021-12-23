@@ -1,6 +1,6 @@
 # Example 2: Phase space optimisation
 
-> **Note:** in this example we will assume you have already completed the first example on Geometry optimisation. If you haven't, we strongly suggest completing that first.
+> **Note:** in this example it is assumed you have already completed the first example on Geometry optimisation.
 
 In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters.
 
@@ -103,22 +103,42 @@ With these considerations in mind, I developed the below objective function. It'
 
 ## Running the example
 
-
-
 Note that there are many other beam parameters we could choose to include. 
 We are going to keep this relatively simple by just having four optimization parameters
 
 ## Analyzing the results
 
+![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\phaseSpaceOpt\ConvergencePlot.png)
+
+![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\phaseSpaceOpt\CorrelationPlot.png)
+
+Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recored:
+
+```json
+Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutoff': 8.093521167768209, 'BeamAngularSpread': 0.01, 'BeamEnergy': 9.606637841613118, 'BeamPositionCutoff': 2.265724252124363, 'BeamPositionSpread': 0.309694887480956}}
+```
+
+These values are copied into the below table along with the ground truth values and the range we allowed them to vary over:
+
 | Parameter          | Ground Truth | Allowed Range | Optimized |
 | ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 10.1      |
-| BeamPositionCutoff | 2            | 1-3           | 2.7       |
-| BeamPositionSpread | 0.3          | .1-1          | .1        |
-| BeamAngularSpread  | .07          | .01-1         | .1        |
-| BeamAngularCutoff  | 5            | 1-10          | 1         |
+| BeamEnergy         | 10           | 6-12          | 9.6       |
+| BeamPositionCutoff | 2            | 1-3           | 2.3       |
+| BeamPositionSpread | 0.3          | .1-1          | .31       |
+| BeamAngularSpread  | .07          | .01-1         | .01       |
+| BeamAngularCutoff  | 5            | 1-10          | 8.1       |
 
-... that's actually already really good!! 
+Our model actually seems to have done quite a good job!
+
+Another thing that is interesting to look at can be found in the logs/SingleParameterPlots directly.
+
+These plots show the predicted change in the objective function as each single parameter is varied and all other parameters are held at their optimal value. From these plots, we can see that the most sensitive parameters seem to be BeamEnergy, BeamPositionSpread, and BeamAngularSpread. The parameter we got the worst estimate for was BeamAngularCutoff, but from these plots it appears that the solution isn't very sensitive to this parameter. Note also that there is fairly high uncertainty in it's estimate.
+
+> **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
+
+![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\phaseSpaceOpt\singeparamplots.png)
+
+
 
 ## Comparing the results:
 
@@ -140,9 +160,9 @@ compare_multiple_results(FilesToCompare, abs_dose=False)
 
 Comparing our best result with the ground truth yields the below plot:
 
-![](../../docsrc\_resources\PhaseSpaceOptimisationComparison.png)
+![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\abstracts,presentations etc\Publications\FirstAuthor\TopasBayesOp\phaseSpaceOpt\compare.png)
 
 A few things to note about this plot:
 
-- although our optimiser didn't recover the exact parameters, the parameters it did recover gave a pretty good match to the ground truth
+- although our optimiser didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
 - We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 
