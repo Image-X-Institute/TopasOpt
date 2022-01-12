@@ -106,6 +106,8 @@ class WaterTankData:
         plt.rc('xtick', labelsize=FigureSpecs.AxisFontSize)
         plt.rc('ytick', labelsize=FigureSpecs.AxisFontSize)
         self._ReadDoseFilesIntoDoseCube()
+        self.__GenerateDepthDoseData()
+        self.__GenerateProfileData()
 
     def _ReadDoseFilesIntoDoseCube(self):
         """
@@ -250,41 +252,47 @@ class WaterTankData:
                 Dose3D = np.stack([Dose3D.squeeze(),Dose3D.squeeze()], 2)
         self.DoseCube = np.add(self.DoseCube, Dose3D)
 
-    def __GenerateIsoplaneData(self):
-        """
-        Use RegularGridInterpolator to extract the isoplane data from the current dose file using linear interpolation.
-        Isoplane in this case means 'middle of z' and is a hard dependancy as currently coded...
-        """
-        Xplane, Yplane = np.meshgrid(self.x, self.y)
-        self.__DoseGridInterpolator = RegularGridInterpolator((self.x, self.y, self.z), self.dose.data['Sum'])  # interpolation function
-        Xinterp = Xplane.flatten()
-        Yinterp = Yplane.flatten()
-        Zinterp = (self.PhantomSizeZ * np.ones(np.size(Xplane.flatten())))
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
-        DoseAtIsoPlane = self.__DoseGridInterpolator(pts)
-        # now reshape into a 2D array again:
-        DoseAtIsoPlane = np.reshape(DoseAtIsoPlane, Xplane.shape)
-        self.Current_DoseAtIsoPlane = DoseAtIsoPlane
-
     def __GenerateDepthDoseData(self):
         """
-        use self.DoseGridInterpolator (created in __GenerateIsoplaneData) to extract depth dose data from current
-        dose file
+        Interpolate depth dose data from current dose cube
         """
         # get logical array for central axis...
-        Zinterp = np.flip(self.z)  # this might not be very elegant
-        Xinterp = np.zeros(Zinterp.shape)
-        Yinterp = np.zeros(Zinterp.shape)
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
-        self.DepthDose = self.__DoseGridInterpolator(pts)
+        Zpts_dd = self.z
+        Xpts_dd = np.zeros(Zpts_dd.shape)
+        Ypts_dd = np.zeros(Zpts_dd.shape)
+        self.DepthDose  = self.ExtractDataFromDoseCube(Xpts_dd, Ypts_dd, Zpts_dd)
 
         if not self.AbsDepthDose:
             # then normalise plots to dmax:
             dmax = np.max(self.DepthDose)
             try:
                 self.DepthDose = self.DepthDose * 100 / dmax
+            except FloatingPointError:
+                logging.warning(f'you seem to have divded by zero for files {self.FileToAnalyse[-1]}, which indicates that there is no actual dose '
+                                'in the dose file')
+
+    def __GenerateProfileData(self):
+        """
+        generate the data for plotting profiles.
+        Note that this operates on each beamlet, NOT on the integral Dose Cube data
+        """
+        # X profile
+        Xpts_prof = self.x # profile over entire X range
+        Ypts_prof = np.zeros(Xpts_prof.shape)
+        Zpts_prof = self.PhantomSizeZ * np.ones(Xpts_prof.shape)  # at the middle of the water tank
+        self.ProfileDose_X = self.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
+        # Y profile
+        Yinterp = self.y  # profile over entire X range
+        Xinterp = np.zeros(Yinterp.shape)
+        Zinterp = self.PhantomSizeZ * np.ones(Xinterp.shape)
+        pts = np.stack([Xinterp, Yinterp, Zinterp])
+        pts = pts.T  # take the tranpose to get the dimnesions right
+        self.ProfileDose_Y = self.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
+
+        if not self.AbsDepthDose:
+            try:
+                self.ProfileDose_X = self.ProfileDose_X * 100/max(self.ProfileDose_X)
+                self.ProfileDose_Y = self.ProfileDose_Y * 100 / max(self.ProfileDose_Y)
             except FloatingPointError:
                 logging.warning(f'you seem to have divded by zero for files {self.FileToAnalyse[-1]}, which indicates that there is no actual dose '
                                 'in the dose file')
@@ -579,7 +587,27 @@ class WaterTankData:
         plt.tight_layout()
         plt.show()
 
+def compare_multiple_results(BinFiles, abs_dose=False):
+    fig, axs = plt.subplots(ncols=2, nrows=1, figsize=[10, 5])
+    legend_names = []
+    for bin_file in BinFiles:
+        [path_name, file_name] = os.path.split(bin_file)
+        legend_names.append(file_name)
+        WTD = WaterTankData(path_name, file_name, AbsDepthDose=abs_dose)
+        # plot the differences:
 
+        axs[0].plot(WTD.x, WTD.ProfileDose_X)
+        axs[1].plot(WTD.z, np.flip(WTD.DepthDose))  # nb flip is just to it goes in conventional LR direction
+
+
+    axs[0].grid()
+    axs[0].set_xlabel('X [mm]')
+    axs[0].set_ylabel('Dose (%)')
+    axs[1].set_xlabel('Z [mm]')
+    axs[1].set_ylabel('Dose [%]')
+    axs[1].grid()
+    axs[1].legend(legend_names)
+    plt.show()
 
 
 
