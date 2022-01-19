@@ -108,9 +108,9 @@ We are going to keep this relatively simple by just having four optimization par
 
 ## Analyzing the results
 
-![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\phaseSpaceOpt\ConvergencePlot.png)
+![](../../\docsrc\_resources\phaseSpaceOpt\ConvergencePlot.png)
 
-![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\phaseSpaceOpt\CorrelationPlot.png)
+![](../../\docsrc\_resources\phaseSpaceOpt\CorrelationPlot.png)
 
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recored:
 
@@ -136,7 +136,7 @@ These plots show the predicted change in the objective function as each single p
 
 > **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
-![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\phaseSpaceOpt\singeparamplots.png)
+![](../..\docsrc\_resources\phaseSpaceOpt\singeparamplots.png)
 
 
 
@@ -160,7 +160,7 @@ compare_multiple_results(FilesToCompare, abs_dose=False)
 
 Comparing our best result with the ground truth yields the below plot:
 
-![](C:\Users\bwhe3635\Dropbox (Sydney Uni)\abstracts,presentations etc\Publications\FirstAuthor\TopasBayesOp\phaseSpaceOpt\compare.png)
+![](../..\docsrc\_resources\phaseSpaceOpt\compare.png)
 
 A few things to note about this plot:
 
