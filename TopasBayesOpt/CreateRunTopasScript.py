@@ -151,7 +151,7 @@ class CreateTopasScript:
 
         return new_line, OriginalFileName
 
-    def HandlePhaseSpaceSource(self, line, OutputPhaseSpaceFilesNames):
+    def HandlePhaseSpaceSource(self,OriginalFileLocation, line, OutputPhaseSpaceFilesNames):
         """
         Handle lines where a phase space source is used
 
@@ -172,9 +172,10 @@ class CreateTopasScript:
                 UseStaticPhaseSpace = False
 
         line1, line2 = line.split("=", 1)  # delete everything after the first =
-        dum, OriginalFileName = line2.split("/", 1)
+        OriginalFileName = line2
         OriginalFileName = OriginalFileName.replace('"', '')
         OriginalFileName = OriginalFileName.replace("'", '')
+        OriginalFileName = OriginalFileName.replace(" ", '')
         line1 = line1.replace('"', '')
         line1 = line1.replace("'", '')
         if not UseStaticPhaseSpace:
@@ -184,8 +185,7 @@ class CreateTopasScript:
         else:
             # in this case we want to convert a relative path to an absolute path.
             # do we also want to copy the file to the IncludeDirectory? probably not, it could be huge...
-            logger.warning('not coded yet :-P')  #ToDo
-            pass
+            new_line = line1 + ' = ' + str(OriginalFileLocation.parent / OriginalFileName) + "')"
 
         return new_line
 
@@ -240,7 +240,7 @@ class CreateTopasScript:
                         OutputPhaseSpaceFilesNames.append(OriginalFileName)
                         continue  # need a slightly different line in this case from the default
                     if 'PhaseSpaceFileName'.lower() in line.lower():  # could put a more sophisticated test here...
-                        line = self.HandlePhaseSpaceSource(line, OutputPhaseSpaceFilesNames)
+                        line = self.HandlePhaseSpaceSource(file, line, OutputPhaseSpaceFilesNames)
                         TopasScriptGenerator.append("    " + ScriptName + ".append('" + line + "\n")
                         continue  # need a slightly different line in this case from the default
 
