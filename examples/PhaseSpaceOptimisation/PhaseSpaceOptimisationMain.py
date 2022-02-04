@@ -6,8 +6,8 @@ sys.path.append('../../../TopasBayesOpt')
 from TopasBayesOpt import TopasBayesOpt as to
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-SimulationName = 'PhaseSpaceOptimisationTest'
-OptimisationDirectory = Path(__file__).parent
+SimulationName = 'PhaseSpaceOptimisationTest_NM'
+OptimisationDirectory = Path(__file__).parent  # this points to whatever directory this file is in, don't change it.
 
 # set up optimisation params:
 optimisation_params = {}
@@ -18,10 +18,16 @@ optimisation_params['LowerBounds'] = np.array([6,  1, 0.1, .01, 1])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
 random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
+optimisation_params['start_point'] = np.array([7.85, 2.71, 0.98, 0.1, 2.7])  # keeping original random values for reproducability
 optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, length_scales=0.1)
+# Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest', OptimisationDirectory,
+#                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, length_scales=0.1)
+
+
+Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest_NM', OptimisationDirectory,
+                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
+
 Optimiser.RunOptimisation()

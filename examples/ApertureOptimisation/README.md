@@ -268,7 +268,7 @@ Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOpt
 - **logs:** Contains log files from the optimisers and results from the optimisation.
   - **TopasLogs:** contains the output from each topas simulation that was run. If your topas sims ever crash, this is a good starting point to figure out why
   - **SingleParameterPlots:** This contains the estimate of how the objective function will change as a function of each parameter, assuming all other parameters are held at the (current) optimal value,
-- **Results:** Contains the topas simulation outputs. By default it will contain the result of every simulation you ran. In some cases this will be a lot of unecessary data, and you can set ResultsToKeep = 'last' **CODE THIS**
+- **Results:** Contains the topas simulation outputs. By default it will contain the result of every simulation you ran. In some cases this will be a lot of unnecessary data, and you can set ResultsToKeep = 'last' **CODE THIS**
 - **TopasScripts:** Contains the scripts used to run each iteration.
 
 To start with, have a look at ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.
@@ -309,5 +309,18 @@ If you require better accuracy, you have a few options:
 - Use these parameters as a starting guess, and run a new optimisation with a reduced search space
 - Note that there **will** be noise in the objective function. This is an inherent aspect of the monte carlo method, especially when we are trying to run fast simulations. At some point, this noise will limit the accuracy the optimiser could even theoretically achieve. See assessing and handling noise in the objective function.
 
+## Comparison with Nelder-Mead optimiser
+
+A comparison of the same problem with the Nelder-Mead optimiser is below. In this case, Nelder Mead performs almost as well. Bayesian optimisation found a minimum objective function of 1.24 on the 30th iteration, while Nelder-Mead found a minimum value of 1.4 on the 19th iteration. For more complex situations, the difference between these two approaches can be substantially greater.
+
+Nelder-Mead will generally converge more quickly than the Bayesian approach during the first ~10-20 iterations, so it can sometimes be useful to run Nelder-Mead first to get a good starting point. 
+
+![](C:\Users\Brendan\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\ConvergencePlot.png)
 
 
+
+| Parameter                | Original Value | Random Starting Value | Recovered Value |
+| ------------------------ | -------------- | --------------------- | --------------- |
+| CollimatorThickness      | 27 mm          | 12.5 mm               | 25.6 mm         |
+| UpStreamApertureRadius   | 1.82 mm        | 2.46 mm               | 2.06 mm         |
+| DownStreamApertureRadius | 2.5 mm         | 1.62 mm               | 2.29 mm         |
