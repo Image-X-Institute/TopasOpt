@@ -35,8 +35,7 @@ def import_from_absolute_path(fullpath, global_name=None):
     which are not known in advance.
     (credit here)[https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders]
     """
-    import os
-    import sys
+
 
     script_dir, filename = os.path.split(fullpath)
     script, ext = os.path.splitext(filename)
@@ -63,7 +62,7 @@ class TopasOptBaseClass:
                  TargetBeamWidth=7, ReadMeText = None,
                  StartingSimplexRelativeVal=None, length_scales=None,
                  KappaDecayIterations=10, TopasLocation='~/topas/',
-                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.01):
+                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.01, KeepAllResults=True):
         """
         :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
         :type optimisation_params: list
@@ -102,6 +101,7 @@ class TopasOptBaseClass:
 
         self.ReadMeText = ReadMeText  # this gets written to base directory
         self.ShellScriptHeader = ShellScriptHeader
+        self.KeepAllResults = KeepAllResults
         # attempt the absolute imports from the optimisation directory:
         self.BaseDirectory = BaseDirectory
         self.OptimisationDirectory = OptimisationDirectory
@@ -124,7 +124,7 @@ class TopasOptBaseClass:
         self.UpperBounds = optimisation_params['UpperBounds']
         self.LowerBounds = optimisation_params['LowerBounds']
         self.MaxItterations = optimisation_params['Nitterations']
-        self.CreateVariableDictionary([self.StartingValues])
+        self._CreateVariableDictionary([self.StartingValues])
         self.SuggestionsProbed = 0  # always starts at 0
         self.Overwrite = Overwrite
         self.AllObjectiveFunctionValues = []
@@ -192,12 +192,12 @@ class TopasOptBaseClass:
             if self.StartingSimplexRelativeVal:  # nb None evaluates as False
                 self.GenerateStartingSimplex()
 
-        self.CheckInputData()
+        self._CheckInputData()
 
-    def CreateVariableDictionary(self, x):
+    def _CreateVariableDictionary(self, x):
         """
         Use the input information to create a dictionary of geometric inputs. This creates an elegant method to
-        create phaser geometries downstream in GenerateTopasModel
+        create phaser geometries downstream in _GenerateTopasModel
 
         x is the current list of parameter guesses.
         """
@@ -216,7 +216,7 @@ class TopasOptBaseClass:
                 self.VariableDict[key] = self.VariableDict[key][0]
         # finally add in the beamlet size:
 
-    def EmptySimulationFolder(self):
+    def _EmptySimulationFolder(self):
         """
         If there is already stuff in the simulation folder, ask for user permission to empty and continue
         """
@@ -247,7 +247,7 @@ class TopasOptBaseClass:
                     logger.error(f'Failed to delete {file_path}. Reason: {e}. Quitting')
                     sys.exit(1)
 
-    def CheckInputData(self):
+    def _CheckInputData(self):
         """
         check that the user has put in reasonable parameters:
 
@@ -294,7 +294,7 @@ class TopasOptBaseClass:
                 f'fixed!The following parameters have starting values of zero:\n{Names}{bcolors.ENDC}')
             sys.exit(1)
 
-        self.CreateVariableDictionary(self.StartingValues)
+        self._CreateVariableDictionary(self.StartingValues)
 
         # make sure topas binary exists
         if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
@@ -303,7 +303,7 @@ class TopasOptBaseClass:
                          f'\nQuitting{bcolors.ENDC}')
             sys.exit(1)
 
-    def GenerateTopasModel(self, x):
+    def _GenerateTopasModel(self, x):
         """
         Generates a topas model with the latest parameters as well as a shell script called RunAllFiles.sh to run it.
         """
@@ -320,7 +320,7 @@ class TopasOptBaseClass:
 
         self.GenerateRunIterationShellScript()
 
-    def GenerateRunIterationShellScript(self):
+    def _GenerateRunIterationShellScript(self):
 
         """
         This will generate a bash script called 'RunAllFiles', which, funnily enough, can be used to run all files generated!
@@ -355,7 +355,7 @@ class TopasOptBaseClass:
         os.chmod(ShellScriptLocation, st.st_mode | stat.S_IEXEC)
         f.close()
 
-    def RunTopasModel(self):
+    def _RunTopasModel(self):
         """
         This invokes a bash subprocess to run the current model
         """
@@ -368,7 +368,7 @@ class TopasOptBaseClass:
             logger.error(f'RunIteration.sh failed with exit code {cmd.returncode}. Quitting')
             sys.exit(1)
 
-    def UpdateOptimisationLogs(self, x, OF):
+    def _UpdateOptimisationLogs(self, x, OF):
         """
         Just a simple function to keep track of the objective function in the logs folder
         """
@@ -400,7 +400,7 @@ class TopasOptBaseClass:
             f.write(Entry)
         print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
 
-    def Plot_Convergence(self):
+    def _Plot_Convergence(self):
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
 
@@ -440,7 +440,7 @@ class TopasOptBaseClass:
         plt.savefig(SaveLoc / 'ConvergencePlot.png')
         plt.close(fig)
 
-    def CopySelf(self):
+    def _CopySelf(self):
         """
         Copies all class attributes to a a (human readable) json file called 'SimulationSettings'.
         This is so you can exactly which settings were used to generate a given simulation
@@ -452,7 +452,7 @@ class TopasOptBaseClass:
         f = open(str(Filename), 'w')
         f.write(Attributes)
 
-    def ReadInLogFile(self, LogFileLoc):
+    def _ReadInLogFile(self, LogFileLoc):
         """
         This function can be used to read in a log file to a dictionary
         """
@@ -485,12 +485,12 @@ class TopasOptBaseClass:
 
         return ResultsDict
 
-    def PlotLogFile(self, LogFileLoc):
+    def _PlotLogFile(self, LogFileLoc):
         """
         This function can be used to plot an existing log file
         need to fix because now itteration and OF are stored in dict
         """
-        ResultsDict = self.ReadInLogFile(LogFileLoc)
+        ResultsDict = self._ReadInLogFile(LogFileLoc)
         fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(15, 5))
 
         Itteration = ResultsDict.pop('Itteration')
@@ -558,7 +558,7 @@ class TopasOptBaseClass:
         plt.tight_layout()
         plt.show()
 
-    def PlotLogFileScatter(self, LogFileLoc, RemoveOutliers=True):
+    def xxx_PlotLogFileScatter(self, LogFileLoc, RemoveOutliers=True):
         """
         Create a scatter plot of bayesian prediction versus actual value of objective function from log file.
         Unlike the in-optimiser function, in this case we can assess and remove outliers before assessing correlation
@@ -566,7 +566,7 @@ class TopasOptBaseClass:
         :param LogFileLoc: Path location of the log flie to plot
         :param RemoveOutliers: If True, will remove outliers based on the Zscore of the OF (Zscore>2 used at time of writing).
         """
-        ResultsDict = self.ReadInLogFile(LogFileLoc)
+        ResultsDict = self._ReadInLogFile(LogFileLoc)
         OF = np.array(ResultsDict.pop('ObjectiveFunction'))
         prediction = -1 * np.array(ResultsDict.pop('target_prediction_mean'))
         OF = np.delete(OF, [0])
@@ -605,6 +605,40 @@ class TopasOptBaseClass:
         axs.set_title('Actual versus predicted correlation', fontsize=FigureSpecs.TitleFontSize)
         plt.tight_layout()
         plt.show()
+    
+    def _ConvertDictToVariables(self, x_new):
+        """
+        I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
+        the bayes code gives me into what the rest of my code expects
+
+        Note the bayes code sends in the dict in alphabetical order; this methods also corrects that such that the initial
+        order of variables is maintained
+        """
+        if not isinstance(x_new, dict):
+            # then no conversion needed
+            self.x = x_new
+            return
+        x = []
+        for i, paramNames in enumerate(x_new):
+            x.append(x_new[self.ParameterNames[i]])
+        self.x = np.array(x, ndmin=2)
+
+    def _empty_results_folder(self):
+        """
+        if KeepAllResults is false, this function is called which removes all existing files
+        in the results folder. It is called just before new scripts are run such that the latest results
+        will be kept
+        """
+        ResultsLocation = str(Path(self.BaseDirectory) / self.SimulationName / 'Results')
+        for filename in os.listdir(ResultsLocation):
+            file_path = os.path.join(ResultsLocation, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                logger.warning(f'Failed to delete {file_path} from results folder. Reason: {e}. continuing...')
 
     def BlackBoxFunction(self, x_new):
         """
@@ -612,14 +646,16 @@ class TopasOptBaseClass:
         parameter guesses, and solves the model.
         """
 
-        self.ConvertDictToVariables(x_new)
-        self.CreateVariableDictionary(self.x)
-        self.GenerateTopasModel(self.x)
-        self.RunTopasModel()
+        self._ConvertDictToVariables(x_new)
+        self._CreateVariableDictionary(self.x)
+        self._GenerateTopasModel(self.x)
+        if not self.KeepAllResults:
+            self._empty_results_folder()
+        self._RunTopasModel()
         self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results', self.Itteration)
         self.AllObjectiveFunctionValues.append(self.OF)
-        self.UpdateOptimisationLogs(self.x, self.OF)
-        self.Plot_Convergence()
+        self._UpdateOptimisationLogs(self.x, self.OF)
+        self._Plot_Convergence()
         self.Itteration = self.Itteration + 1
 
         if 'BayesianOptimiser' in str(self.__class__):
@@ -638,8 +674,8 @@ class TopasOptBaseClass:
         FullSimName = Path(self.BaseDirectory) / self.SimulationName
         if not os.path.isdir(FullSimName):
             os.mkdir(FullSimName)
-        self.EmptySimulationFolder()
-        self.CopySelf()
+        self._EmptySimulationFolder()
+        self._CopySelf()
         os.mkdir(Path(FullSimName) / 'logs')
         os.mkdir(Path(FullSimName) / 'logs' / 'TopasLogs')
         if 'BayesianOptimiser' in str(self.__class__):
@@ -651,22 +687,7 @@ class TopasOptBaseClass:
             f = open(FullSimName / 'readme.txt','w')
             f.write(self.ReadMeText)
 
-    def ConvertDictToVariables(self, x_new):
-        """
-        I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
-        the bayes code gives me into what the rest of my code expects
 
-        Note the bayes code sends in the dict in alphabetical order; this methods also corrects that such that the initial
-        order of variables is maintained
-        """
-        if not isinstance(x_new, dict):
-            # then no conversion needed
-            self.x = x_new
-            return
-        x = []
-        for i, paramNames in enumerate(x_new):
-            x.append(x_new[self.ParameterNames[i]])
-        self.x = np.array(x, ndmin=2)
 
 
 class NealderMeadOptimiser(TopasOptBaseClass):
@@ -714,8 +735,6 @@ class NealderMeadOptimiser(TopasOptBaseClass):
         self.NelderMeadRes = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
-        # nb: we take the negative of BlackBoxFunction, because Bayesian optimisation wants to maximise and this
-        # wants to minimise
 
 
 class BayesianOptimiser(TopasOptBaseClass):
@@ -798,12 +817,12 @@ class BayesianOptimiser(TopasOptBaseClass):
                     suggestion_dict[key] = optimisation_params['Suggestions'][n, i]
                 self.Suggestions.append(suggestion_dict)
 
-    def Plot_ConvergenceRetrospective(self, optimizer):
+    def _Plot_ConvergenceRetrospective(self, optimizer):
         """
         This will read in a log file and produce a version of the convergence plot using the input gaussian process
         model to predict the objective function at each itteration.
         This allows a comparison between the prospective and retrospective performance of the GPM. the plot produced
-        in real time (SphinxOptBaseClass.Plot_Convergence) will show the performance of the model in 'real time'.
+        in real time (SphinxOptBaseClass._Plot_Convergence) will show the performance of the model in 'real time'.
          this will show the performance
         of the final model.
 
@@ -812,7 +831,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         LogFile = Path(self.BaseDirectory) / self.SimulationName
         LogFile = LogFile / 'logs'
         LogFile = str(LogFile / 'OptimisationLogs.txt')
-        ResultsDict = self.ReadInLogFile(LogFile)
+        ResultsDict = self._ReadInLogFile(LogFile)
 
         # we need to format this into a an array based on ParameterNames
         ResultsArray = np.zeros([len(ResultsDict['Itteration']), len(self.ParameterNames)])
@@ -985,7 +1004,7 @@ class BayesianOptimiser(TopasOptBaseClass):
                     self.RepeatedPointsProbed = 1
 
             self.PlotPredictedVersusActualCorrelation()
-            self.Plot_ConvergenceRetrospective(self.optimizer)
+            self._Plot_ConvergenceRetrospective(self.optimizer)
             self.PlotSingleVariableObjective(self.optimizer)
 
         # update the logs with the best value:
