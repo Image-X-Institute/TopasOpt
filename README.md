@@ -1,4 +1,4 @@
-# TopasBayesOpt
+# TopasOpt
 
 **Author:** *Brendan Whelan*
 
