@@ -1,9 +1,9 @@
 import sys
 import os
-sys.path.append('../../TopasBayesOpt')
+sys.path.append('../../TopasOpt')
 import sys
 from pathlib import Path
-sys.path.append(str(Path('../../TopasBayesOpt').resolve()))
+sys.path.append(str(Path('../../TopasOpt').resolve()))
 from WaterTankAnalyser import compare_multiple_results
 
 GroundTruthDir = '../SimpleCollimatorExample_TopasFiles/Results/'
@@ -17,7 +17,7 @@ OptimisationData = WaterTankData(OptimisationDir, OptimisationFile)
 
 
 FilesToCompare = ['C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin',
-                  'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
+                  'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
 
 
 compare_multiple_results(FilesToCompare, abs_dose=False)

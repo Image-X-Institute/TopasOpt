@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
 
 
-class CreateTopasScript:
+class GenerateTopasScriptGenerator:
     """
     This code will take a list topas scripts, and create a python function that returns a list for each script.
     Each list element contains one line of the topas script, which can be used to automatically regenerate that script.

@@ -187,6 +187,12 @@ class TopasOptBaseClass:
                     f'in the NealderMeadO optimiser - it only works with the Bayesian optimiser. Continuing'
                     f' and ignoring this parameter')
 
+            if 'Suggestions' in optimisation_params.keys():
+                logger.warning(
+                    f'You have attempted to enter a suggestion, but this does nothing'
+                    f'in the NealderMeadO optimiser - it only works with the Bayesian optimiser. Continuing'
+                    f' and ignoring this parameter')
+
             self.StartingSimplexSupplied = False
             self.StartingSimplexRelativeVal = StartingSimplexRelativeVal
             if self.StartingSimplexRelativeVal:  # nb None evaluates as False
@@ -318,7 +324,7 @@ class TopasOptBaseClass:
                 f.write(line)
                 f.write('\n')
 
-        self.GenerateRunIterationShellScript()
+        self._GenerateRunIterationShellScript()
 
     def _GenerateRunIterationShellScript(self):
 
@@ -686,8 +692,6 @@ class TopasOptBaseClass:
         if self.ReadMeText:
             f = open(FullSimName / 'readme.txt','w')
             f.write(self.ReadMeText)
-
-
 
 
 class NealderMeadOptimiser(TopasOptBaseClass):

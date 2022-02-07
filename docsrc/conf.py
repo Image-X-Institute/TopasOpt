@@ -30,7 +30,7 @@ for read_me in example_readmes:
 
 # -- Project information -----------------------------------------------------
 
-project = 'TopasBayesOpt'
+project = 'TopasOpt'
 copyright = '2021, Brendan Whelan(s)'
 author = 'Brendan Whelan(s)'
 

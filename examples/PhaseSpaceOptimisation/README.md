@@ -32,8 +32,9 @@ import sys
 import os
 import numpy as np
 from pathlib import Path
-sys.path.append('../../../TopasBayesOpt')
-from TopasBayesOpt import TopasBayesOpt as to
+
+sys.path.append('../../../TopasOpt')
+from TopasOpt import TopasOpt as to
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
 SimulationName = 'PhaseSpaceOptimisationTest'
@@ -44,9 +45,10 @@ optimisation_params = {}
 optimisation_params['ParameterNames'] = ['BeamEnergy', 'BeamPositionCutoff', 'BeamPositionSpread', 'BeamAngularSpread',
                                          'BeamAngularCutoff']
 optimisation_params['UpperBounds'] = np.array([12, 3, 0.5, 0.15, 10])
-optimisation_params['LowerBounds'] = np.array([6,  1, 0.1, .01, 1])
+optimisation_params['LowerBounds'] = np.array([6, 1, 0.1, .01, 1])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
-random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
+random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'],
+                                                     optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
 optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
@@ -147,12 +149,14 @@ Maybe you want to take a look at how a given iteration has performed versus the 
 ```python
 import sys
 from pathlib import Path
-sys.path.append(str(Path('../../TopasBayesOpt').resolve()))
+
+sys.path.append(str(Path('../../TopasOpt').resolve()))
 from WaterTankAnalyser import compare_multiple_results
 
 # add all the files you want to compare to this list
-FilesToCompare = ['C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin',
-                  'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
+FilesToCompare = [
+    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin',
+    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
 
 # abs_dose = True if you don't want to normalise the plots
 compare_multiple_results(FilesToCompare, abs_dose=False)

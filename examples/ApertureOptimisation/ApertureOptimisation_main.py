@@ -3,9 +3,9 @@ import sys
 import os
 import numpy as np
 from pathlib import Path
-# sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/')
-sys.path.append('../../../TopasBayesOpt')
-from TopasBayesOpt import TopasBayesOpt as to
+# sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasOpt/')
+sys.path.append('../../../TopasOpt')
+from TopasOpt import TopasOpt as to
 
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
@@ -33,5 +33,5 @@ ReadMeText = 'This is a public service announcement, this is only a test'
 #                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.4)
 
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, 'BayesianOptimisationTest', OptimisationDirectory,
-                                TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
+                                TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False)
 Optimiser.RunOptimisation()

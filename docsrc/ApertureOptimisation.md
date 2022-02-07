@@ -10,14 +10,16 @@ Create a python file called 'temp_GenerateTopasScript.py' (or whatever you want,
 
 ```python
 import sys
-sys.path.append('../../TopasBayesOpt')
-from TopasBayesOpt.CreateRunTopasScript import CreateTopasScript
+
+sys.path.append('../../TopasOpt')
+from TopasOpt.GenerateTopasScriptGenerator import CreateTopasScript
 from pathlib import Path
 
 this_directory = Path(__file__).parent
 
 # nb: the order of input files is important to make sure that a phase space files are correctly classified
-CreateTopasScript(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',   '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
+CreateTopasScript(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',
+                                   '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
 
 ```
 
@@ -55,9 +57,9 @@ import sys
 import os
 import numpy as np
 from pathlib import Path
-sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/TopasBayesOpt')
-import TopasBayesOpt as to
 
+sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasOpt/TopasOpt')
+import TopasOpt as to
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
 SimulationName = 'BayesianOptimisationTest'
@@ -65,11 +67,12 @@ OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:
 optimisation_params = {}
-optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
+optimisation_params['ParameterNames'] = ['UpStreamApertureRadius', 'DownStreamApertureRadius', 'CollimatorThickness']
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
-random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
+random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'],
+                                                     optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
 optimisation_params['Nitterations'] = 20
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
@@ -158,7 +161,7 @@ A more sensible objective function must do a few more things:
 ```python
 import sys
 import os
-sys.path.append('../../TopasBayesOpt')
+sys.path.append('../../TopasOpt')
 from WaterTankAnalyser import WaterTankData
 import numpy as np
 

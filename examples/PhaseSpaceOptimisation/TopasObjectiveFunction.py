@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append('../../TopasBayesOpt')
+sys.path.append('../../TopasOpt')
 from WaterTankAnalyser import WaterTankData
 import numpy as np
 

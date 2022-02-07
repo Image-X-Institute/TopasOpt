@@ -5,12 +5,12 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
-    name='TopasBayesOpt',
+    name='TopasOpt',
     url='https://github.sydney.edu.au/Image-X/TopasBayesOpt',
-    packages=find_packages(include=['TopasBayesOpt', 'TopasBayesOpt.*']),
+    packages=find_packages(include=['TopasOpt', 'TopasOpt.*']),
     author='Brendan Whelan',
     author_email="bwheelz360@gmail.com",
-    description='Perform Bayesian optimisation on topas simulations',
+    description='Inverse optimisation for topas Monte Carlo',
     long_description=long_description,
     long_description_content_type='text/markdown',
     download_url='https://github.com/fmfn/BayesianOptimization/tarball/0.6',

@@ -46,14 +46,16 @@ Create a python file called 'temp_GenerateTopasScript.py' (or whatever you want,
 
 ```python
 import sys
-sys.path.append('../../TopasBayesOpt')
-from TopasBayesOpt.CreateRunTopasScript import CreateTopasScript
+
+sys.path.append('../../TopasOpt')
+from TopasOpt.GenerateTopasScriptGenerator import CreateTopasScript
 from pathlib import Path
 
 this_directory = Path(__file__).parent
 
 # nb: the order of input files is important to make sure that a phase space files are correctly classified
-CreateTopasScript(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',   '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
+CreateTopasScript(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',
+                                   '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
 # update these paths so that it points to wherever you have stored the base files
 
 ```
@@ -81,23 +83,24 @@ import sys
 import os
 import numpy as np
 from pathlib import Path
-sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasBayesOpt/TopasBayesOpt')
-import TopasBayesOpt as to
 
+sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasOpt/TopasOpt')
+import TopasOpt as to
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
 # Update this! ^^^ This needs to be an existing location on your computer where you will store your sims
-SimulationName = 'BayesianOptimisationTest' 
+SimulationName = 'BayesianOptimisationTest'
 OptimisationDirectory = Path(__file__).parent  # points to whatever directory this script is in
 
 # set up optimisation params:
 optimisation_params = {}
-optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
+optimisation_params['ParameterNames'] = ['UpStreamApertureRadius', 'DownStreamApertureRadius', 'CollimatorThickness']
 # parameter names are just labels and can be called whatever you want, as long as they are used consistently
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds: (it doesn't have to be random, this is just for demonstration purposes)
-random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
+random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'],
+                                                     optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
 optimisation_params['Nitterations'] = 40
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't do this here here.
@@ -197,9 +200,11 @@ The actual objective function we will use in this example fulfills these criteri
 ```python
 import sys
 import os
-sys.path.append('../../TopasBayesOpt')
+
+sys.path.append('../../TopasOpt')
 from WaterTankAnalyser import WaterTankData
 import numpy as np
+
 
 def CalculateObjectiveFunction(TopasResults):
     OriginalDataLoc = os.path.realpath('../SimpleCollimatorExample_TopasFiles/Results')
@@ -224,15 +229,15 @@ def CalculateObjectiveFunction(TopasResults):
 
     OriginalDepthDose = OriginalResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
     CurrentDepthDose = TopasResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
-    OriginalDepthDoseNorm = OriginalDepthDose * 100 /np.max(OriginalDepthDose)
+    OriginalDepthDoseNorm = OriginalDepthDose * 100 / np.max(OriginalDepthDose)
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
     ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
     return ObjectiveFunction
 
-def TopasObjectiveFunction(ResultsLocation, iteration):
 
+def TopasObjectiveFunction(ResultsLocation, iteration):
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     path, file = os.path.split(ResultsLocation)
     TopasResults = WaterTankData(path, file)  # WaterTank data is built on topas2numpy
