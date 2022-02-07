@@ -6,7 +6,7 @@ simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu
 
 ## Install and Requirements
 
-To install: ```pip install TopasBayesOpt```
+To install: ```pip install TopasOpt```
 
 - This code will only run on linux (as will topas)
 - You require a working installation of topas to run the code.
