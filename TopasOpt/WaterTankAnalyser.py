@@ -11,7 +11,7 @@ from scipy.stats import linregress
 from pathlib import Path
 plt.interactive(False)
 np.seterr(divide='raise')
-from utilities import FigureSpecs, bcolors
+from .utilities import FigureSpecs, bcolors
 
 
 class WaterTankData:
