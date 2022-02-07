@@ -25,8 +25,6 @@ class GenerateTopasScriptGenerator:
 
         if IncludeFileStorageDirectory is None:
             self.IncludeFileStorageDirectory = Path(OutputDirectory) / 'IncludeFiles'
-            if not os.path.isdir(self.IncludeFileStorageDirectory):
-                os.mkdir(self.IncludeFileStorageDirectory)
         else:
             self.IncludeFileStorageDirectory = IncludeFileStorageDirectory
 
@@ -71,6 +69,8 @@ class GenerateTopasScriptGenerator:
         """
         # first, check that this include file exists... the user may have used a relative or an absolute path...
         # see if relative paths points to a OriginalFileLocation:
+        if not os.path.isdir(self.IncludeFileStorageDirectory):
+            os.mkdir(self.IncludeFileStorageDirectory)
         FileLocation, dum = os.path.split(OriginalFileLocation)
         IncludeFileNames = re.findall('(?<==).*$', line)[0] # extract the file name with regular expression
         IncludeFileNames = IncludeFileNames.split('#')[0]  # ignore anything after a comment symbol
