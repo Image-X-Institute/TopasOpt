@@ -4,13 +4,13 @@
 This code provides a framework for performing inverse optimisation on monte carlo radiation transpoty 
 simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC).
 
-## Setup/Build/Install
+## Install and Requirements
+
+To install: ```pip install TopasBayesOpt```
 
 - This code will only run on linux (as will topas)
-- You require a working installation of topas.
-- python3.8 or greater
-
-pip install -i https://test.pypi.org/simple/ TopasBayesOpt==0.0.1
+- You require a working installation of topas to run the code.
+- python3.8 or greater is required.
 
 ## Usage
 
