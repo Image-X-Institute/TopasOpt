@@ -7,3 +7,4 @@ __pycache__
 .pypirc
 *temp*
 build
+*.egg-info
