@@ -196,7 +196,7 @@ class TopasOptBaseClass:
             self.StartingSimplexSupplied = False
             self.StartingSimplexRelativeVal = StartingSimplexRelativeVal
             if self.StartingSimplexRelativeVal:  # nb None evaluates as False
-                self.GenerateStartingSimplex()
+                self._GenerateStartingSimplex()
 
         self._CheckInputData()
 
@@ -696,7 +696,7 @@ class TopasOptBaseClass:
 
 class NealderMeadOptimiser(TopasOptBaseClass):
 
-    def GenerateStartingSimplex(self):
+    def _GenerateStartingSimplex(self):
         """
         This is copied from the scipy source code (optimize around line 690), with a variable version of nonzdelt
         """
@@ -1032,53 +1032,3 @@ class BayesianOptimiser(TopasOptBaseClass):
         self.__RestartMode = True
         self.__PreviousBayesOptLogLoc = self.BayesOptLogLoc
         self.RunOptimisation()
-
-    def xxx_debug_LoadPreviousLogFile(self, LogFileLocation):
-        """
-        This will load a previously generated .json log file, read the results into a model,
-        and return the model. You can then play around with the model and for examples see
-        it's predictions at various parameter combos.
-        This is useful for debugging only. You need to make sure the optimiser set up matches that
-        in RunOptimisation
-
-        Example use::
-
-            import sys,os
-            import numpy as np
-            sys.path.append('.')
-            from TopasSphinxOptimiser import NealderMeadOptimiser, BayesianOptimiser
-
-            # 5 mm beamlets:
-            BaseDirectory = "/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/"
-            SimulationName = 'temp'
-            # set up optimisation params:
-            optimisation_params = {}
-            optimisation_params['ParameterNames'] = ['coll_UpStreamHoleSize', 'BeamletSizeAtIso', 'coll_CollimatorThickness',
-                                                    'CollimatorToIso','VirtSourceToIso', 'coll_TargetOffset','targ_Thicknesses_1','targ_Thicknesses_2',
-                                                    'coll_filt_Thickness']
-            optimisation_params['start_point'] = np.array([1.7,   2, 257, 500, 1200, 25,  1, 1, 2])
-            optimisation_params['UpperBounds'] = np.array([2.5,   4, 300, 600, 1400, 50,  5, 2, 4])
-            optimisation_params['LowerBounds'] = np.array([1.5,   1, 100, 400, 1000, 0,    0, 1, 2])
-            # optimisation_params['Suggestions'] = np.array([1.99, 1.12, 246.52, 400, 1000, 0,  3.07, 1.72])
-            optimisation_params['Nitterations'] = 200
-            Optimiser = BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, debug=False, Nthreads=0, TargetBeamWidth=5, length_scales=0.1)
-
-            LogFileLoc = '/home/brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/Paper_7mm_final/logs/bayes_opt_logs.json'
-            bayes_opt_object, utility = Optimiser.debug_LoadPreviousLogFile(LogFileLoc)
-            bayes_opt_object._gp.fit(bayes_opt_object._space.params, bayes_opt_object._space.target)
-
-            # next_point_to_probe = bayes_opt_object.suggest(utility)
-            # NextPointValues = np.array(list(next_point_to_probe.values()))
-            # mean, std = bayes_opt_object._gp.predict(NextPointValues.reshape(1, -1), return_std=True)
-        """
-
-        new_optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        new_optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.length_scales, nu=self.Matern_Nu),
-                                n_restarts_optimizer=20, alpha=self.GP_alpha)  # tuning of the gaussian parameters...
-        utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa,
-                                  xi=0.0)  # kappa determines explore/Exploitation ratio, see here:
-        # load logs:
-        load_logs(new_optimizer, logs=[LogFileLocation])
-        new_optimizer._gp.fit(new_optimizer._space.params, new_optimizer._space.target)
-
-        return new_optimizer, utility

@@ -195,7 +195,9 @@ A more sensible objective function must do a few more things:
 - Extract some metrics from them
 - Calculate an objective value based on those results. 
 
-The actual objective function we will use in this example fulfills these criteria, and is copied below. Copy this code into TopasObjectiveFunction.py.
+The actual objective function we will use in this example fulfills these criteria, and is copied below. 
+Copy this code into TopasObjectiveFunction.py. 
+Update the location of ```OriginalDataLoc``` to wherever you downloaded the input topas scripts.
 
 ```python
 import sys

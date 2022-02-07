@@ -9,7 +9,7 @@ from TopasOpt import TopasOpt as to
 
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-SimulationName = 'NM_OptimisationTest'
+SimulationName = 'NM_OptimisationTest_temp'
 OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:

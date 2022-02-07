@@ -1,21 +1,20 @@
 # TopasOpt
 
-**Author:** *Brendan Whelan*
 
-This code links together two open source projects: [Bayesian optimisation in python](https://github.com/fmfn/BayesianOptimization), and [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC) to perform Bayesian optimisation on topas projects.
+This code provides a framework for performing inverse optimisation on monte carlo radiation transpoty 
+simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC).
 
 ## Setup/Build/Install
 
 - This code will only run on linux (as will topas)
 - You require a working installation of topas.
-
-
+- python3.8 or greater
 
 pip install -i https://test.pypi.org/simple/ TopasBayesOpt==0.0.1
 
 ## Usage
 
-TBC
+see the examples folder for worked examples
 
 ## Directory Structure
 
@@ -25,22 +24,7 @@ TBC
 - **tests:** Unit and integration tests
 - **TopasBayesOpt:** source code
 
-## Packaging information
 
-nb: this is mostly for me so I can remember how I did this :-P
-
-Packaging for this project has been setup based on [this tutorial](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
-To update the distribution version, use the following commands
-
-```bash
-# first update version number in setup.cfg
-# delete any existing distribution files
-rm -r dist
-# build distribution packages
-python -m build
-# upload built package
-python3 -m twine upload --repository testpypi dist/*
-```
 
 
 
