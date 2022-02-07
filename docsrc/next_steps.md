@@ -49,7 +49,7 @@ Optimiser = to.PowelOptimiser(optimisation_params, BaseDirectory, SimulationName
 It is also possible to add new optimisation algorithms, by inheriting from the optimisation base class, e.g.
 
 ```python
-from TopasOpt.TopasOpt import TopasOptBaseClass
+from TopasOpt.Optimisers import TopasOptBaseClass
 
 
 class NewOptimiser(TopasOptBaseClass):

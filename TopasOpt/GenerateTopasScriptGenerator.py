@@ -262,4 +262,3 @@ class GenerateTopasScriptGenerator:
         f2 = open(outputFile, "w+")
         for line in TopasScriptGenerator:
             f2.writelines(line)
-

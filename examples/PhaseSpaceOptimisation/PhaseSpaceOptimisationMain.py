@@ -3,7 +3,7 @@ import os
 import numpy as np
 from pathlib import Path
 sys.path.append('../../../TopasOpt')
-from TopasOpt import TopasOpt as to
+from TopasOpt import Optimisers as to
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
 SimulationName = 'PhaseSpaceOptimisationTest_NM'
