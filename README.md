@@ -12,9 +12,12 @@ To install: ```pip install TopasOpt```
 - You require a working installation of topas to run the code.
 - python3.8 or greater is required.
 
-## Usage
+## Usage and Documentation
 
-see the examples folder for worked examples
+See the examples folder for worked examples.
+Detailed documents are provided [here](put sphinx link in!)
+
+Detailed docu
 
 ## Directory Structure
 
