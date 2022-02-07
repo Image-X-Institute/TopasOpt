@@ -172,7 +172,7 @@ class GenerateTopasScriptGenerator:
                 UseStaticPhaseSpace = False
 
         line1, line2 = line.split("=", 1)  # delete everything after the first =
-        OriginalFileName = line2
+        OriginalFileName = line2.split('/')[0]
         OriginalFileName = OriginalFileName.replace('"', '')
         OriginalFileName = OriginalFileName.replace("'", '')
         OriginalFileName = OriginalFileName.replace(" ", '')

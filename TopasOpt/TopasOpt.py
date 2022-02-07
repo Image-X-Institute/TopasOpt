@@ -371,7 +371,10 @@ class TopasOptBaseClass:
         if cmd.returncode == 0:
             print(f'{bcolors.OKBLUE}Analysis complete{bcolors.ENDC}')
         else:
-            logger.error(f'RunIteration.sh failed with exit code {cmd.returncode}. Quitting')
+            logger.error(f'RunIteration.sh failed with exit code {cmd.returncode}.'
+                         f'\nSuggestion: look at {Path(self.OptimisationDirectory) / self.SimulationName / "Logs" / "TopasLogs"} '
+                         f'\nto figure out what went wrong...'
+                         f' Quitting')
             sys.exit(1)
 
     def _UpdateOptimisationLogs(self, x, OF):

@@ -8,8 +8,8 @@ sys.path.append('../../../TopasOpt')
 from TopasOpt import TopasOpt as to
 
 
-BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-SimulationName = 'NM_OptimisationTest_temp'
+BaseDirectory = '/home/brendan/Documents/temp'
+SimulationName = 'NMtest'
 OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:
@@ -32,6 +32,6 @@ ReadMeText = 'This is a public service announcement, this is only a test'
 # Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'NM_OptimisationTest', OptimisationDirectory,
 #                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.4)
 
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, 'BayesianOptimisationTest', OptimisationDirectory,
+Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False)
 Optimiser.RunOptimisation()

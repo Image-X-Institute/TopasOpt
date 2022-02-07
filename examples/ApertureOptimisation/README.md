@@ -30,9 +30,7 @@ When you have finished working through this example you should have a working di
 
 ## Copy the base topas files
 
-The code will need to know where your base model is stored. The base model for this application is available here: https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles
-
-https://downgit.github.io/#/home
+The code will need to know where your base model is stored. The base model for this application is available [here](https://downgit.github.io/#/home?url=https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles)
 
 Download these files into a folder inside your working directory (ApertureOptExample in this example).
 
