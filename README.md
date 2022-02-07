@@ -17,8 +17,6 @@ To install: ```pip install TopasOpt```
 See the examples folder for worked examples.
 Detailed documents are provided [here](put sphinx link in!)
 
-Detailed docu
-
 ## Directory Structure
 
 - **docs:** html documentation created from docsrc using sphinx
