@@ -16,9 +16,9 @@ sudo apt install python3.8
 # you can google how to change this if you want to!
 
 # make virtual environment:
-python3.8 -m venv TopasOpt
+python3.8 -m venv TopasOptVenv
 # activate it:
-source TopasOpt/bin/activate
+source TopasOptVenv/bin/activate
 
 # Make sure the version of your pip and setuptools is sufficient for manylinux2014 wheels.
 # thank to this answer:
