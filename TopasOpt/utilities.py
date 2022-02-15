@@ -547,9 +547,11 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
     axs[0].set_xlabel('X [mm]', fontsize=FigureSpecs.LabelFontSize)
     axs[0].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize)
     axs[0].set_title('a) Dose profiles', fontsize = FigureSpecs.TitleFontSize)
+    axs[0].grid()
     axs[1].set_xlabel('Z [mm]', fontsize=FigureSpecs.LabelFontSize)
     axs[1].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize)
     axs[1].set_title('b) Depth Dose', fontsize=FigureSpecs.TitleFontSize)
+    axs[1].grid()
 
     if not custom_legend_names:
         axs[1].legend(legend_names, fontsize=FigureSpecs.LabelFontSize)
