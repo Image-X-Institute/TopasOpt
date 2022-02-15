@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append('../../TopasOpt')
-from WaterTankAnalyser import WaterTankData
+from utilities import WaterTankData
 import numpy as np
 
 def CalculateObjectiveFunction(TopasResults):
