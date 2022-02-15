@@ -8,9 +8,10 @@ sys.path.append('../../../TopasOpt')
 from TopasOpt import Optimisers as to
 
 
-BaseDirectory = '/home/brendan/Documents/temp'
+BaseDirectory =  '/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/'
 SimulationName = 'NMtest'
 OptimisationDirectory = Path(__file__).parent
+
 
 # set up optimisation params:
 optimisation_params = {}
