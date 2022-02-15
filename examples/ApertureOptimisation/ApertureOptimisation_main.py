@@ -4,7 +4,7 @@ import numpy as np
 from pathlib import Path
 from TopasOpt import Optimisers as to
 
-BaseDirectory =  '/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/'
+BaseDirectory =  '/home/brendan/Documents/temp'
 SimulationName = 'NMtest'
 OptimisationDirectory = Path(__file__).parent
 
@@ -19,7 +19,7 @@ optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # optimisation_params['start_point'] = random_start_point
 optimisation_params['start_point'] = np.array([2.46, 1.62, 12.47])
 # Remember true values are  [1.82, 2.5, 27]
-optimisation_params['Nitterations'] = 40
+optimisation_params['Nitterations'] = 5
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 

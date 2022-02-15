@@ -156,7 +156,7 @@ class TopasOptBaseClass:
                     f' and ignoring this parameter')
             self.BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs.json'
             self._BayesianOptimiser__RestartMode = False  # don't change!
-            self.__create_p_bounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
+            self._create_p_bounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
             self._create_suggested_points_to_probe(optimisation_params)
             self._derive_length_scales(length_scales)
 
@@ -380,6 +380,10 @@ class TopasOptBaseClass:
     def _UpdateOptimisationLogs(self, x, OF):
         """
         Just a simple function to keep track of the objective function in the logs folder
+
+        :param x: the current parameter values
+        :type x: array
+        :param OF: the current objective function value
         """
 
         LogFile = Path(self.BaseDirectory) / self.SimulationName
@@ -404,6 +408,37 @@ class TopasOptBaseClass:
                 # for the first entry
                 Entry = Entry + f', target_prediction_mean: NaN'
                 Entry = Entry + f', target_prediction_std: NaN'
+
+            Entry = Entry + f', ObjectiveFunction: {OF: 1.2f}\n'
+            f.write(Entry)
+        print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
+
+    def _write_final_log_entry(self, x, OF, Itteration=None):
+        """
+        This method can optionally be called when the optimiser has finished running.
+        It worked similarly to _UpdateOptimisationLogs but it should be passed the best
+        parameters and OF value. Optionally, the user can also pass the itteration at which
+        these occured (which I recomend, it makes life easier)
+
+        :param x: the best parameter values
+        :type x: array
+        :param OF: the best objective function value
+        :param Itteration: the Itteration these results occured at
+        """
+
+        LogFile = Path(self.BaseDirectory) / self.SimulationName
+        LogFile = LogFile / 'logs'
+        LogFile = str(LogFile / 'OptimisationLogs.txt')
+
+        with open(LogFile, 'a') as f:
+            Entry = f'\nBest parameter set: '
+            if Itteration is not None:
+                Entry = Entry + f'Itteration: {Itteration}.'
+            for i, Parameter in enumerate(self.ParameterNames):
+                try:
+                    Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
+                except IndexError:
+                    Entry = Entry + f', {Parameter}: {x[i]: 1.2f}'
 
             Entry = Entry + f', ObjectiveFunction: {OF: 1.2f}\n'
             f.write(Entry)
@@ -695,11 +730,17 @@ class NealderMeadOptimiser(TopasOptBaseClass):
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
 
+        # update final log entry
+        best_iteration = np.argmin(self.NelderMeadRes.final_simplex[1])
+        best_OF = self.NelderMeadRes.final_simplex[1][best_iteration]
+        best_params = self.NelderMeadRes.final_simplex[0][best_iteration]
+        self._write_final_log_entry(best_params, best_OF, best_iteration)
+
 
 class BayesianOptimiser(TopasOptBaseClass):
     """
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
-    This inherits most of its functionality from SphinxOptBaseClass
+    This inherits most of its functionality from SphinxOptBaseClass.
     """
 
     def _derive_length_scales(self, length_scales):
@@ -738,7 +779,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             message = message + paramter_name + f': {self.length_scales[i]}\n'
         logger.info(f'{bcolors.OKGREEN}{message}{bcolors.ENDC}')
 
-    def __create_p_bounds(self, optimisation_params):
+    def _create_p_bounds(self, optimisation_params):
         """
         Just reformat the optimisation variables into a format that the Bayesian optimiser wants
         """
@@ -968,14 +1009,16 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         # update the logs with the best value:
         best = self.optimizer.max
-        best['target'] = -1 * best['target']  # min/max paradigm...
-        LogFile = Path(self.BaseDirectory) / self.SimulationName
-        LogFile = LogFile / 'logs'
-        LogFile = str(LogFile / 'OptimisationLogs.txt')
-
-        with open(LogFile, 'a') as f:
-            Entry = f'\nBest parameter set: {best}'
-            f.write(Entry)
+        best_itteration = np.argmin(abs(self.optimizer.space.target- best['target']))
+        self._write_final_log_entry(list(best['params'].values()), best['target'],Itteration=best_itteration)
+        # best['target'] = -1 * best['target']  # min/max paradigm...
+        # LogFile = Path(self.BaseDirectory) / self.SimulationName
+        # LogFile = LogFile / 'logs'
+        # LogFile = str(LogFile / 'OptimisationLogs.txt')
+        #
+        # with open(LogFile, 'a') as f:
+        #     Entry = f'\nBest parameter set: {best}'
+        #     f.write(Entry)
 
     def RestartOptimisation(self):
         """
