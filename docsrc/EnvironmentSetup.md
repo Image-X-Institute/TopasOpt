@@ -1,6 +1,6 @@
 # Environment set up
 
-These instructions demonstrate how to set up a new environment on ubuntu from scratch. It is assumed you already have python3.8 or greater installed.
+These instructions demonstrate how to set up a new environment on ubuntu from scratch.
 These were tested on Ubunutu 18.04 but something very similar should work on most linux versions.
 
 ```bash
