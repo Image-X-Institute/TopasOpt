@@ -1,6 +1,6 @@
 import sys
 import os
-from utilities import WaterTankData
+from TopasOpt.utilities import WaterTankData
 import numpy as np
 
 def CalculateObjectiveFunction(TopasResults):

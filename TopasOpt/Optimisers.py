@@ -750,7 +750,7 @@ class BayesianOptimiser(TopasOptBaseClass):
     This inherits most of its functionality from SphinxOptBaseClass
     """
 
-    def (self, length_scales):
+    def DeriveLengthScales(self, length_scales):
         """
         Figure out what to put in to the gaussian process model kernel for length scales.
         We use the Matern Kernel which is detailed `here <https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern>`_
