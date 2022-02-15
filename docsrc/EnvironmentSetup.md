@@ -1,6 +1,6 @@
 # Environment set up
 
-These instructions demonstrate how to set up a new environment on ubuntu from scratch. It is assumed you already have python3.8 or greater installed.
+These instructions demonstrate how to set up a new environment on ubuntu from scratch.
 These were tested on Ubunutu 18.04 but something very similar should work on most linux versions.
 
 ```bash
@@ -16,9 +16,9 @@ sudo apt install python3.8
 # you can google how to change this if you want to!
 
 # make virtual environment:
-python3.8 -m venv TopasOpt
+python3.8 -m venv TopasOptVenv
 # activate it:
-source TopasOpt/bin/activate
+source TopasOptVenv/bin/activate
 
 # Make sure the version of your pip and setuptools is sufficient for manylinux2014 wheels.
 # thank to this answer:
