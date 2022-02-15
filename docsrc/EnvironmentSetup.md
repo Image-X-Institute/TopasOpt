@@ -1,5 +1,8 @@
 # Environment set up
 
+
+Management of virtual environments in python is a detailed and complex topic which is well beyond the scope of these documents. However, we do give a simple example of setting up a virtual environment through the linux command window. There are many ways to do this, this is only one!
+
 These instructions demonstrate how to set up a new environment on ubuntu from scratch.
 These were tested on Ubunutu 18.04 but something very similar should work on most linux versions.
 

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
 
 
-class GenerateTopasScriptGenerator:
+class generate_topas_script_generator:
     """
     This code will take a list topas scripts, and create a python function that returns a list for each script.
     Each list element contains one line of the topas script, which can be used to automatically regenerate that script.
@@ -30,10 +30,10 @@ class GenerateTopasScriptGenerator:
 
         self.ErrorChecking = ErrorChecking
         if self.ErrorChecking:
-            self.CheckInputs()
-        self.GenerateTopasScriptGenerator()
+            self._check_inputs()
+        self._generate_topas_script_generator()
 
-    def CheckInputs(self):
+    def _check_inputs(self):
 
         if not type(self.TopasScriptLocation) is list:
             self.TopasScriptLocation = [self.TopasScriptLocation]
@@ -58,7 +58,7 @@ class GenerateTopasScriptGenerator:
             logger.error(f'IncludeFileStorageDirectory does not exist:\n{self.IncludeFileStorageDirectory}\nQuitting.')
             sys.exit(1)
 
-    def HandleIncludeFileLine(self, OriginalFileLocation, line):
+    def _handle_include_files(self, OriginalFileLocation, line):
         """
         check the OriginalFileLocation at self.TopasScriptLocation, and see if it has and include statements.
         If it does...what do we do?
@@ -109,7 +109,7 @@ class GenerateTopasScriptGenerator:
                             if file == '' or file =='\n':
                                 continue
                             temp_include_file_line = 'includeFile = ' + file
-                            include_OriginalFileLocation_line = self.HandleIncludeFileLine(IncludeFileLocation, temp_include_file_line)
+                            include_OriginalFileLocation_line = self._handle_include_files(IncludeFileLocation, temp_include_file_line)
                             new_include_file_line = new_include_file_line + os.path.split(self.IncludeFileStorageDirectory)[1] + '/' + file + ' '
                         if AllIncludeFiles[-1] == '\n':
                             new_include_file_line = new_include_file_line + '\n'
@@ -127,7 +127,7 @@ class GenerateTopasScriptGenerator:
 
         return line
 
-    def HandleOutputFileLine(self, line):
+    def _handle_output_file_line(self, line):
         """
         If a file is being output, change the location it is being output to
         BaseDirectory / Results.
@@ -151,7 +151,7 @@ class GenerateTopasScriptGenerator:
 
         return new_line, OriginalFileName
 
-    def HandlePhaseSpaceSource(self,OriginalFileLocation, line, OutputPhaseSpaceFilesNames):
+    def _handle_phase_space_source(self,OriginalFileLocation, line, OutputPhaseSpaceFilesNames):
         """
         Handle lines where a phase space source is used
 
@@ -189,7 +189,7 @@ class GenerateTopasScriptGenerator:
 
         return new_line
 
-    def GenerateTopasScriptGenerator(self):
+    def _generate_topas_script_generator(self):
         """
         generate a python script that will itself generate the script at TopasScriptLocation
 
@@ -233,14 +233,14 @@ class GenerateTopasScriptGenerator:
                     line = line.split('#', 1)
                     line = line[0]  # i'm going to remove inline comments, easier and safer.
                     if 'includeFile'.lower() in line.lower():
-                        line = self.HandleIncludeFileLine(file, line)
+                        line = self._handle_include_files(file, line)
                     if 'OutputFile '.lower() in line.lower():
-                        line, OriginalFileName = self.HandleOutputFileLine(line)
+                        line, OriginalFileName = self._handle_output_file_line(line)
                         TopasScriptGenerator.append("    " + ScriptName + ".append('" + line + "\n")
                         OutputPhaseSpaceFilesNames.append(OriginalFileName)
                         continue  # need a slightly different line in this case from the default
                     if 'PhaseSpaceFileName'.lower() in line.lower():  # could put a more sophisticated test here...
-                        line = self.HandlePhaseSpaceSource(file, line, OutputPhaseSpaceFilesNames)
+                        line = self._handle_phase_space_source(file, line, OutputPhaseSpaceFilesNames)
                         TopasScriptGenerator.append("    " + ScriptName + ".append('" + line + "\n")
                         continue  # need a slightly different line in this case from the default
 

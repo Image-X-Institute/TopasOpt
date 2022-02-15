@@ -156,9 +156,9 @@ class TopasOptBaseClass:
                     f' and ignoring this parameter')
             self.BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs.json'
             self._BayesianOptimiser__RestartMode = False  # don't change!
-            self.CreatePbounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
-            self.CreateSuggestedPointsToProbe(optimisation_params)
-            self.DeriveLengthScales(length_scales)
+            self.__create_p_bounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
+            self._create_suggested_points_to_probe(optimisation_params)
+            self._derive_length_scales(length_scales)
 
             # Bayesian optimisation settings:
             self.target_prediction_mean = []  # keep track of what the optimiser expects to get
@@ -567,54 +567,6 @@ class TopasOptBaseClass:
         plt.tight_layout()
         plt.show()
 
-    def xxx_PlotLogFileScatter(self, LogFileLoc, RemoveOutliers=True):
-        """
-        Create a scatter plot of bayesian prediction versus actual value of objective function from log file.
-        Unlike the in-optimiser function, in this case we can assess and remove outliers before assessing correlation
-
-        :param LogFileLoc: Path location of the log flie to plot
-        :param RemoveOutliers: If True, will remove outliers based on the Zscore of the OF (Zscore>2 used at time of writing).
-        """
-        ResultsDict = self._ReadInLogFile(LogFileLoc)
-        OF = np.array(ResultsDict.pop('ObjectiveFunction'))
-        prediction = -1 * np.array(ResultsDict.pop('target_prediction_mean'))
-        OF = np.delete(OF, [0])
-        try:
-            prediction = np.delete(prediction, [0])
-        except KeyError:
-            logger.error('Log file does not contain target_prediction_mean')
-            return
-
-        if RemoveOutliers:
-            # remove datapoints in objective function
-            Zscore = (OF - np.mean(OF)) / np.std(OF)
-            ind = Zscore > 2
-            OF = np.delete(OF, ind)
-            prediction = np.delete(prediction, ind)
-
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
-        axs.scatter(OF, prediction)
-        axs.set_xlabel('Actual', fontsize=FigureSpecs.LabelFontSize)
-        axs.set_ylabel('Predicted', fontsize=FigureSpecs.LabelFontSize)
-        NewMinLim = np.min([axs.get_ylim(), axs.get_xlim()])
-        NewMaxLim = np.max([axs.get_ylim(), axs.get_xlim()])
-        axs.set_ylim([NewMinLim, NewMaxLim])
-        axs.set_xlim([NewMinLim, NewMaxLim])
-        axs.plot([NewMinLim, NewMaxLim], [NewMinLim, NewMaxLim], 'r--')
-
-        # Assess and print correlation metrics:
-        if len(prediction) > 2:
-            Pearson = stats.pearsonr(OF, prediction)
-            Spearman = stats.spearmanr(OF, prediction)
-            plt.text(NewMinLim + abs(NewMinLim * 0.2), NewMaxLim - (abs(NewMaxLim * 0.2)),
-                     f'Spearman: {Spearman[0]: 1.1f}\nPearson: {Pearson[0]: 1.1f}',
-                     fontsize=FigureSpecs.LabelFontSize)
-
-        axs.grid(True)
-        axs.set_title('Actual versus predicted correlation', fontsize=FigureSpecs.TitleFontSize)
-        plt.tight_layout()
-        plt.show()
-    
     def _ConvertDictToVariables(self, x_new):
         """
         I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
@@ -750,7 +702,7 @@ class BayesianOptimiser(TopasOptBaseClass):
     This inherits most of its functionality from SphinxOptBaseClass
     """
 
-    def DeriveLengthScales(self, length_scales):
+    def _derive_length_scales(self, length_scales):
         """
         Figure out what to put in to the gaussian process model kernel for length scales.
         We use the Matern Kernel which is detailed `here <https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern>`_
@@ -786,7 +738,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             message = message + paramter_name + f': {self.length_scales[i]}\n'
         logger.info(f'{bcolors.OKGREEN}{message}{bcolors.ENDC}')
 
-    def CreatePbounds(self, optimisation_params):
+    def __create_p_bounds(self, optimisation_params):
         """
         Just reformat the optimisation variables into a format that the Bayesian optimiser wants
         """
@@ -797,7 +749,7 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         self.pbounds = pbounds
 
-    def CreateSuggestedPointsToProbe(self, optimisation_params):
+    def _create_suggested_points_to_probe(self, optimisation_params):
         """
         If the user has entered any suggestions, sort them alphabetically and create some variables to keep track of them
         """
@@ -824,7 +776,7 @@ class BayesianOptimiser(TopasOptBaseClass):
                     suggestion_dict[key] = optimisation_params['Suggestions'][n, i]
                 self.Suggestions.append(suggestion_dict)
 
-    def _Plot_ConvergenceRetrospective(self, optimizer):
+    def _plot_convergence_plot_retrospective(self, optimizer):
         """
         This will read in a log file and produce a version of the convergence plot using the input gaussian process
         model to predict the objective function at each itteration.
@@ -869,7 +821,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         plt.savefig(SaveLoc / 'RetrospectiveModelFit.png')
         plt.close(fig)
 
-    def PlotPredictedVersusActualCorrelation(self):
+    def _plot_predicted_versus_actual_correlation(self):
         """
         Produce a scatter plot of the predicted versus actual objective function values, and print spearman and pearson
         correlation coefficient to it
@@ -902,7 +854,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         plt.savefig(SaveLoc / 'CorrelationPlot.png')
         plt.close(fig)
 
-    def PlotSingleVariableObjective(self, optimizer):
+    def _plot_single_variable_objective(self, optimizer):
         """
         For each variables, produce a plot of the prediced objective function while only that parameter varies
         and the others are held at the current best values.
@@ -1010,9 +962,9 @@ class BayesianOptimiser(TopasOptBaseClass):
                 except AttributeError:
                     self.RepeatedPointsProbed = 1
 
-            self.PlotPredictedVersusActualCorrelation()
-            self._Plot_ConvergenceRetrospective(self.optimizer)
-            self.PlotSingleVariableObjective(self.optimizer)
+            self._plot_predicted_versus_actual_correlation()
+            self._plot_convergence_plot_retrospective(self.optimizer)
+            self._plot_single_variable_objective(self.optimizer)
 
         # update the logs with the best value:
         best = self.optimizer.max

@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import linregress
 from pathlib import Path
-import seaborn as sns
 plt.interactive(False)
 
 
@@ -648,7 +647,6 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
     """
 
     LineStyles = ['C0-', 'C2--', 'C3:', 'C4-:']
-    ColorStyles = ['C0', 'C5', 'C7', 'C1', 'C2']
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=[10, 5])
     legend_names = []
     for i, bin_file in enumerate(BinFiles):
