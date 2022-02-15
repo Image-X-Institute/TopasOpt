@@ -23,7 +23,7 @@ class generate_topas_script_generator:
         code can correctly detect dynamic input/output files.
     :type TopasScriptLocation: string or pathlib.Path
     :param IncludeFileStorageDirectory: Any included files will be copied here. This is to try and ensure the topas
-    scripts are portable. If no path is entered then they will be written to OutputDirectory / IncludeFiles
+        scripts are portable. If no path is entered then they will be written to OutputDirectory / IncludeFiles
     :type IncludeFileStorageDirectory: None or string or pathlib.Path (optional)
     :param ErrorChecking: if True (recommended), will attempt to perform some checks on the input data.
     :type ErrorChecking: bool, optional
