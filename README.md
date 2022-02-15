@@ -9,7 +9,7 @@ simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu
 To install: ```pip install TopasOpt```
 
 - This code will only run on linux (as will topas)
-- You require a working installation of topas to run the code.
+- You require a working installation of [topas](https://topas.readthedocs.io/en/latest/getting-started/intro.html) to run the code.
 - python3.8 or greater is required.
 
 ## Usage and Documentation

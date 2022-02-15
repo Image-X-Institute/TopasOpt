@@ -2,8 +2,6 @@
 import sys
 import numpy as np
 from pathlib import Path
-# sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasOpt/')
-sys.path.append('../../../TopasOpt')  # note: this is for development only. re
 from TopasOpt import Optimisers as to
 
 BaseDirectory = '/home/brendan/Documents/temp'
