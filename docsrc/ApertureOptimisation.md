@@ -12,11 +12,11 @@ In this example, we will optimise the geometry of an X-ray collimator. The geome
 
 You will need the data from the original simulation to complete this example; it is available [here](https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles) 
 
-![](_resources/Sketch.png)
+![](_resources/ApertureOpt/Sketch.png)
 
 ## environment set up
 
-If you need help with getting an appropriate environment set up properly, see HERE
+If you need help with getting an appropriate environment set up, see HERE
 
 ## directory set up
 
@@ -24,7 +24,7 @@ To start with, create a folder somewhere called for instance 'ApertureOptExample
 
 When you have finished working through this example you should have a working directory which looks like this:
 
-![](_resources/ApertureDirectoryStructure.jpg)
+![](_resources/ApertureOpt/ApertureDirectoryStructure.jpg)
 
 
 
@@ -32,9 +32,7 @@ When you have finished working through this example you should have a working di
 
 The code will need to know where your base model is stored. The base model for this application is available [here](https://downgit.github.io/#/home?url=https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles)
 
-Download these files into a folder inside your working directory (ApertureOptExample in this example).
-
-Note that in principle these files can reside anywhere; we are going to put them inside the working directory to make this example as simple as possible!  
+Download these files into a folder inside your working directory (ApertureOptExample in this example) called SimpleCollimatorExample_TopasFiles. Note that in principle these files can reside anywhere; we are going to put them inside the working directory to make this example as simple as possible!  
 
 ## Creating GenerateTopasScript.py
 
@@ -43,24 +41,19 @@ The first thing we will be needing is a function that generates your topas scrip
 Create a python file called 'temp_GenerateTopasScript.py' (or whatever you want, the name isn't important). Copy the below code into it (or use an interactive console if you prefer):
 
 ```python
-import sys
-
-sys.path.append('../../TopasOpt')
-from TopasOpt.TopasScriptGenerator import CreateTopasScript
+from TopasOpt.TopasScriptGenerator import generate_topas_script_generator
 from pathlib import Path
 
-this_directory = Path(__file__).parent
+this_directory = Path(__file__).parent  # figures out where your working directory is located
 
-# nb: the order of input files is important to make sure that a phase space files are correctly classified
-CreateTopasScript(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',
-                                   '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
-# update these paths so that it points to wherever you have stored the base files
-
+# nb: the order is important to make sure that a phase space files are correctly classified
+generate_topas_script_generator(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',
+                                                  '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
 ```
 
 > **Tip:** CreateTopasScript is a code that takes a code and generates a code that generates a code. If that makes your head hurt you are not alone!
 
-If it worked, you will now have a python function in your Optimisation Directory called GenerateTopasScript.py.
+If it worked, you will now have a python function in your Optimisation Directory called GenerateTopasScripts.py.
 
 If you open this script up, you will see that all it has done it copied the contents of the topas file you input into a list, which it returns. At the moment, it's not very useful because every time it's called it will copy out exactly the same script! We will change that a bit later; but first it's a good idea to test this script and see if it actually works. 
 
@@ -70,7 +63,7 @@ To test it, run it directly. This will create two scripts in your working direct
 - **Output files:** Any output file will now be appended with iteration, e.g. for iteration 7 the output files will be called OriginalOutputName_Itt_7
 - **Input files:** When phase space sources are being used, it is a bit trickier to figure out what to do, since you could be using a static phase space source, or you could be using a phase space source which is generated in a previous sim.  CreateTopasScript will try to figure out which of these is occuring by checking if the input phase space is related to the output of a previous script. If the phase space is dynamic, its name will be updated using the same logic as above. If it is static,  we will  simply update the line to an absolute path. Note that unlike include files, we will not automatically create a local copy - this is because phase space files can be huge! 
 
->  **warning:** There are probably situations which CreateTopasScript does not handle well. For instance, CAD file imports are currently unsupported. In general, you should think of the script created at this point as a first draft. You may have to do some further work on it to get it to do exactly what you want. We will make some edits to GenerateTopasScripts.py a bit later on in this example. (You can delete temp_GenerateTopasScript.py now if you want to, it has done its job. )
+>  **warning:** There are probably situations which GenerateTopasScripts does not handle well. For instance, CAD file imports are currently unsupported. In general, you should think of the script created at this point as a first draft. You may have to do some further work on it to get it to do exactly what you want. We will make some edits to GenerateTopasScripts.py a bit later on in this example. (You can delete temp_GenerateTopasScript.py now if you want to, it has done its job. )
 
 ## Creating RunOptimisation.py
 
@@ -78,35 +71,37 @@ Create a new file called RunOptimisation_main.py (or whatever you want, the name
 
 ```python
 import sys
-import os
 import numpy as np
 from pathlib import Path
+from TopasOpt import Optimisers as to
 
-sys.path.append('/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasOpt/TopasOpt')
-import TopasOpt as to
-
-BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-# Update this! ^^^ This needs to be an existing location on your computer where you will store your sims
-SimulationName = 'BayesianOptimisationTest'
-OptimisationDirectory = Path(__file__).parent  # points to whatever directory this script is in
+BaseDirectory =  '/home/brendan/Documents/temp'  #update with where you want results stored!
+SimulationName = 'ApertureOptimisationTutorial'
+OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:
 optimisation_params = {}
-optimisation_params['ParameterNames'] = ['UpStreamApertureRadius', 'DownStreamApertureRadius', 'CollimatorThickness']
-# parameter names are just labels and can be called whatever you want, as long as they are used consistently
+optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
-# generate a random starting point between our bounds: (it doesn't have to be random, this is just for demonstration purposes)
-random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'],
-                                                     optimisation_params['UpperBounds'])
+# generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
+random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
 optimisation_params['start_point'] = random_start_point
+
 optimisation_params['Nitterations'] = 40
-# optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't do this here here.
+# optimisation_params['Suggestions'] # for the bayesian optimiser you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
+# Bayesian optimiser
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
+                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True,  KeepAllResults=True)
+
+# or switch to nelder mead:
+# Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'NM_OptimisationTest', OptimisationDirectory,
+#                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
+
 Optimiser.RunOptimisation()
+
 
 ```
 
@@ -116,14 +111,14 @@ A full list of the inputs for BayesianOptimiser is HERE, but the inputs we are u
 - **BaseDirectory** is where you want to store all your optimisations
 - **SimulationName** this particular simulation will be stored at BaseDirectory / SimulationName
 - **OptimisationDirectory** Is the directory where this script is located. In this example this is ApertureOptExample
-
 - **ReadMeText** is an optional parameter where you can simply enter some text describing what the optimisation is supposed to be doing. this can be pretty useful when you come back to some case months later!
 - **Overwrite=True** means that the optimiser will empty any files in BaseDirectory / SimulationName. If this option is False, the code will ask you first.
 - **TopasLocation** is the path to your topas installation. If you followed the installation instructions, this will be at ~/topas, which is where the code will look by default. 
+- **KeepAllResults** if False, only the last results files are kept (the logs record all results in either case)
 
 ## Editing GenerateTopasScript.py
 
-Remember from earlier that GenerateTopasScript.py currently regenerates the original topas scripts. For an optimisation, we need to be able to receive parameters from the optimiser, and build a model reflecting these parameters. Therefore we will have to make some changes to this script! 
+Remember from earlier that GenerateTopasScripts.py currently regenerates the original topas scripts. For an optimisation, we need to be able to receive parameters from the optimiser, and build a model reflecting these parameters. Therefore we will have to make some changes to this script! 
 
 Whenever GenerateTopasScript is called from the optimiser, it will be passed a dictionary that contains the variables defined in optimisation_params and their current values. We need to edit GenerateTopasScript so that when these parameters change, the topas parameters change accordingly. Firstly, we need to change three lines:
 
@@ -200,15 +195,13 @@ Update the location of ```OriginalDataLoc``` to wherever you downloaded the inpu
 ```python
 import sys
 import os
-
-sys.path.append('../../TopasOpt')
-from WaterTankAnalyser import WaterTankData
+from TopasOpt.utilities import WaterTankData
 import numpy as np
 
-
 def CalculateObjectiveFunction(TopasResults):
-    OriginalDataLoc = os.path.realpath('../SimpleCollimatorExample_TopasFiles/Results')
-    File = 'WaterTank'
+    OriginalDataLoc = os.path.realpath('SimpleCollimatorExample_TopasFiles/Results')
+    # update to original data file location ^^
+    File = 'WaterTank.bin'
     OriginalResults = WaterTankData(OriginalDataLoc, File)
 
     # define the points we want to collect our profile at:
@@ -278,19 +271,21 @@ Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOpt
 
 To start with, have a look at ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.
 
-![](_resources/ConvergencePlot.png)
+![](_resources/ApertureOpt/ConvergencePlot.png)
 
 Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be < 0.5. 
 
 > **Note:** the model doesn't have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function
 
-![](_resources/CorrelationPlot.png)
+![](_resources/ApertureOpt/CorrelationPlot.png)
 
-If the correlation isn't great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts **after** it has seen each point. If this also isn't working, you have a serious problem with the model, since predicting something that has already happened isn't very difficult!!
+If the correlation isn't great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts **after** it has seen each point. If this also isn't working, you have a serious problem with the model, since predicting something that has already happened isn't very difficult!! In this case, if your model didn't show great correlation, it's most likey simply due to the low number of iterations we have run.
 
-Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value. Note that you should interpret these in the context of the correlation plot. If the correlation is high, then these should represent a reasonable accurate interpretation of how each parameter effects the objective function. If correlation is low, these are close to nonsense! 
+Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value. 
 
-![](_resources/Apperture_Correlation.png)
+>  **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
+
+<img src=../../docsrc/_resources/ApertureOpt/ApertureParameterPlots.png alt="drawing" width="300"/>
 
 In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.
 
@@ -316,11 +311,11 @@ If you require better accuracy, you have a few options:
 
 ## Comparison with Nelder-Mead optimiser
 
-A comparison of the same problem with the Nelder-Mead optimiser is below. In this case, Nelder Mead performs almost as well. Bayesian optimisation found a minimum objective function of 1.24 on the 30th iteration, while Nelder-Mead found a minimum value of 1.4 on the 19th iteration. For more complex situations, the difference between these two approaches can be substantially greater.
+A comparison of the same problem with the Nelder-Mead optimiser is below. In this case, Nelder Mead performs almost as well. Bayesian optimisation found a minimum objective function of 1.24 on the 30th iteration, while Nelder-Mead found a minimum value of 1.4 on the 19th iteration. For more complex situations , the difference between these two approaches can be substantially greater.
 
-Nelder-Mead will generally converge more quickly than the Bayesian approach during the first ~10-20 iterations, so it can sometimes be useful to run Nelder-Mead first to get a good starting point. 
+As a rule of thumb, Nelder-Mead will generally converge more quickly than the Bayesian approach during the first ~10-20 iterations, but then tend to get stuck in a local minima, whereas the Bayesian approach will continue to explore. For simple objective function spaces Nelder-Mead can therefore be a better and more simple choice.   
 
-![](_resources/ConvergencePlot.png)
+![](_resources/ApertureOpt/ConvergencePlotNM.png)
 
 
 
@@ -329,3 +324,33 @@ Nelder-Mead will generally converge more quickly than the Bayesian approach duri
 | CollimatorThickness      | 27 mm          | 12.5 mm               | 25.6 mm         |
 | UpStreamApertureRadius   | 1.82 mm        | 2.46 mm               | 2.06 mm         |
 | DownStreamApertureRadius | 2.5 mm         | 1.62 mm               | 2.29 mm         |
+
+## Comparison with original results
+
+We have seen that both optimizers did a reasonable job of recovering the original geometric parameters. We can also compare how the raw data looks. To compare multiple results we have included a function in utilities.compare_multiple_results, which is used like this:
+
+```python
+from TopasOpt.utilities import compare_multiple_results
+
+# update paths to point to wherever your results are.
+ResultsToCompare = ['../SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin',
+                    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/BayesianApertureOpt/Results/WaterTank_itt_29.bin',
+                    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/NM_OptimisationTest/Results/WaterTank_itt_17.bin']
+
+
+custom_legend = ['Origina','Bayesian','NelderMead']
+compare_multiple_results(ResultsToCompare,custom_legend_names=custom_legend)
+```
+
+Using this code, we can generate the following figure:
+
+![](_resources/ApertureOpt/compare.png)
+
+## Improving these results
+
+There are number of things you could do to improve these results, many of which are explained in a bit more detail in NEXT STEPS:
+
+- Run more iterations
+- Nelder-Mead: change the starting point, change the starting simplex
+- Making a better objective function: we arbitrarily chose an objective function based on a depth dose curve and profiles, but we could probably find some more sensitive metrics.
+- assess the noise in the objective function and decide if we need to run more particles or not. Note that if there is 10% noise, this is a  rough limit on how accurate to expect the optimisation to be. /

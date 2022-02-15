@@ -18,9 +18,9 @@ class generate_topas_script_generator:
     :param OutputDirectory: location to write the returned python function to
     :type OutputDirectory: string or pathlib.Path
     :param TopasScriptLocation: location of all topas scripts which need to be recreated. Note that you do not need
-    to enter 'include' files, as these are found automatically. You only need to enter files which will be
-    changing on each iteration. The order of the files must match the order in which they will be run so the
-    code can correctly detect dynamic input/output files.
+        to enter 'include' files, as these are found automatically. You only need to enter files which will be
+        changing on each iteration. The order of the files must match the order in which they will be run so the
+        code can correctly detect dynamic input/output files.
     :type TopasScriptLocation: string or pathlib.Path
     :param IncludeFileStorageDirectory: Any included files will be copied here. This is to try and ensure the topas
     scripts are portable. If no path is entered then they will be written to OutputDirectory / IncludeFiles
