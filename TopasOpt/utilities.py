@@ -16,7 +16,9 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import linregress
 from pathlib import Path
+import seaborn as sns
 plt.interactive(False)
+
 
 
 logging.basicConfig(level=logging.WARNING)
@@ -632,27 +634,49 @@ class WaterTankData:
         plt.tight_layout()
         plt.show()
 
-def compare_multiple_results(BinFiles, abs_dose=False):
+
+def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None):
+    """
+    this produces depth dose and profile plots for a list of topas .bin files.
+
+    :param BinFiles: list of files to analyse
+    :type BinFiles: list
+    :param abs_dose: % dose (False) or absolute dose (True)
+    :type abs_doseL boolean, optional
+    :param custom_legend_names: if passed, this list will be used for legend. If not, file names will be used.
+    :type custom_legend_names: list, optional
+    """
+
+    LineStyles = ['C0-', 'C2--', 'C3:', 'C4-:']
+    ColorStyles = ['C0', 'C5', 'C7', 'C1', 'C2']
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=[10, 5])
     legend_names = []
-    for bin_file in BinFiles:
+    for i, bin_file in enumerate(BinFiles):
         [path_name, file_name] = os.path.split(bin_file)
         legend_names.append(file_name)
         WTD = WaterTankData(path_name, file_name, AbsDepthDose=abs_dose)
         # plot the differences:
 
-        axs[0].plot(WTD.x, WTD.ProfileDose_X)
-        axs[1].plot(WTD.z, np.flip(WTD.DepthDose))  # nb flip is just to it goes in conventional LR direction
+        PlotStyle = i % np.shape(LineStyles)[0]
+        axs[0].plot(WTD.x, WTD.ProfileDose_X, LineStyles[PlotStyle], linewidth=2)
+        axs[1].plot(WTD.z, np.flip(WTD.DepthDose), LineStyles[PlotStyle], linewidth=2)
 
+        # sns.lineplot(ax=axs[0], x=WTD.x, y=WTD.ProfileDose_X)
+        # sns.lineplot(ax=axs[1], x=WTD.z, y=np.flip(WTD.DepthDose))
 
-    axs[0].grid()
-    axs[0].set_xlabel('X [mm]')
-    axs[0].set_ylabel('Dose (%)')
-    axs[1].set_xlabel('Z [mm]')
-    axs[1].set_ylabel('Dose [%]')
-    axs[1].grid()
-    axs[1].legend(legend_names)
+    axs[0].set_xlabel('X [mm]', fontsize=FigureSpecs.LabelFontSize)
+    axs[0].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize)
+    axs[0].set_title('a) Dose profiles', fontsize = FigureSpecs.TitleFontSize)
+    axs[1].set_xlabel('Z [mm]', fontsize=FigureSpecs.LabelFontSize)
+    axs[1].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize)
+    axs[1].set_title('b) Depth Dose', fontsize=FigureSpecs.TitleFontSize)
+
+    if not custom_legend_names:
+        axs[1].legend(legend_names, fontsize=FigureSpecs.LabelFontSize)
+    else:
+        axs[1].legend(custom_legend_names, fontsize=FigureSpecs.LabelFontSize)
     plt.show()
+
 
 
 
