@@ -14,14 +14,27 @@ class generate_topas_script_generator:
     Each list element contains one line of the topas script, which can be used to automatically regenerate that script.
     This class will also attempt to handle input/output lines in the topas language such as include lines and input
     and output of phase space lines.
+
+    :param OutputDirectory: location to write the returned python function to
+    :type OutputDirectory: string or pathlib.Path
+    :param TopasScriptLocation: location of all topas scripts which need to be recreated. Note that you do not need
+    to enter 'include' files, as these are found automatically. You only need to enter files which will be
+    changing on each iteration. The order of the files must match the order in which they will be run so the
+    code can correctly detect dynamic input/output files.
+    :type TopasScriptLocation: string or pathlib.Path
+    :param IncludeFileStorageDirectory: Any included files will be copied here. This is to try and ensure the topas
+    scripts are portable. If no path is entered then they will be written to OutputDirectory / IncludeFiles
+    :type IncludeFileStorageDirectory: None or string or pathlib.Path (optional)
+    :param ErrorChecking: if True (recommended), will attempt to perform some checks on the input data.
+    :type ErrorChecking: bool, optional
     """
 
-    def __init__(self,OutputDirectory,TopasScriptLocation, RequiredIncludeFiles=None, IncludeFileStorageDirectory=None,
-                 ErrorChecking = True):
+    def __init__(self,OutputDirectory, TopasScriptLocation, IncludeFileStorageDirectory=None,
+                 ErrorChecking=True):
 
         self.OutputDirectory = Path(OutputDirectory)
         self.TopasScriptLocation = TopasScriptLocation
-        self.RequiredIncludeFiles = RequiredIncludeFiles
+
 
         if IncludeFileStorageDirectory is None:
             self.IncludeFileStorageDirectory = Path(OutputDirectory) / 'IncludeFiles'
@@ -34,6 +47,10 @@ class generate_topas_script_generator:
         self._generate_topas_script_generator()
 
     def _check_inputs(self):
+        """
+        Perform checks of input data.
+        these tests should be updated as uncaught errors arise!
+        """
 
         if not type(self.TopasScriptLocation) is list:
             self.TopasScriptLocation = [self.TopasScriptLocation]
@@ -42,14 +59,6 @@ class generate_topas_script_generator:
             if not os.path.isfile(script):
                 logger.error(f'Could not find TopasScriptLocation at {script}. Quitting')
                 sys.exit(1)
-
-        if self.RequiredIncludeFiles is not None:
-            if not type(self.RequiredIncludeFiles) == list:
-                self.RequiredSupportFiles = list(self.RequiredIncludeFiles)
-            for include_file in self.RequiredSupportFiles:
-                if not os.path.isfile(include_file):
-                    logger.error(f'Expected to find included file: {include_file} but its not there...quitting')
-                    sys.exit(1)
 
         if not os.path.isdir(self.OutputDirectory):
             logger.error(f'Specified output directory does not exist: {self.OutputDirectory}')
@@ -60,12 +69,11 @@ class generate_topas_script_generator:
 
     def _handle_include_files(self, OriginalFileLocation, line):
         """
-        check the OriginalFileLocation at self.TopasScriptLocation, and see if it has and include statements.
-        If it does...what do we do?
+        This function is called when an includeFile statement is found in the input topas script.
+        The include file will be copied to  IncludeFileStorageDirectory, and the line updated with an
+        absolute path to that location
 
-        1. Update the path to be absolute - but this will break if the user chagnes to a different server
-        2. Create a directory in the script location called support_files...yes, I think this correct...
-        Returns:
+        Returns: line, the updated includeFile line
         """
         # first, check that this include file exists... the user may have used a relative or an absolute path...
         # see if relative paths points to a OriginalFileLocation:
@@ -192,8 +200,6 @@ class generate_topas_script_generator:
     def _generate_topas_script_generator(self):
         """
         generate a python script that will itself generate the script at TopasScriptLocation
-
-        Returns:
         """
         outputFile = self.OutputDirectory / 'GenerateTopasScripts.py'
         # first read in the text:

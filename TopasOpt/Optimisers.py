@@ -1,4 +1,8 @@
 # -*- coding: iso-8859-1 -*-
+"""
+This module contains the specific optimisation algorithms for TopasOpt. Most functionality is defined in TopasOptBaseClass,
+which other optimisers inherit from.
+"""
 import subprocess
 import jsonpickle
 from matplotlib import pyplot as plt
@@ -28,14 +32,13 @@ logger.setLevel(logging.INFO)  # This toggles all the logging in your app
 logger.propagate = False
 
 
-def import_from_absolute_path(fullpath, global_name=None):
+def _import_from_absolute_path(fullpath, global_name=None):
     """
     Dynamic script import using full path.
     This is required to enable mapping to the location of the script generation function and the objective funciton,
     which are not known in advance.
-    (credit here)[https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders]
+    `credit here`_<https://stackoverflow.com/questions/3137731/is-this-correct-way-to-import-python-scripts-residing-in-arbitrary-folders>
     """
-
 
     script_dir, filename = os.path.split(fullpath)
     script, ext = os.path.splitext(filename)
@@ -50,49 +53,62 @@ def import_from_absolute_path(fullpath, global_name=None):
     finally:
         del sys.path[0]
 
+
 class TopasOptBaseClass:
     """
     There are many overlapping functionalities required by all optimisation algorithms: logging, calculation of objective function,
     generation of models...etc. All of these common methods are contained this base class which other optimisation methods inherit.
-
     This class is not intended to be used in isolation and won't work if you try.
+    An important thing to note is that the variables from all optimisers are defined here, which means some of these options
+    are specific to a particular optimiser. We may find a more elegant way to handle this in future!
+
+    :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
+    :type optimisation_params: list
+    :param BaseDirectory: Place where all the topas simulation results are stored
+    :type BaseDirectory: string
+    :param SimulationName: Specific folder for this simulation
+    :type SimulationName: string
+    :param OptimisationDirectory: location that TopasObjectiveFunction and GenerateTopasScript are located
+    :type OptimisationDirectory: string or Path
+    :param ReadMeText: If supplied, is written to a readme file in BaseDirectory
+    :type ReadMeText: string, optional
+    :param NM_StartingSimplexRelativeVal: This is a Nelder-Mead specific parameter which controls the size of the
+        starting simplex. A value of .1 will create a starting simplex that is spans 10% of the starting values,
+        which is the default behavior. If this is defined and non-Nelder-Mead optimisers are used it does nothing
+        (and hopefully you will be warned accordingly)
+    :type NM_StartingSimplexRelativeVal: float, optional
+    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process
+        model. If supplied to non-Bayes optimisers it does nothing (and hopefully you will be warned accordingly).
+        This can be supplied as one of three things: **None**: in this case, the default is used: length_scale=1.0
+        **Number > 0 and <1**: in this case, the length scales for each parameter are derived as a percentage of range.
+        For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable -
+        this is the default behavior. **Array**: Finally, the user is free to simply specify what length scales to use for each parameter. Make sure
+        you enter them in alphabetical order as this is the order used internally by the optimiser.
+    :type bayes_length_scales: None, float, or array (optional)
+    :param bayes_KappaDecayIterations: Bayes-specific parameter. Over the last N iterations, kappa will decay to be
+        almost 0 (highly exploitive). For explantion of kappa decay see `here <https://github.com/fmfn/BayesianOptimization/pull/221>`_
+    :type bayes_KappaDecayIterations: int, optional
+    :param bayes_GP_alpha: Bayes-specific parameter. This parameter handles the smoothness of the gaussian process model.
+        for a noisy objective function, increasing this value can minimise overfitting errors.
+    :type bayes_GP_alpha: float, optional
+    :param TopasLocation: location of topas installation. Default is ~/topas if you follow the topas instructions.
+    :type TopasLocation: string or pathlib.Path, optional
+    :param ShellScriptHeader: Header to place at the start of the bash file that runs the topas model. This header
+        should contain all the commands you normally perform to set up your terminal environment.
+    :type ShellScriptHeader: string, optional
+    :param Overwrite: if True, will automatically overwrite any existing files. If False, will ask first (safer)
+    :type Overwrite: bool, optional
+    :param KeepAllResults: if True, all results kept, if false, only most recent results are kept. Note that in either
+        case the log files contain the info from all cases, it's just a matter of whether you want to store every iteration
+        which can take a lot of space
+    :type KeepAllResults: bool, optional
     """
 
     def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                 TargetBeamWidth=7, ReadMeText = None,
-                 StartingSimplexRelativeVal=None, length_scales=None,
-                 KappaDecayIterations=10, TopasLocation='~/topas/',
-                 ShellScriptHeader=None, Overwrite=False, GP_alpha=0.01, KeepAllResults=True):
-        """
-        :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
-        :type optimisation_params: list
-        :param BaseDirectory: Place where all the topas simulation results are stored
-        :type BaseDirectory: string
-        :param SimulationName: Specific folder for this simulation
-        :type SimulationName: string
-        :param TargetBeamWidth: desired beam width in mm
-        :type TargetBeamWidth: double
-        :param debug: will try and use a quick phase space. won't produce meaningful results but will be quick. Default is True.
-        type debug: Boolean, optional
-        param Nthreads: Number of threads to run.
-        type Nthreads: double, optional
-        :param StartingDoseFile: If supplied, results will be normalised to this. if not, they will be normalised to the
-            starting parameters
-        :type StartingDoseFile: string, optional
-        :param StartingCollimatorThickness: Thickness of collimator used in StartingDoseFile. If StartingDoseFile is supplied
-            this MUST be supplied, otherwise not.
-        :type StartingCollimatorThickness: double, optional
-        :param StartingSimplexRelativeVal: This does nothing here; it is only here to enable complete compatability between
-            the Bayesian and Nealder-Mead methods
-        :type StartingSimplexRelativeVal: double, optional
-        :param MaxItterations: this is defined in optimisation_params['Nitterations']. Note that nealder mead will always
-            assess the starting simplex first before checking this (mostly a debugging problem)
-        :param KappaDecayIterations: Over the last N iterations, kappa will decay to be almost 0 (highly exploitive). For
-            explantion of kappa decay see `here <https://github.com/fmfn/BayesianOptimization/pull/221>`_
-        :type KappaDecayIterations: int
-        :param OptimisationDirectory: location that TopasObjectiveFunction and GenerateTopasScript are located
-        :type OptimisationDirectory: string or Path
-        """
+                 ReadMeText=None,
+                 NM_StartingSimplexRelativeVal=None, bayes_length_scales=None,
+                 bayes_KappaDecayIterations=10, TopasLocation='~/topas/',
+                 ShellScriptHeader=None, Overwrite=False, bayes_GP_alpha=0.01, KeepAllResults=True):
 
         if 'TopasOptBaseClass' in str(self.__class__):
             logger.error('TopasOptBaseClass should not be called directly; it only exists for other optimisers'
@@ -110,7 +126,6 @@ class TopasOptBaseClass:
                 f'{bcolors.FAIL}Input BaseDirectory "{BaseDirectory}" does not exist. Exiting. {bcolors.ENDC}')
             sys.exit()
         self.SimulationName = SimulationName
-        self.TargetBeamWidth = TargetBeamWidth
         self.Itteration = 0
         self.ItterationStart = 0
         # the starting values of our optimisation parameters are defined from the default geometry
@@ -133,13 +148,13 @@ class TopasOptBaseClass:
             TopasLocation = os.path.expanduser(TopasLocation)
         self.TopasLocation = Path(TopasLocation)
         try:
-            import_from_absolute_path(Path(self.OptimisationDirectory) / 'GenerateTopasScripts.py')
+            _import_from_absolute_path(Path(self.OptimisationDirectory) / 'GenerateTopasScripts.py')
         except ModuleNotFoundError:
             logger.error(f'could not find required file at {str(Path(self.OptimisationDirectory) / "GenerateTopasScript.py")}.'
                          f'\nQuitting')
             sys.exit(1)
         try:
-            import_from_absolute_path(Path(self.OptimisationDirectory) / 'TopasObjectiveFunction.py')
+            _import_from_absolute_path(Path(self.OptimisationDirectory) / 'TopasObjectiveFunction.py')
         except ModuleNotFoundError:
             logger.error(f'could not find required file at {str(Path(self.OptimisationDirectory) / "TopasObjectiveFunction.py")}.'
                          f'\nQuitting')
@@ -149,28 +164,28 @@ class TopasOptBaseClass:
 
         # put optimiser specific stuff in blocks like this:
         if 'BayesianOptimiser' in str(self.__class__):
-            if StartingSimplexRelativeVal is not None:
+            if NM_StartingSimplexRelativeVal is not None:
                 logger.warning(
-                    f'You have attempted to use the variable StartingSimplexRelativeVal, but this does nothing'
+                    f'You have attempted to use the variable NM_StartingSimplexRelativeVal, but this does nothing'
                     f'in the Bayesian optimiser - it only works with the Nealder-Mead optimiser. Continuing'
                     f' and ignoring this parameter')
             self.BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs.json'
             self._BayesianOptimiser__RestartMode = False  # don't change!
             self._create_p_bounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
             self._create_suggested_points_to_probe(optimisation_params)
-            self._derive_length_scales(length_scales)
+            self._derive_bayes_length_scales(bayes_length_scales)
 
             # Bayesian optimisation settings:
             self.target_prediction_mean = []  # keep track of what the optimiser expects to get
             self.target_prediction_std = []  # keep track of what the optimiser expects to get
-            self.GP_alpha = GP_alpha  # this tells the GPM the expected ammount of noise in the objective function
+            self.bayes_GP_alpha = bayes_GP_alpha  # this tells the GPM the expected ammount of noise in the objective function
             # see here: https://github.com/fmfn/BayesianOptimization/issues/202
             self.Matern_Nu = 1.5  # see here https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern
             self.UCBkappa = 5  # higher kappa = more exploration. lower kappa = more exploitation
             self.n_restarts_optimizer = 20  # this controls the gaussian process fitting. 20 seems to be a good number.
-            self.KappaDecayIterations = KappaDecayIterations
+            self.bayes_KappaDecayIterations = bayes_KappaDecayIterations
             self.UCBKappa_final = 0.1
-            self.kappa_decay_delay = self.MaxItterations - self.KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
+            self.kappa_decay_delay = self.MaxItterations - self.bayes_KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
 
             if self.kappa_decay_delay >= self.MaxItterations:
                 logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
@@ -180,10 +195,10 @@ class TopasOptBaseClass:
                 self.kappa_decay = (self.UCBKappa_final/self.UCBkappa) ** (1/(self.MaxItterations - self.kappa_decay_delay))
                 # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
 
-        if 'NealderMeadOptimiser' in str(self.__class__):
-            if length_scales is not None:
+        if 'NelderMeadOptimiser' in str(self.__class__):
+            if bayes_length_scales is not None:
                 logger.warning(
-                    f'You have attempted to set length_scales, but this does nothing'
+                    f'You have attempted to set bayes_length_scales, but this does nothing'
                     f'in the NealderMeadO optimiser - it only works with the Bayesian optimiser. Continuing'
                     f' and ignoring this parameter')
 
@@ -194,8 +209,8 @@ class TopasOptBaseClass:
                     f' and ignoring this parameter')
 
             self.StartingSimplexSupplied = False
-            self.StartingSimplexRelativeVal = StartingSimplexRelativeVal
-            if self.StartingSimplexRelativeVal:  # nb None evaluates as False
+            self.NM_StartingSimplexRelativeVal = NM_StartingSimplexRelativeVal
+            if self.NM_StartingSimplexRelativeVal:  # nb None evaluates as False
                 self._GenerateStartingSimplex()
 
         self._CheckInputData()
@@ -684,20 +699,23 @@ class TopasOptBaseClass:
             f.write(self.ReadMeText)
 
 
-class NealderMeadOptimiser(TopasOptBaseClass):
+class NelderMeadOptimiser(TopasOptBaseClass):
+    """
+    Implementation of Nelder-Mead based on scipy. Allowed options are defined in TopasOptBaseClass
+    """
 
     def _GenerateStartingSimplex(self):
         """
         This is copied from the scipy source code (optimize around line 690), with a variable version of nonzdelt
         """
 
-        if not type(self.StartingSimplexRelativeVal) is float:
+        if not type(self.NM_StartingSimplexRelativeVal) is float:
             logger.error('Starting simplex can only be defined as a relative parameter, e.g. 0.1')
             sys.exit(1)
 
         N = len(self.StartingValues)
-        nonzdelt = self.StartingSimplexRelativeVal
-        zdelt = self.StartingSimplexRelativeVal / 200  # based on the scipy code where zdelt - nonzdelt/200
+        nonzdelt = self.NM_StartingSimplexRelativeVal
+        zdelt = self.NM_StartingSimplexRelativeVal / 200  # based on the scipy code where zdelt - nonzdelt/200
         sim = np.empty((N + 1, N), dtype=self.StartingValues.dtype)
         sim[0] = self.StartingValues
         for k in range(N):
@@ -714,7 +732,7 @@ class NealderMeadOptimiser(TopasOptBaseClass):
     def RunOptimisation(self):
         """
         Use the scipy.optimize.minimize module to perform the optimisation.
-        Note that most of the 'action' is happening in BlackBoxFunction, which is repeated called by the optmizer
+        Note that most of the 'action' is happening in BlackBoxFunction, which is repeated called by the optimiser
         """
 
         self.SetUpDirectoryStructure()
@@ -740,15 +758,15 @@ class NealderMeadOptimiser(TopasOptBaseClass):
 class BayesianOptimiser(TopasOptBaseClass):
     """
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
-    This inherits most of its functionality from SphinxOptBaseClass.
+    Allowed options are defined in TopasOptBaseClass
     """
 
-    def _derive_length_scales(self, length_scales):
+    def _derive_bayes_length_scales(self, bayes_length_scales):
         """
         Figure out what to put in to the gaussian process model kernel for length scales.
         We use the Matern Kernel which is detailed `here <https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern>`_
 
-        :param length_scales: user input for length scales. Can be one of three things:
+        :param bayes_length_scales: user input for length scales. Can be one of three things:
             1. **None**: in this case, the default is used: length_scale=1.0
             2. Number > 0 and <1: in this case, the length scales for each parameter are derived as a percentage of range.
                 For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable.
@@ -756,27 +774,27 @@ class BayesianOptimiser(TopasOptBaseClass):
                 you enter them in alphabetical order as this is the order used internally by the optimiser.
         """
         ParameterNames = sorted(self.pbounds.keys())
-        if length_scales is None:
-            length_scales = 0.1
-            self.length_scales = []
+        if bayes_length_scales is None:
+            bayes_length_scales = 0.1
+            self.bayes_length_scales = []
             for paramter_name in ParameterNames:
-                length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * length_scales
-                self.length_scales.append(length_scale_temp)
-        elif type(length_scales) is float:
-            self.length_scales = []
+                length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * bayes_length_scales
+                self.bayes_length_scales.append(length_scale_temp)
+        elif type(bayes_length_scales) is float:
+            self.bayes_length_scales = []
             for paramter_name in ParameterNames:
-                length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * length_scales
-                self.length_scales.append(length_scale_temp)
-        elif type(length_scales) is list or type(length_scales) is np.ndarray:
+                length_scale_temp = (self.pbounds[paramter_name][1] - self.pbounds[paramter_name][0]) * bayes_length_scales
+                self.bayes_length_scales.append(length_scale_temp)
+        elif type(bayes_length_scales) is list or type(bayes_length_scales) is np.ndarray:
 
-            if not len(length_scales) == len(ParameterNames):
-                logger.error(f'length of length_scales must be single values or match number of parameters; you have'
-                             f'{len(ParameterNames)} Parameters, but {len(length_scales)} length_scales. Quitting')
+            if not len(bayes_length_scales) == len(ParameterNames):
+                logger.error(f'length of bayes_length_scales must be single values or match number of parameters; you have'
+                             f'{len(ParameterNames)} Parameters, but {len(bayes_length_scales)} bayes_length_scales. Quitting')
                 sys.exit(1)
-            self.length_scales = length_scales
+            self.bayes_length_scales = bayes_length_scales
         message = f'\nSetting the following length scales. Make sure they are in the right order!!\n'
         for i, paramter_name in enumerate(ParameterNames):
-            message = message + paramter_name + f': {self.length_scales[i]}\n'
+            message = message + paramter_name + f': {self.bayes_length_scales[i]}\n'
         logger.info(f'{bcolors.OKGREEN}{message}{bcolors.ENDC}')
 
     def _create_p_bounds(self, optimisation_params):
@@ -965,8 +983,8 @@ class BayesianOptimiser(TopasOptBaseClass):
         # instantiate optimizer:
 
         self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        self.optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.length_scales, nu=self.Matern_Nu),
-                                n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.GP_alpha)  # tuning of the gaussian parameters...
+        self.optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.bayes_length_scales, nu=self.Matern_Nu),
+                                n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
         utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
                                   kappa_decay=self.kappa_decay)
         logger.warning('setting numpy to ignore underflow errors.')

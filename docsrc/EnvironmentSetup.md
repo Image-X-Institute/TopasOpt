@@ -46,7 +46,7 @@ a few tips:
 # to deactivate the virtual environment
 deactivate
 # to leave the screen session
-hold ctrl, press a, release, then press d
+# hold ctrl, press a, release, then press d
 # to reneter the screen session
 screen -r TopasOpt  # or whatever name you gave this session
 # to exit and terminate screen session

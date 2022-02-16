@@ -1,5 +1,5 @@
 """
-Supporting classes and functions
+Supporting classes and functions that don't belong anywhere else in particular
 """
 from bayes_opt.logger import JSONLogger
 import sys
@@ -18,11 +18,7 @@ from scipy.stats import linregress
 from pathlib import Path
 plt.interactive(False)
 
-
-
 logging.basicConfig(level=logging.WARNING)
-
-
 
 class bcolors:
     """
@@ -66,10 +62,9 @@ class WaterTankData:
     There are two ways you might want to use this:
 
     1. Analyse a single dose file
-    2. Analyse multiple dose files
+    2. Analyse multiple dose files all on the same scoring grid
 
-    The use is very similar in each case: you will have a variety of metrics returned in lists/arrays, one for each
-    input file, and you will have an array called 'DoseCube' array. This is the agregate of all the input files. If you
+    The main attribute is the 'DoseCube' array. This is the agregate of all the input files. If you
     only put one file in, then this is simply the agregate of that single file.
     A number of plotting routines are already provided which operate on this array, but if you need to you can use
     ExtractDataFromDoseCube to generate any additional data from it.
@@ -88,35 +83,18 @@ class WaterTankData:
 
     """
 
-    def __init__(self, AnalysisPath, FileToAnalyse, MirrorData=False, AbsDepthDose=False,
-                 ParametricParameter=None, DesiredBeamletWidthAtSurface=None, FourierFilterIsoPlanData=False):
+    def __init__(self, AnalysisPath, FileToAnalyse, AbsDepthDose=False):
         """
         :param AnalysisPath: Path where files are located
         :type AnalysisPath: string
         :param FileToAnalyse: Can be either a single file or a list of tiles
-        :type FileToAnalyse: string
-        :param MirrorData: If True, will attempt to produce a full dataset based on symetry. This is useful when you have
-            generated beamlets for the 'Quarter' option.
-        :type MirrorData: Boolean, optional
+        :type FileToAnalyse: list or string
         :param AbsDepthDose: If True, plots are in dose, if False they are normalised to Dmax
         :type AbsDepthDose: Boolean, optional
-        :param ParametricParameter: If a parametric sweep was performed, telling Dose Analyser the parameter name allows
-            it to sort the metrics according to that parameter
-        :type ParametricParameter: String, optional
-        :param DesiredBeamletWidth: Used to crop the surface dose plane in _ExtractSurfaceDoseIntegral.
-            This is only used in very specific circumstances by the optimizer. If it's None, the actual beamlet width
-            will be used
-        :type DesiredBeamletWidthAtSurface: None or double, optional
-        :param FourierFilterIsoPlanData: if True, a low pass fourier filter is applied to the isoplane data before metrics
-            are extracted from it; this can help with noise but you should be very careful about how it effects the results.
-        :type FourierFilterIsoPlanData: Boolean, optional
         """
 
         self.AnalysisPath = AnalysisPath
         self.FileToAnalyse = FileToAnalyse
-        self.FourierFilterIsoPlanData = FourierFilterIsoPlanData
-        self.ParametricParameter = ParametricParameter
-        self.DesiredBeamletWidthAtSurface = DesiredBeamletWidthAtSurface
         # the below lists all get appended to as data is read in
         self.Xangles = []
         self.Yangles = []
@@ -130,13 +108,7 @@ class WaterTankData:
         self.DosePerCoulomb = []
         self.LegendNames = []
         self.OF = []
-        if self.ParametricParameter is not None:
-                self.ParametricMode = True
-                self.ParamValues = []
-                logging.warning(f'running in parametric mode for parameter {ParametricParameter}')
-        else:
-            self.ParametricMode = False
-        self.MirrorData = MirrorData  # None, or 'quarter'. other methods can be written as needed\
+
         self.ReverseZDirection = True  # True makes the PDDs go in the normal direction
         self.AbsDepthDose = AbsDepthDose  # if true, dose is plotted instead of percentage
 
@@ -157,9 +129,7 @@ class WaterTankData:
 
     def _ReadDoseFilesIntoDoseCube(self):
         """
-        in a loop:
-            1. Extract metrics from each file
-            2. Read all dose files into an integral 'dose cube' that can be queried later
+        read all dose files into an integral 'dose cube' that can be queried later
         """
         self.MultiFileMode = True  # overwrite below if not
         if isinstance(self.FileToAnalyse, str):
@@ -184,7 +154,6 @@ class WaterTankData:
         """
         read in the dose file using topas2numpy
         """
-
         try:
             FileLocation = str(Path(self.AnalysisPath) / self.CurrentFile)
             if not os.path.isfile(FileLocation):
@@ -547,93 +516,6 @@ class WaterTankData:
             plt.tight_layout()
             plt.show()
 
-    def Plot_IsoPlaneStatsVersusAngle(self):
-        """
-        Plots different stats per beamlet versus steering angle
-
-        at the moment, plots max dose (actually, 1st percentile dose) and FWHM as assessed using 2D gaussian fit
-        """
-
-        # so, for each absolute angle we are going to need the dose
-        try:
-            test = self.stats_axs
-        except AttributeError:
-
-            fig, self.stats_axs = plt.subplots(nrows=1,ncols=2,figsize=(10, 5))
-
-        xang = np.array(self.Xangles)
-        yang = np.array(self.Yangles)
-        DosePerCharge = np.array(self.DosePerCoulomb)
-
-        absAngle = np.sqrt(xang**2 + yang**2)
-        # normalise dose to central plane dose:
-        MaxDose = np.array(self.MaxDoseAtIsoplane)
-        # find the smallest angle:
-        AngleInd = np.argmin(absAngle)
-        if absAngle[AngleInd] > np.finfo(float).eps:
-            logging.warning(f'this model does not appear to have a central beamlet; normalising dose to the smallesr angle,'
-                            f' which is: {absAngle[AngleInd]}')
-
-        RelativeMaxDose = -abs((MaxDose*100/MaxDose[AngleInd])-100)
-
-        if self.ParametricMode:
-            # MaxDose = MaxDose *100/MaxDose[0]
-            self.stats_axs[0].scatter(self.ParamValues, DosePerCharge)
-            self.stats_axs[0].set_xlabel(self.ParametricParameter, fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[0].set_ylabel('Dose per Coulomb [Gy/C]', fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[0].set_title('Max Dose vs. Parameter', fontsize=FigureSpecs.TitleFontSize)
-            self.stats_axs[0].grid(True)
-        else:
-            self.stats_axs[0].scatter(absAngle, RelativeMaxDose)
-            # add line of best fit:
-            try:
-                slope, intercept, r_value, p_value, std_err = linregress(absAngle, RelativeMaxDose)
-            except Exception as e:
-                print(e)
-                logging.error('Error performing linear regression. This may be becayse you actually want to perform this '
-                              'analysis in parametric mode, but you have set the variable "ParametricParameter')
-                sys.exit()
-
-            FittedLine  = np.poly1d([slope,intercept])
-            self.stats_axs[0].plot(absAngle, FittedLine(absAngle), '--C7', linewidth=2)
-            self.stats_axs[0].set_xlabel('Absolute steering angle (degrees)', fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[0].set_ylabel('Difference from central channel (%)', fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[0].set_title('Dose vs. Angle', fontsize=FigureSpecs.TitleFontSize)
-            self.stats_axs[0].grid(True)
-            PlotText = f'f(\u03B8) ={slope:1.1f}\u03B8 + {intercept:1.1f}\n$R^2$={r_value**2:1.2f}'
-            PlotText = f'$R^2$={r_value ** 2:1.2f}'
-            self.stats_axs[0].text(2.0, -2.0, PlotText,fontsize=FigureSpecs.TitleFontSize)
-
-        # Plot beamlet widths versus angle:
-        if self.ParametricMode:
-
-            # self.BeamletWidthsGauss = np.divide(np.multiply(self.BeamletWidthsGauss,100),self.BeamletWidthsGauss[0])
-            self.stats_axs[1].scatter(self.ParamValues,self.BeamletWidthsGauss)
-            self.stats_axs[1].set_xlabel(self.ParametricParameter, fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[1].set_ylabel('FWHM of gausian fit [mm]', fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[1].set_title('Beamlet width vs. Parameter', fontsize=FigureSpecs.TitleFontSize)
-            self.stats_axs[1].grid(True)
-
-        else:
-            self.stats_axs[1].scatter(absAngle, self.BeamletWidthsGauss)
-            slope, intercept, r_value, p_value, std_err = linregress(absAngle, self.BeamletWidthsGauss)
-            FittedLine = np.poly1d([slope,intercept])
-
-            # self.stats_axs[1].plot(absAngle, FittedLine(absAngle), color='--C', linewidth=2)
-            self.stats_axs[1].set_xlabel('Absolute steering angle (degrees)', fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[1].set_ylabel('FWHM of gausian fit [mm]', fontsize=FigureSpecs.LabelFontSize)
-            self.stats_axs[1].set_title('Beamlet width vs. Angle', fontsize=FigureSpecs.TitleFontSize)
-
-            # PlotText = f'f(\u03B8) ={slope:1.1f}\u03B8 + {intercept:1.1f}\n$R^2$={r_value**2:1.2f}'
-            # PlotText = f'$R^2$={r_value ** 2:1.2f}'
-            # self.stats_axs[1].text(0, 7.86, PlotText,fontsize=FigureSpecs.TitleFontSize)
-            self.stats_axs[1].set_ylim([6, 8])
-            self.stats_axs[1].grid(True)
-
-        plt.tight_layout()
-        plt.show()
-
-
 def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None):
     """
     this produces depth dose and profile plots for a list of topas .bin files.
@@ -641,7 +523,7 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
     :param BinFiles: list of files to analyse
     :type BinFiles: list
     :param abs_dose: % dose (False) or absolute dose (True)
-    :type abs_doseL boolean, optional
+    :type abs_dose: boolean, optional
     :param custom_legend_names: if passed, this list will be used for legend. If not, file names will be used.
     :type custom_legend_names: list, optional
     """

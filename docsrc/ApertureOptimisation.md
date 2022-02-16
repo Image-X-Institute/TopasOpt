@@ -46,7 +46,7 @@ Create a python file called 'temp_GenerateTopasScript.py' (or whatever you want,
 import sys
 
 sys.path.append('../../TopasOpt')
-from TopasOpt.GenerateTopasScriptGenerator import CreateTopasScript
+from TopasOpt.TopasScriptGenerator import CreateTopasScript
 from pathlib import Path
 
 this_directory = Path(__file__).parent

@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../../TopasOpt')
-from TopasOpt.GenerateTopasScriptGenerator import GenerateTopasScriptGenerator
+from TopasOpt.TopasScriptGenerator import GenerateTopasScriptGenerator
 from pathlib import Path
 
 this_directory = Path(__file__).parent

@@ -6,10 +6,10 @@ different optimisers.
 
 
 
-CreateRunTopasScript
---------------------
+Optimisers
+----------
 
-.. automodule:: TopasBayesOpt.CreateRunTopasScript
+.. automodule:: TopasOpt.Optimisers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -17,23 +17,16 @@ CreateRunTopasScript
 TopasBayesOpt
 -------------
 
-.. automodule:: TopasBayesOpt.TopasBayesOpt
+.. automodule:: TopasOpt.GenerateTopasScriptGenerator
    :members:
    :undoc-members:
    :show-inheritance:
 
-WaterTankAnalyser
------------------
-
-.. automodule:: TopasBayesOpt.WaterTankAnalyser
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 utilities
 ---------
 
-.. automodule:: TopasBayesOpt.utilities
+.. automodule:: TopasOpt.utilities
    :members:
    :undoc-members:
    :show-inheritance:
