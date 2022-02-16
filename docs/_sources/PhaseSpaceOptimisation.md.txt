@@ -2,22 +2,20 @@
 
 > **Note:** in this example it is assumed you have already completed the first example on Geometry optimisation.
 
-In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters.
+In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
+
+![](_resources/ApertureOpt/Sketch.png)
 
 This is a much more difficult problem for several reasons:
 
 - We will optimise five parameters simultaneously instead of three. 
 - X-ray dose is actually pretty insensitive to the starting parameters of the electron beam used to produce it. This means we are going to have to do two things:
   - Be a bit smarter with our objective function
-  - Run more particles to minimise the amount of noise in the objective function
-
-Together, these factors mean it will take a lot longer to run this optimisation; PUT ESTIMATED TIME HERE
-
-PUT FIGURE SHOWING PARAMETERS TO BE OPTIMISED HERE
+  - Run more iterations. This means it will take longer to run this optimization; allow ~16 hours on a 16 core machine.
 
 ## Directory set up
 
-Since we are now running a new optimisation, you have to create a new base directory (you will repeat these basic steps every time you have an optimisation problem). So, create a new directory called e.g. PhaseSpaceOptimisation. The following instructions refer to being inside this directory.
+Since we are now running a new optimisation, you have to create a new base directory (you will repeat these basic steps every time you have an optimisation problem). So, create a new directory called e.g. PhaseSpaceOptimisation. The basic setup is the same as the ApertureOptimisation example.
 
 ## Creating GenerateTopasScript.py
 
@@ -25,7 +23,7 @@ This step is the same as in example 1; you should create your base line topas sc
 
 ## Creating RunOptimisation.py
 
-The following is the script to run this optimisation. Remeber to change the BaseDirectory to a place that exists on your computer!
+The following is the script to run this optimisation. Remember to change the BaseDirectory to a place that exists on your computer!
 
 ```python
 import sys
@@ -33,7 +31,6 @@ import os
 import numpy as np
 from pathlib import Path
 
-sys.path.append('../../../TopasOpt')
 from TopasOpt import Optimisers as to
 
 BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
@@ -55,7 +52,7 @@ optimisation_params['Nitterations'] = 100
 ReadMeText = 'This is a public service announcement, this is only a test'
 
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, length_scales=0.1)
+                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
 Optimiser.RunOptimisation()
 ```
 
@@ -114,7 +111,7 @@ We are going to keep this relatively simple by just having four optimization par
 
 ![](_resources/phaseSpaceOpt/CorrelationPlot.png)
 
-Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recored:
+Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recorded:
 
 ```
 Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutoff': 8.093521167768209, 'BeamAngularSpread': 0.01, 'BeamEnergy': 9.606637841613118, 'BeamPositionCutoff': 2.265724252124363, 'BeamPositionSpread': 0.309694887480956}}
@@ -147,11 +144,7 @@ These plots show the predicted change in the objective function as each single p
 Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:
 
 ```python
-import sys
-from pathlib import Path
-
-sys.path.append(str(Path('../../TopasOpt').resolve()))
-from WaterTankAnalyser import compare_multiple_results
+from TopasOpt.utilities import compare_multiple_results
 
 # add all the files you want to compare to this list
 FilesToCompare = [
