@@ -935,6 +935,23 @@ class BayesianOptimiser(TopasOptBaseClass):
             plt.savefig(SaveName)
             plt.close(fig)
 
+    def _update_logs_with_length_scales(self):
+        # update the logs with the length scale information\
+        start_length = self.optimizer._gp.kernel.length_scale
+        final_length = self.optimizer._gp.kernel_.length_scale
+        keys = sorted(self.pbounds)
+        start_length = dict(zip(keys, start_length))
+        final_length = dict(zip(keys, final_length))
+        Entry = f'\nStarting length scales were {start_length}'
+        Entry = Entry + f'\nOptimised length scales were {final_length}'
+
+        LogFile = Path(self.BaseDirectory) / self.SimulationName
+        LogFile = LogFile / 'logs'
+        LogFile = str(LogFile / 'OptimisationLogs.txt')
+
+        with open(LogFile, 'a') as f:
+            f.write(Entry)
+
     def RunOptimisation(self):
         """
         This is the main optimisation loop.
@@ -1011,14 +1028,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         best = self.optimizer.max
         best_itteration = np.argmin(abs(self.optimizer.space.target- best['target']))
         self._write_final_log_entry(list(best['params'].values()), best['target'],Itteration=best_itteration)
-        # best['target'] = -1 * best['target']  # min/max paradigm...
-        # LogFile = Path(self.BaseDirectory) / self.SimulationName
-        # LogFile = LogFile / 'logs'
-        # LogFile = str(LogFile / 'OptimisationLogs.txt')
-        #
-        # with open(LogFile, 'a') as f:
-        #     Entry = f'\nBest parameter set: {best}'
-        #     f.write(Entry)
+        self._update_logs_with_length_scales()
 
     def RestartOptimisation(self):
         """
