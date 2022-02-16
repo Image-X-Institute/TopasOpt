@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example 2: Phase space optimisation &mdash; TopasOpt  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Next steps" href="next_steps.html" />
+    <link rel="prev" title="Example 1: Geometry Optimisation" href="ApertureOptimisation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> TopasOpt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="worked_examples.html">Worked Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html">Example 1: Geometry Optimisation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 2: Phase space optimisation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#directory-set-up">Directory set up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-generatetopasscript-py">Creating GenerateTopasScript.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-runoptimisation-py">Creating RunOptimisation.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#editing-generatetopasscript-py">Editing GenerateTopasScript.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-topasobjectivefunction-py">Create TopasObjectiveFunction.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-example">Running the example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analyzing-the-results">Analyzing the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comparing-the-results">Comparing the results:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TopasOpt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="worked_examples.html">Worked Examples</a> &raquo;</li>
+      <li>Example 2: Phase space optimisation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/PhaseSpaceOptimisation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-2-phase-space-optimisation">
+<h1>Example 2: Phase space optimisation<a class="headerlink" href="#example-2-phase-space-optimisation" title="Permalink to this headline"></a></h1>
+<blockquote>
+<div><p><strong>Note:</strong> in this example it is assumed you have already completed the first example on Geometry optimisation.</p>
+</div></blockquote>
+<p>In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters.</p>
+<p>This is a much more difficult problem for several reasons:</p>
+<ul class="simple">
+<li><p>We will optimise five parameters simultaneously instead of three.</p></li>
+<li><p>X-ray dose is actually pretty insensitive to the starting parameters of the electron beam used to produce it. This means we are going to have to do two things:</p>
+<ul>
+<li><p>Be a bit smarter with our objective function</p></li>
+<li><p>Run more particles to minimise the amount of noise in the objective function</p></li>
+</ul>
+</li>
+</ul>
+<p>Together, these factors mean it will take a lot longer to run this optimisation; PUT ESTIMATED TIME HERE</p>
+<p>PUT FIGURE SHOWING PARAMETERS TO BE OPTIMISED HERE</p>
+<section id="directory-set-up">
+<h2>Directory set up<a class="headerlink" href="#directory-set-up" title="Permalink to this headline"></a></h2>
+<p>Since we are now running a new optimisation, you have to create a new base directory (you will repeat these basic steps every time you have an optimisation problem). So, create a new directory called e.g. PhaseSpaceOptimisation. The following instructions refer to being inside this directory.</p>
+</section>
+<section id="creating-generatetopasscript-py">
+<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this headline"></a></h2>
+<p>This step is the same as in example 1; you should create your base line topas script as described in that example</p>
+</section>
+<section id="creating-runoptimisation-py">
+<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline"></a></h2>
+<p>The following is the script to run this optimisation. Remeber to change the BaseDirectory to a place that exists on your computer!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../../TopasOpt&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
+
+<span class="n">BaseDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (Sydney Uni)/Projects/PhaserSims/topas&#39;</span>
+<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;PhaseSpaceOptimisationTest&#39;</span>
+<span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
+<span class="c1"># set up optimisation params:</span>
+<span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;ParameterNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BeamEnergy&#39;</span><span class="p">,</span> <span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">,</span> <span class="s1">&#39;BeamPositionSpread&#39;</span><span class="p">,</span> <span class="s1">&#39;BeamAngularSpread&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;BeamAngularCutoff&#39;</span><span class="p">]</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="c1"># generate a random starting point between our bounds (it doesn&#39;t have to be random, this is just for demonstration purposes)</span>
+<span class="n">random_start_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">],</span>
+                                                     <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_start_point</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # you can suggest points to test if you want - we won&#39;t here.</span>
+<span class="n">ReadMeText</span> <span class="o">=</span> <span class="s1">&#39;This is a public service announcement, this is only a test&#39;</span>
+
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>
+                                 <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">length_scales</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">Optimiser</span><span class="o">.</span><span class="n">RunOptimisation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="editing-generatetopasscript-py">
+<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Permalink to this headline"></a></h2>
+<p>Just like last time, we have to edit our baseline script with the parameters that we want to optimise.</p>
+<p>In order to reduce the total number of parameters we need to tune, we are going to make the assumption that our source is symmetric in x and y. Make the following changes to GenerateTopasScript.py:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># change</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamEnergy               = 10.0 MeV&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionCutoffX = 2 mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionCutoffY = 2 mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionSpreadX = 0.3 mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionSpreadY = 0.3 mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularCutoffX = 5 deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularCutoffY = 5 deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularSpreadX = 0.07 deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularSpreadY = 0.07 deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ic:So/Beam/NumberOfHistoriesInRun = 500000&#39;</span><span class="p">)</span>
+<span class="c1"># to</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamEnergy               = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamEnergy&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; MeV&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionCutoffX = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionCutoffY = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionSpreadX = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamPositionSpread&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamPositionSpreadY = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamPositionSpread&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularCutoffX = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularCutoffY = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularSpreadX = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamAngularSpread&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dc:So/Beam/BeamAngularSpreadY = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;BeamAngularSpread&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; deg&#39;</span><span class="p">)</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ic:So/Beam/NumberOfHistoriesInRun = 200000&#39;</span><span class="p">)</span> <span class="c1"># note we run more particles in this example because we are more sensitive to noise</span>
+</pre></div>
+</div>
+</section>
+<section id="create-topasobjectivefunction-py">
+<h2>Create TopasObjectiveFunction.py<a class="headerlink" href="#create-topasobjectivefunction-py" title="Permalink to this headline"></a></h2>
+<p>We need to create an objective function.</p>
+<p>Since our basic problem is the same in example 1, we could in principle just copy and paste the objective function we used in that example. However, that objective function is actually pretty basic, and there are a few things we could change to make our lives easier.</p>
+<ul class="simple">
+<li><p>Place more emphasis on different parts of the dose cube - for instance, we know that the build up region in a depth dose curve tends to be quite sensitive to beam energy, so we could weight this part of the profile more heavily. We also know that that the penumbral region of a profile tends to be sensitive to the geometric properties of the electron beam, so we could weight these regions more heavily as well</p></li>
+<li><p>Because we expect the results aren’t especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes.</p></li>
+</ul>
+<p>With these considerations in mind, I developed the below objective function. It’s still based on assessing the differences between depth dose curves and profiles, but it has some different weightings thrown in and we take the log.</p>
+</section>
+<section id="running-the-example">
+<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this headline"></a></h2>
+<p>Note that there are many other beam parameters we could choose to include.
+We are going to keep this relatively simple by just having four optimization parameters</p>
+</section>
+<section id="analyzing-the-results">
+<h2>Analyzing the results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline"></a></h2>
+<p><img alt="_images/ConvergencePlot1.png" src="_images/ConvergencePlot1.png" /></p>
+<p><img alt="_images/CorrelationPlot.png" src="_images/CorrelationPlot.png" /></p>
+<p>Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recored:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Best</span> <span class="n">parameter</span> <span class="nb">set</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5824966507848057</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;BeamAngularCutoff&#39;</span><span class="p">:</span> <span class="mf">8.093521167768209</span><span class="p">,</span> <span class="s1">&#39;BeamAngularSpread&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;BeamEnergy&#39;</span><span class="p">:</span> <span class="mf">9.606637841613118</span><span class="p">,</span> <span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">:</span> <span class="mf">2.265724252124363</span><span class="p">,</span> <span class="s1">&#39;BeamPositionSpread&#39;</span><span class="p">:</span> <span class="mf">0.309694887480956</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>These values are copied into the below table along with the ground truth values and the range we allowed them to vary over:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Ground Truth</th>
+<th>Allowed Range</th>
+<th>Optimized</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BeamEnergy</td>
+<td>10</td>
+<td>6-12</td>
+<td>9.6</td>
+</tr>
+<tr>
+<td>BeamPositionCutoff</td>
+<td>2</td>
+<td>1-3</td>
+<td>2.3</td>
+</tr>
+<tr>
+<td>BeamPositionSpread</td>
+<td>0.3</td>
+<td>.1-1</td>
+<td>.31</td>
+</tr>
+<tr>
+<td>BeamAngularSpread</td>
+<td>.07</td>
+<td>.01-1</td>
+<td>.01</td>
+</tr>
+<tr>
+<td>BeamAngularCutoff</td>
+<td>5</td>
+<td>1-10</td>
+<td>8.1</td>
+</tr>
+</tbody>
+</table><p>Our model actually seems to have done quite a good job!</p>
+<p>Another thing that is interesting to look at can be found in the logs/SingleParameterPlots directly.</p>
+<p>These plots show the predicted change in the objective function as each single parameter is varied and all other parameters are held at their optimal value. From these plots, we can see that the most sensitive parameters seem to be BeamEnergy, BeamPositionSpread, and BeamAngularSpread. The parameter we got the worst estimate for was BeamAngularCutoff, but from these plots it appears that the solution isn’t very sensitive to this parameter. Note also that there is fairly high uncertainty in it’s estimate.</p>
+<blockquote>
+<div><p><strong>warning:</strong> these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.</p>
+</div></blockquote>
+<p><img alt="_images/singeparamplots.png" src="_images/singeparamplots.png" /></p>
+</section>
+<section id="comparing-the-results">
+<h2>Comparing the results:<a class="headerlink" href="#comparing-the-results" title="Permalink to this headline"></a></h2>
+<p>Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../../TopasOpt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+<span class="kn">from</span> <span class="nn">WaterTankAnalyser</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
+
+<span class="c1"># add all the files you want to compare to this list</span>
+<span class="n">FilesToCompare</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin&#39;</span><span class="p">]</span>
+
+<span class="c1"># abs_dose = True if you don&#39;t want to normalise the plots</span>
+<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">FilesToCompare</span><span class="p">,</span> <span class="n">abs_dose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Comparing our best result with the ground truth yields the below plot:</p>
+<p><img alt="_images/compare.png" src="_images/compare.png" /></p>
+<p>A few things to note about this plot:</p>
+<ul class="simple">
+<li><p>although our optimiser didn’t recover the exact parameters, the parameters it did select give a very good match to the ground truth</p></li>
+<li><p>We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ApertureOptimisation.html" class="btn btn-neutral float-left" title="Example 1: Geometry Optimisation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="next_steps.html" class="btn btn-neutral float-right" title="Next steps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

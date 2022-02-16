@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Example 1: Geometry Optimisation &mdash; TopasOpt  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example 2: Phase space optimisation" href="PhaseSpaceOptimisation.html" />
+    <link rel="prev" title="Worked Examples" href="worked_examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> TopasOpt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="worked_examples.html">Worked Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 1: Geometry Optimisation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-model-and-problem-overview">Base model and problem overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-set-up">environment set up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-set-up">directory set up</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#copy-the-base-topas-files">Copy the base topas files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-generatetopasscript-py">Creating GenerateTopasScript.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-runoptimisation-py">Creating RunOptimisation.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#editing-generatetopasscript-py">Editing GenerateTopasScript.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-topasobjectivefunction-py">Creating TopasObjectiveFunction.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-example">Running the example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interpreting-the-results">Interpreting the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comparison-with-nelder-mead-optimiser">Comparison with Nelder-Mead optimiser</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html">Example 2: Phase space optimisation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TopasOpt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="worked_examples.html">Worked Examples</a> &raquo;</li>
+      <li>Example 1: Geometry Optimisation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ApertureOptimisation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-1-geometry-optimisation">
+<h1>Example 1: Geometry Optimisation<a class="headerlink" href="#example-1-geometry-optimisation" title="Permalink to this headline"></a></h1>
+<p>The starting point for an optimisation is a working topas model. In this example we are going to optimise the geometry of a simple x-ray collimator. We are going to randomise the values shown in read, and see if we can recover the correct values using the Bayesian optimisation. To guide the optimisation, we will create an objective function which simply measures the difference between the original depth dose curves and profile data and those created by a given set of parameters.</p>
+<p>If you are an experienced python and topas user, you should allow 1-2 hours to set up this example (this will get much quicker once you get the hang of it; it takes me about 15 minutes).</p>
+<p>Actually running this example will take ~4 hours on a decent computer.</p>
+<section id="base-model-and-problem-overview">
+<h2>Base model and problem overview<a class="headerlink" href="#base-model-and-problem-overview" title="Permalink to this headline"></a></h2>
+<p>In this example, we will optimise the geometry of an X-ray collimator. The geometry is shown below, with the parameters targeted for optimisation shown in red. The original values for each of these parameters are: Collimator Thickness = 54 mm, Up-stream aperture radius = 1.82 mm, and Down-stream aperture radius = 2.5 mm. In this example, each of these parameters will firt be assigned a random value. We will then attempt to recover the original values by constructing a simple objective function based on the differences between the original data and the current iteration.</p>
+<p>You will need the data from the original simulation to complete this example; it is available <a class="reference external" href="https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles">here</a></p>
+<p><img alt="_images/Sketch.png" src="_images/Sketch.png" /></p>
+</section>
+<section id="environment-set-up">
+<h2>environment set up<a class="headerlink" href="#environment-set-up" title="Permalink to this headline"></a></h2>
+<p>If you need help with getting an appropriate environment set up properly, see HERE</p>
+</section>
+<section id="directory-set-up">
+<h2>directory set up<a class="headerlink" href="#directory-set-up" title="Permalink to this headline"></a></h2>
+<p>To start with, create a folder somewhere called for instance ‘ApertureOptExample’ (or whatever). This is where you will store all the code necessary to run the optimisation. The rest of the instructions assume you are in this working directory.</p>
+<p>When you have finished working through this example you should have a working directory which looks like this:</p>
+<p><img alt="_images/ApertureDirectoryStructure.jpg" src="_images/ApertureDirectoryStructure.jpg" /></p>
+</section>
+<section id="copy-the-base-topas-files">
+<h2>Copy the base topas files<a class="headerlink" href="#copy-the-base-topas-files" title="Permalink to this headline"></a></h2>
+<p>The code will need to know where your base model is stored. The base model for this application is available <a class="reference external" href="https://downgit.github.io/#/home?url=https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles">here</a></p>
+<p>Download these files into a folder inside your working directory (ApertureOptExample in this example).</p>
+<p>Note that in principle these files can reside anywhere; we are going to put them inside the working directory to make this example as simple as possible!</p>
+</section>
+<section id="creating-generatetopasscript-py">
+<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this headline"></a></h2>
+<p>The first thing we will be needing is a function that generates your topas script.</p>
+<p>Create a python file called ‘temp_GenerateTopasScript.py’ (or whatever you want, the name isn’t important). Copy the below code into it (or use an interactive console if you prefer):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../TopasOpt&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">TopasOpt.TopasScriptGenerator</span> <span class="kn">import</span> <span class="n">CreateTopasScript</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">this_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
+<span class="c1"># nb: the order of input files is important to make sure that a phase space files are correctly classified</span>
+<span class="n">CreateTopasScript</span><span class="p">(</span><span class="n">this_directory</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;../SimpleCollimatorExample_TopasFiles/WaterTank.tps&#39;</span><span class="p">])</span>
+<span class="c1"># update these paths so that it points to wherever you have stored the base files</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>Tip:</strong> CreateTopasScript is a code that takes a code and generates a code that generates a code. If that makes your head hurt you are not alone!</p>
+</div></blockquote>
+<p>If it worked, you will now have a python function in your Optimisation Directory called GenerateTopasScript.py.</p>
+<p>If you open this script up, you will see that all it has done it copied the contents of the topas file you input into a list, which it returns. At the moment, it’s not very useful because every time it’s called it will copy out exactly the same script! We will change that a bit later; but first it’s a good idea to test this script and see if it actually works.</p>
+<p>To test it, run it directly. This will create two scripts in your working directory called SimpleCollimator.tps and WaterTank.tps. They should be almost identical to the input scripts. The differences are:</p>
+<ul class="simple">
+<li><p><strong>Include files:</strong> if your original scripts contained any include statements, any included files are copied to ApertureOptExample/IncludeFiles. This is to ensure that this example will run even if you move it to a different server. This operation is recursive, i.e. include files of include files are also copied</p></li>
+<li><p><strong>Output files:</strong> Any output file will now be appended with iteration, e.g. for iteration 7 the output files will be called OriginalOutputName_Itt_7</p></li>
+<li><p><strong>Input files:</strong> When phase space sources are being used, it is a bit trickier to figure out what to do, since you could be using a static phase space source, or you could be using a phase space source which is generated in a previous sim.  CreateTopasScript will try to figure out which of these is occuring by checking if the input phase space is related to the output of a previous script. If the phase space is dynamic, its name will be updated using the same logic as above. If it is static,  we will  simply update the line to an absolute path. Note that unlike include files, we will not automatically create a local copy - this is because phase space files can be huge!</p></li>
+</ul>
+<blockquote>
+<div><p><strong>warning:</strong> There are probably situations which CreateTopasScript does not handle well. For instance, CAD file imports are currently unsupported. In general, you should think of the script created at this point as a first draft. You may have to do some further work on it to get it to do exactly what you want. We will make some edits to GenerateTopasScripts.py a bit later on in this example. (You can delete temp_GenerateTopasScript.py now if you want to, it has done its job. )</p>
+</div></blockquote>
+</section>
+<section id="creating-runoptimisation-py">
+<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline"></a></h2>
+<p>Create a new file called RunOptimisation_main.py (or whatever you want, the name isn’t important). Copy the below code into it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/mrlSSDfixed/Brendan/Dropbox (Sydney Uni)/Projects/TopasOpt/TopasOpt&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">TopasOpt</span> <span class="k">as</span> <span class="nn">to</span>
+
+<span class="n">BaseDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (Sydney Uni)/Projects/PhaserSims/topas&#39;</span>
+<span class="c1"># Update this! ^^^ This needs to be an existing location on your computer where you will store your sims</span>
+<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;BayesianOptimisationTest&#39;</span>
+<span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>  <span class="c1"># points to whatever directory this script is in</span>
+
+<span class="c1"># set up optimisation params:</span>
+<span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;ParameterNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UpStreamApertureRadius&#39;</span><span class="p">,</span> <span class="s1">&#39;DownStreamApertureRadius&#39;</span><span class="p">,</span> <span class="s1">&#39;CollimatorThickness&#39;</span><span class="p">]</span>
+<span class="c1"># parameter names are just labels and can be called whatever you want, as long as they are used consistently</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="c1"># generate a random starting point between our bounds: (it doesn&#39;t have to be random, this is just for demonstration purposes)</span>
+<span class="n">random_start_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">],</span>
+                                                     <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_start_point</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # you can suggest points to test if you want - we won&#39;t do this here here.</span>
+<span class="n">ReadMeText</span> <span class="o">=</span> <span class="s1">&#39;This is a public service announcement, this is only a test&#39;</span>
+
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>
+                                 <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">Optimiser</span><span class="o">.</span><span class="n">RunOptimisation</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A full list of the inputs for BayesianOptimiser is HERE, but the inputs we are using this case are described below:</p>
+<ul class="simple">
+<li><p><strong>optimisation_params</strong> is the dictionary of parameters we set up in this script</p></li>
+<li><p><strong>BaseDirectory</strong> is where you want to store all your optimisations</p></li>
+<li><p><strong>SimulationName</strong> this particular simulation will be stored at BaseDirectory / SimulationName</p></li>
+<li><p><strong>OptimisationDirectory</strong> Is the directory where this script is located. In this example this is ApertureOptExample</p></li>
+<li><p><strong>ReadMeText</strong> is an optional parameter where you can simply enter some text describing what the optimisation is supposed to be doing. this can be pretty useful when you come back to some case months later!</p></li>
+<li><p><strong>Overwrite=True</strong> means that the optimiser will empty any files in BaseDirectory / SimulationName. If this option is False, the code will ask you first.</p></li>
+<li><p><strong>TopasLocation</strong> is the path to your topas installation. If you followed the installation instructions, this will be at ~/topas, which is where the code will look by default.</p></li>
+</ul>
+</section>
+<section id="editing-generatetopasscript-py">
+<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Permalink to this headline"></a></h2>
+<p>Remember from earlier that GenerateTopasScript.py currently regenerates the original topas scripts. For an optimisation, we need to be able to receive parameters from the optimiser, and build a model reflecting these parameters. Therefore we will have to make some changes to this script!</p>
+<p>Whenever GenerateTopasScript is called from the optimiser, it will be passed a dictionary that contains the variables defined in optimisation_params and their current values. We need to edit GenerateTopasScript so that when these parameters change, the topas parameters change accordingly. Firstly, we need to change three lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. change</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d:Ge/SecondaryCollimator/RMin2      = 1.82 mm&#39;</span><span class="p">)</span>
+<span class="c1"># to</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d:Ge/SecondaryCollimator/RMin2      = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;DownStreamApertureRadius&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+
+<span class="c1"># 2. change</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d:Ge/SecondaryCollimator/RMin1      = 2.5 mm&#39;</span><span class="p">)</span>
+<span class="c1"># to</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d:Ge/SecondaryCollimator/RMin1      = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;UpStreamApertureRadius&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+
+<span class="c1"># 3. change</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d:Ge/SecondaryCollimator/HL         = 27 mm&#39;</span><span class="p">)</span>
+<span class="c1"># to</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;d:Ge/SecondaryCollimator/HL      = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;CollimatorThickness&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; mm&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Notice that we have used the same variable names that we set up RunOptimisation.py. These can be called anything you want, they just have to be used consistently.</p>
+<p>We will make a few more changes. The original files used 500000 primary particles which are split 1000 times in the target. The resultant phase space is scored just below the collimator, and recycled 200 times in the water tank simulation. This took around 1 hour to run on 16 multi threaded cores.</p>
+<p>We don’t actually need especially high quality data to guide the optimser, so I’m going to reduce the number of primary particles by a factor of 10:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># change</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ic:So/Beam/NumberOfHistoriesInRun = 500000&#39;</span><span class="p">)</span>
+<span class="c1"># to</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ic:So/Beam/NumberOfHistoriesInRun = 50000&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>Hint</strong> In many cases, it is desirable to simple check that the optimisation will run through a complete iteration before running anything computationally intensive. To test that, you could just change NumberOfHistoriesInRun to e.g. 100</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Hint:</strong> Figuring out the optimal trade-off between simulation time and simulation noise is something that can take quite a while to get right! It can be helpful to run the same simulation e.g. 10 times, and assess the variance in the objective function against the accuracy of the result you hope to obtain with the optimization.</p>
+</div></blockquote>
+</section>
+<section id="creating-topasobjectivefunction-py">
+<h2>Creating TopasObjectiveFunction.py<a class="headerlink" href="#creating-topasobjectivefunction-py" title="Permalink to this headline"></a></h2>
+<p>Finally, create a file called TopasObjectiveFunction.py. The name of this <strong>does</strong> matter!</p>
+<p>The only things this file <strong>must</strong> do is</p>
+<ol class="simple">
+<li><p>Contain a function called TopasObjectiveFunction which:</p>
+<ol class="simple">
+<li><p>Receive two inptuts from the optimiser: the location of the results, and the current iteration</p></li>
+<li><p>Return a value for the objective function to the optimiser.</p></li>
+</ol>
+</li>
+</ol>
+<p>A very simple example of a function which meets these requirements is below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Of course, this is pretty useless as an objective function since it returns a random number that has
+nothing to do with the results! But it illustrates a very useful principle: all this function
+has to do is take two parameters and return a number. You can do whatever you want in between.</p>
+<p>A more sensible objective function must do a few more things:</p>
+<ul class="simple">
+<li><p>Read in the latest results,</p></li>
+<li><p>Extract some metrics from them</p></li>
+<li><p>Calculate an objective value based on those results.</p></li>
+</ul>
+<p>The actual objective function we will use in this example fulfills these criteria, and is copied below.
+Copy this code into TopasObjectiveFunction.py.
+Update the location of <code class="docutils literal notranslate"><span class="pre">OriginalDataLoc</span></code> to wherever you downloaded the input topas scripts.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../../TopasOpt&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">WaterTankAnalyser</span> <span class="kn">import</span> <span class="n">WaterTankData</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">CalculateObjectiveFunction</span><span class="p">(</span><span class="n">TopasResults</span><span class="p">):</span>
+    <span class="n">OriginalDataLoc</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="s1">&#39;../SimpleCollimatorExample_TopasFiles/Results&#39;</span><span class="p">)</span>
+    <span class="n">File</span> <span class="o">=</span> <span class="s1">&#39;WaterTank&#39;</span>
+    <span class="n">OriginalResults</span> <span class="o">=</span> <span class="n">WaterTankData</span><span class="p">(</span><span class="n">OriginalDataLoc</span><span class="p">,</span> <span class="n">File</span><span class="p">)</span>
+
+    <span class="c1"># define the points we want to collect our profile at:</span>
+    <span class="n">Xpts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">OriginalResults</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">OriginalResults</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># profile over entire X range</span>
+    <span class="n">Ypts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Xpts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">Zpts</span> <span class="o">=</span> <span class="n">OriginalResults</span><span class="o">.</span><span class="n">PhantomSizeZ</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Xpts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># at the middle of the water tank</span>
+
+    <span class="n">OriginalProfile</span> <span class="o">=</span> <span class="n">OriginalResults</span><span class="o">.</span><span class="n">ExtractDataFromDoseCube</span><span class="p">(</span><span class="n">Xpts</span><span class="p">,</span> <span class="n">Ypts</span><span class="p">,</span> <span class="n">Zpts</span><span class="p">)</span>
+    <span class="n">OriginalProfileNorm</span> <span class="o">=</span> <span class="n">OriginalProfile</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">OriginalProfile</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">CurrentProfile</span> <span class="o">=</span> <span class="n">TopasResults</span><span class="o">.</span><span class="n">ExtractDataFromDoseCube</span><span class="p">(</span><span class="n">Xpts</span><span class="p">,</span> <span class="n">Ypts</span><span class="p">,</span> <span class="n">Zpts</span><span class="p">)</span>
+    <span class="n">CurrentProfileNorm</span> <span class="o">=</span> <span class="n">CurrentProfile</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">CurrentProfile</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">ProfileDifference</span> <span class="o">=</span> <span class="n">OriginalProfileNorm</span> <span class="o">-</span> <span class="n">CurrentProfileNorm</span>
+
+    <span class="c1"># define the points we want to collect our DD at:</span>
+    <span class="n">Zpts</span> <span class="o">=</span> <span class="n">OriginalResults</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">Xpts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Zpts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">Ypts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Zpts</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">OriginalDepthDose</span> <span class="o">=</span> <span class="n">OriginalResults</span><span class="o">.</span><span class="n">ExtractDataFromDoseCube</span><span class="p">(</span><span class="n">Xpts</span><span class="p">,</span> <span class="n">Ypts</span><span class="p">,</span> <span class="n">Zpts</span><span class="p">)</span>
+    <span class="n">CurrentDepthDose</span> <span class="o">=</span> <span class="n">TopasResults</span><span class="o">.</span><span class="n">ExtractDataFromDoseCube</span><span class="p">(</span><span class="n">Xpts</span><span class="p">,</span> <span class="n">Ypts</span><span class="p">,</span> <span class="n">Zpts</span><span class="p">)</span>
+    <span class="n">OriginalDepthDoseNorm</span> <span class="o">=</span> <span class="n">OriginalDepthDose</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">OriginalDepthDose</span><span class="p">)</span>
+    <span class="n">CurrentDepthDoseNorm</span> <span class="o">=</span> <span class="n">CurrentDepthDose</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">CurrentDepthDose</span><span class="p">)</span>
+    <span class="n">DepthDoseDifference</span> <span class="o">=</span> <span class="n">OriginalDepthDoseNorm</span> <span class="o">-</span> <span class="n">CurrentDepthDoseNorm</span>
+
+    <span class="n">ObjectiveFunction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ProfileDifference</span><span class="p">))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">DepthDoseDifference</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ObjectiveFunction</span>
+
+
+<span class="k">def</span> <span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+    <span class="n">ResultsFile</span> <span class="o">=</span> <span class="n">ResultsLocation</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;WaterTank_itt_</span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s1">.bin&#39;</span>
+    <span class="n">path</span><span class="p">,</span> <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">)</span>
+    <span class="n">TopasResults</span> <span class="o">=</span> <span class="n">WaterTankData</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>  <span class="c1"># WaterTank data is built on topas2numpy</span>
+    <span class="n">OF</span> <span class="o">=</span> <span class="n">CalculateObjectiveFunction</span><span class="p">(</span><span class="n">TopasResults</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">OF</span>
+</pre></div>
+</div>
+<p>This code can serve as a useful template for for developing your own objective functions, but as mentioned: your objective function can do anything you want, as long as it take the two parameters ResultsLocation and iteration and return a number.</p>
+<p>The objective function we are using is simply the sum of the absolute differences between a profile at iso center and a depth dose curve.  Note that both the current and original data are normalised to account for the fact that different numbers of primary particles are being used.</p>
+<blockquote>
+<div><p><strong>Hint:</strong> if you want a guaranteed way to impress your friends and family, you can tell them that this is an L1 norm objective function</p>
+</div></blockquote>
+</section>
+<section id="running-the-example">
+<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this headline"></a></h2>
+<p>You now have all the building blocks in place to run this example. To do so, you simply need to run RunOptimisation_main.py:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># from a command window:</span>
+python3 RunOptimisation_main.py 
+</pre></div>
+</div>
+<p>Note that although I have tried to make a relatively light weight example here, it still requires a substantial server to run on. I ran this example on a server with 16 multi-threaded CPUs and it took around 5 minutes per iteration. To complete 40 iterations therefore will take ~ 4 hours.</p>
+<blockquote>
+<div><p><strong>warning:</strong> I have used very aggressive variance reduction in this example. Always be careful with <a class="reference external" href="https://topas.readthedocs.io/en/latest/parameters/variance/index.html">implementing variance reduction techniques</a>.</p>
+</div></blockquote>
+</section>
+<section id="interpreting-the-results">
+<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this headline"></a></h2>
+<p>Ok, you’ve gone away and drunk several beers while the optimisation was running, and you are now ready to see how it did!</p>
+<p>Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOptimisation script. An explanation of the folders you see here:</p>
+<ul class="simple">
+<li><p><strong>logs:</strong> Contains log files from the optimisers and results from the optimisation.</p>
+<ul>
+<li><p><strong>TopasLogs:</strong> contains the output from each topas simulation that was run. If your topas sims ever crash, this is a good starting point to figure out why</p></li>
+<li><p><strong>SingleParameterPlots:</strong> This contains the estimate of how the objective function will change as a function of each parameter, assuming all other parameters are held at the (current) optimal value,</p></li>
+</ul>
+</li>
+<li><p><strong>Results:</strong> Contains the topas simulation outputs. By default it will contain the result of every simulation you ran. In some cases this will be a lot of unnecessary data, and you can set ResultsToKeep = ‘last’ <strong>CODE THIS</strong></p></li>
+<li><p><strong>TopasScripts:</strong> Contains the scripts used to run each iteration.</p></li>
+</ul>
+<p>To start with, have a look at ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.</p>
+<p><img alt="_images/ConvergencePlot.png" src="_images/ConvergencePlot.png" /></p>
+<p>Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be &lt; 0.5.</p>
+<blockquote>
+<div><p><strong>Note:</strong> the model doesn’t have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function</p>
+</div></blockquote>
+<p><img alt="_resources/CorrelationPlot.png" src="_resources/CorrelationPlot.png" /></p>
+<p>If the correlation isn’t great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts <strong>after</strong> it has seen each point. If this also isn’t working, you have a serious problem with the model, since predicting something that has already happened isn’t very difficult!!</p>
+<p>Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value. Note that you should interpret these in the context of the correlation plot. If the correlation is high, then these should represent a reasonable accurate interpretation of how each parameter effects the objective function. If correlation is low, these are close to nonsense!</p>
+<p><img alt="_resources/Apperture_Correlation.png" src="_resources/Apperture_Correlation.png" /></p>
+<p>In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.</p>
+<p>Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was.</p>
+<p>After running this example for 40 iterations, I got the following results:</p>
+<p>Itteration: 0, UpStreamApertureRadius:  1.06, DownStreamApertureRadius:  1.72, CollimatorThickness:  39.02, target_prediction_mean:  0.00, target_prediction_std:  0.00, ObjectiveFunction:  13.42</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Original Value</th>
+<th>Random Starting Value</th>
+<th>Recovered Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CollimatorThickness</td>
+<td>27 mm</td>
+<td>12.5 mm</td>
+<td>26.0 mm</td>
+</tr>
+<tr>
+<td>UpStreamApertureRadius</td>
+<td>1.82 mm</td>
+<td>2.46 mm</td>
+<td>1.9 mm</td>
+</tr>
+<tr>
+<td>DownStreamApertureRadius</td>
+<td>2.5 mm</td>
+<td>1.62 mm</td>
+<td>2.4 mm</td>
+</tr>
+</tbody>
+</table><p>This is pretty good! In just 40 iterations, we recovered the original values to within 5% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here.</p>
+<p>If you require better accuracy, you have a few options:</p>
+<ul class="simple">
+<li><p>Run more iterations. See Restarting Optimisation</p></li>
+<li><p>Use these parameters as a starting guess, and run a new optimisation with a reduced search space</p></li>
+<li><p>Note that there <strong>will</strong> be noise in the objective function. This is an inherent aspect of the monte carlo method, especially when we are trying to run fast simulations. At some point, this noise will limit the accuracy the optimiser could even theoretically achieve. See assessing and handling noise in the objective function.</p></li>
+</ul>
+</section>
+<section id="comparison-with-nelder-mead-optimiser">
+<h2>Comparison with Nelder-Mead optimiser<a class="headerlink" href="#comparison-with-nelder-mead-optimiser" title="Permalink to this headline"></a></h2>
+<p>A comparison of the same problem with the Nelder-Mead optimiser is below. In this case, Nelder Mead performs almost as well. Bayesian optimisation found a minimum objective function of 1.24 on the 30th iteration, while Nelder-Mead found a minimum value of 1.4 on the 19th iteration. For more complex situations, the difference between these two approaches can be substantially greater.</p>
+<p>Nelder-Mead will generally converge more quickly than the Bayesian approach during the first ~10-20 iterations, so it can sometimes be useful to run Nelder-Mead first to get a good starting point.</p>
+<p><img alt="_images/ConvergencePlot.png" src="_images/ConvergencePlot.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Original Value</th>
+<th>Random Starting Value</th>
+<th>Recovered Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CollimatorThickness</td>
+<td>27 mm</td>
+<td>12.5 mm</td>
+<td>25.6 mm</td>
+</tr>
+<tr>
+<td>UpStreamApertureRadius</td>
+<td>1.82 mm</td>
+<td>2.46 mm</td>
+<td>2.06 mm</td>
+</tr>
+<tr>
+<td>DownStreamApertureRadius</td>
+<td>2.5 mm</td>
+<td>1.62 mm</td>
+<td>2.29 mm</td>
+</tr>
+</tbody>
+</table></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="worked_examples.html" class="btn btn-neutral float-left" title="Worked Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PhaseSpaceOptimisation.html" class="btn btn-neutral float-right" title="Example 2: Phase space optimisation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
