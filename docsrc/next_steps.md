@@ -1,10 +1,14 @@
-# Next steps
+# Next steps (work in progress!)
 
-These instructions assume you have already worked through at least one of the worked examples. If you have not, it is strongly recommended that you go back and do so before proceeding. 
+These instructions assume you have already worked through at least one of the worked examples.
+ If you have not, it is strongly recommended that you go back and do so before proceeding. 
 
-The following is a list of thing that you may also wish to do with the code:
 
-## Restart an optimisation
+## BayesianOptimiser
+
+The following is a list of things that you can also do with this optimiser (
+
+### Restart an optimisation
 
  Sometimes an optimisation is terminated prematurely because of time limits on job submissions or because your partner turned your computer off.
 
@@ -12,11 +16,11 @@ In such situations, it is easy to restart the optimisation; you just have to cha
 
 This can also be used in situations where you initially thought that 20 iterations would be sufficient but later want to extend this to 40 iterations for instance.
 
-## Load and interact with the gaussian process model
+### Load and interact with the gaussian process model
 
 One of the nice things about bayesian optimisation is that at the end of it, there is a model which can be used to predict what the objective function might look like at some particular point. Of course whether or not this is useful depends on how well the model was trained, but assuming you have trained a useful model, you can use the logs from a previous run to read in and interact with the gaussian process model. The below script demonstrates this:
 
-## Setting length scales in the gaussian process model
+### Setting length scales in the gaussian process model
 
 Length scales are used in the kernel of the gaussian process model. In simple language, the length scales indicate how close together two points should be to expect them to have a fairly similar value. The length scales are integral in getting a good fit of the gaussian process model to 
 
@@ -28,7 +32,8 @@ This approach works pretty well as the default. However, there may be situations
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory, TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True,length_scales=[par1_scale, par2_scale, par3_scale, etc.])
 ```
 
-ADD IN INFO ABOUT GETTING OPTIMAL PARAMETERS
+Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
+length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.
 
 ## Using different optimisation algorithms
 
@@ -53,11 +58,17 @@ from TopasOpt.Optimisers import TopasOptBaseClass
 
 
 class NewOptimiser(TopasOptBaseClass):
-# your code here
+   # your code here
 ```
 
 The Base class contains all the basic functionality an optimser will need, such as generating models, reading results, etc. This inheritance mechanism makes it fairly quick to set up new algorithms, e.g. the implementation of the Nelder-Mead algorithm requires only 45 lines of code. 
 
 You can look through the source code to see how the different optimisers are implemented.
 
-## Assess and handle noise in the objective function
+## Assess noise in the objective function
+
+You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
+
+
+
+

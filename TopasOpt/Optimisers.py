@@ -85,6 +85,10 @@ class TopasOptBaseClass:
         this is the default behavior. **Array**: Finally, the user is free to simply specify what length scales to use for each parameter. Make sure
         you enter them in alphabetical order as this is the order used internally by the optimiser.
     :type bayes_length_scales: None, float, or array (optional)
+    :param bayes_UCBkappa: Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
+        `here`_<https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb>
+        for explanation
+    :type bayes_UCBkappa: float, optional
     :param bayes_KappaDecayIterations: Bayes-specific parameter. Over the last N iterations, kappa will decay to be
         almost 0 (highly exploitive). For explantion of kappa decay see `here <https://github.com/fmfn/BayesianOptimization/pull/221>`_
     :type bayes_KappaDecayIterations: int, optional
@@ -106,7 +110,7 @@ class TopasOptBaseClass:
 
     def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                  ReadMeText=None,
-                 NM_StartingSimplexRelativeVal=None, bayes_length_scales=None,
+                 NM_StartingSimplexRelativeVal=None, bayes_length_scales=None, bayes_UCBkappa=5,
                  bayes_KappaDecayIterations=10, TopasLocation='~/topas/',
                  ShellScriptHeader=None, Overwrite=False, bayes_GP_alpha=0.01, KeepAllResults=True):
 
@@ -181,7 +185,7 @@ class TopasOptBaseClass:
             self.bayes_GP_alpha = bayes_GP_alpha  # this tells the GPM the expected ammount of noise in the objective function
             # see here: https://github.com/fmfn/BayesianOptimization/issues/202
             self.Matern_Nu = 1.5  # see here https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.Matern.html#sklearn.gaussian_process.kernels.Matern
-            self.UCBkappa = 5  # higher kappa = more exploration. lower kappa = more exploitation
+            self.UCBkappa = bayes_UCBkappa  # higher kappa = more exploration. lower kappa = more exploitation
             self.n_restarts_optimizer = 20  # this controls the gaussian process fitting. 20 seems to be a good number.
             self.bayes_KappaDecayIterations = bayes_KappaDecayIterations
             self.UCBKappa_final = 0.1

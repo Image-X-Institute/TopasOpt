@@ -116,7 +116,7 @@ We are going to keep this relatively simple by just having four optimization par
 
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recored:
 
-```json
+```
 Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutoff': 8.093521167768209, 'BeamAngularSpread': 0.01, 'BeamEnergy': 9.606637841613118, 'BeamPositionCutoff': 2.265724252124363, 'BeamPositionSpread': 0.309694887480956}}
 ```
 

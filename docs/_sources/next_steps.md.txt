@@ -49,13 +49,15 @@ Optimiser = to.PowelOptimiser(optimisation_params, BaseDirectory, SimulationName
 It is also possible to add new optimisation algorithms, by inheriting from the optimisation base class, e.g.
 
 ```python
-from TopasBayesOpt.TopasBayesOpt import TopasOptBaseClass
+from TopasOpt.Optimisers import TopasOptBaseClass
+
 
 class NewOptimiser(TopasOptBaseClass):
-    # your code here
+# your code here
 ```
 
 The Base class contains all the basic functionality an optimser will need, such as generating models, reading results, etc. This inheritance mechanism makes it fairly quick to set up new algorithms, e.g. the implementation of the Nelder-Mead algorithm requires only 45 lines of code. 
 
 You can look through the source code to see how the different optimisers are implemented.
 
+## Assess and handle noise in the objective function

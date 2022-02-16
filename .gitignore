@@ -1,4 +1,5 @@
 docsrc/_build
+docs/html/*
 TopasBayesOpt/*.egg-info
 .eggs
 dist

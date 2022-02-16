@@ -16,17 +16,55 @@ import shutil
 from pathlib import Path
 sys.path.insert(0, os.path.abspath('..'))
 
-# copy the example readmes to this directory
+def _include_example_readmes_in_docs(readmelocation):
+    """
+    for the readme location,
+
+    - copy file to docsrc
+    - update any relative image paths in it.
+    """
+    # copy readmes:
+    new_readmes = []
+    for read_me in readmelocation:
+        try:
+            shutil.copy(read_me, (this_directory / os.path.split(read_me.parent)[1]).with_suffix('.md'))
+            new_readmes.append( (this_directory / os.path.split(read_me.parent)[1]).with_suffix('.md'))
+        except FileNotFoundError:
+            print(f'Could not find ApertureOptimisation readme at {read_me}.]n continuing...')
+
+    # update image paths:
+    for read_me in new_readmes:
+        readme_file = open(read_me,'r')
+        list_of_lines = readme_file.readlines()
+        for i, line in enumerate(list_of_lines):
+            if '![' in line:
+                line_components = line.split(']')
+                image_location = line_components[1]
+                if not 'docsrc' in image_location:
+                    print(f'\033[93mPlease place all images in readme {read_me} '
+                          f'in docsrc/_resources to have them render in docs\033[0m')
+                    continue
+                image_location_components = image_location.split('docsrc')
+                new_location = image_location_components[1]
+                new_location = new_location.replace("\\","/")
+                if new_location[0] == '/':
+                    new_location = new_location[1:]
+                # if new_location[-1] == ')':
+                #     new_location = new_location[0:-1]
+                list_of_lines[i] = '![](' + new_location
+        readme_file = open(read_me, 'w')
+        readme_file.writelines(list_of_lines)
+        readme_file.close()
+
+
+# add all example readmes to this directory:
 this_directory = Path(__file__).parent
 example_directory = this_directory.parent / 'examples'
 example_readmes = [example_directory / 'ApertureOptimisation' / 'README.md',
                    example_directory / 'PhaseSpaceOptimisation' / 'README.md']
+_include_example_readmes_in_docs(example_readmes)
 
-for read_me in example_readmes:
-    try:
-        shutil.copy(read_me, (this_directory / os.path.split(read_me.parent)[1]).with_suffix('.md'))
-    except FileNotFoundError:
-        print(f'Could not find ApertureOptimisation readme at {read_me}.]n continuing...')
+
 
 # -- Project information -----------------------------------------------------
 

@@ -14,14 +14,13 @@ Optimisers
    :undoc-members:
    :show-inheritance:
 
-TopasBayesOpt
--------------
+TopasScriptGenerator
+--------------------
 
-.. automodule:: TopasOpt.GenerateTopasScriptGenerator
+.. automodule:: TopasOpt.TopasScriptGenerator
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 utilities
 ---------

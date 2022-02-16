@@ -17,7 +17,6 @@ The quickest way to get started is to go through the worked examples.
    /worked_examples
    /next_steps.md
    /EnvironmentSetup.md
-   /PackagingInstructions.md
    /code_docs
 
 Indices and tables

@@ -278,19 +278,19 @@ Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOpt
 
 To start with, have a look at ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.
 
-![](C:\Users\Brendan\Dropbox (Sydney Uni)\Projects\PhaserSims\topas\BayesianOptimisationTest\logs\ConvergencePlot.png)
+![](../../docsrc/_resources/ConvergencePlot.png)
 
 Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be < 0.5. 
 
 > **Note:** the model doesn't have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function
 
-![](C:\Users\Brendan\Dropbox (Sydney Uni)\Projects\PhaserSims\topas\BayesianOptimisationTest\logs\CorrelationPlot.png)
+![](../../docsrc/_resources/CorrelationPlot.png)
 
 If the correlation isn't great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts **after** it has seen each point. If this also isn't working, you have a serious problem with the model, since predicting something that has already happened isn't very difficult!!
 
 Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value. Note that you should interpret these in the context of the correlation plot. If the correlation is high, then these should represent a reasonable accurate interpretation of how each parameter effects the objective function. If correlation is low, these are close to nonsense! 
 
-![image-20220112100526749](C:\Users\Brendan\AppData\Roaming\Typora\typora-user-images\image-20220112100526749.png)
+![](../../docsrc/_resources/Apperture_Correlation.png)
 
 In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.
 
@@ -320,7 +320,7 @@ A comparison of the same problem with the Nelder-Mead optimiser is below. In thi
 
 Nelder-Mead will generally converge more quickly than the Bayesian approach during the first ~10-20 iterations, so it can sometimes be useful to run Nelder-Mead first to get a good starting point. 
 
-![](C:\Users\Brendan\Dropbox (Sydney Uni)\Projects\TopasBayesOpt\docsrc\_resources\ConvergencePlot.png)
+![](../../docsrc/_resources/ConvergencePlot.png)
 
 
 

@@ -110,13 +110,13 @@ We are going to keep this relatively simple by just having four optimization par
 
 ## Analyzing the results
 
-![](../../\docsrc\_resources\phaseSpaceOpt\ConvergencePlot.png)
+![](_resources/phaseSpaceOpt/ConvergencePlot.png)
 
-![](../../\docsrc\_resources\phaseSpaceOpt\CorrelationPlot.png)
+![](_resources/phaseSpaceOpt/CorrelationPlot.png)
 
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recored:
 
-```json
+```
 Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutoff': 8.093521167768209, 'BeamAngularSpread': 0.01, 'BeamEnergy': 9.606637841613118, 'BeamPositionCutoff': 2.265724252124363, 'BeamPositionSpread': 0.309694887480956}}
 ```
 
@@ -138,7 +138,7 @@ These plots show the predicted change in the objective function as each single p
 
 > **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
-![](../..\docsrc\_resources\phaseSpaceOpt\singeparamplots.png)
+![](_resources/phaseSpaceOpt/singeparamplots.png)
 
 
 
@@ -164,7 +164,7 @@ compare_multiple_results(FilesToCompare, abs_dose=False)
 
 Comparing our best result with the ground truth yields the below plot:
 
-![](../..\docsrc\_resources\phaseSpaceOpt\compare.png)
+![](_resources/phaseSpaceOpt/compare.png)
 
 A few things to note about this plot:
 
