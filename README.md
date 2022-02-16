@@ -1,7 +1,7 @@
 # TopasOpt
 
 
-This code provides a framework for performing inverse optimisation on monte carlo radiation transpoty 
+This code provides a framework for performing inverse optimisation on monte carlo radiation transport 
 simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC).
 
 ## Install and Requirements
