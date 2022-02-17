@@ -15,7 +15,7 @@ To install: ```pip install TopasOpt```
 ## Usage and Documentation
 
 See the examples folder for worked examples.
-Detailed documents are provided [here](put sphinx link in!)
+Detailed documents are provided [here](https://acrf-image-x-institute.github.io/TopasOpt/index.html)
 
 ## Directory Structure
 
