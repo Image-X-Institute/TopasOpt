@@ -19,11 +19,11 @@ Detailed documents are provided [here](https://acrf-image-x-institute.github.io/
 
 ## Directory Structure
 
+- **TopasOpt:** source code
+- **examples:** as the name implies!
 - **docs:** html documentation created from docsrc using sphinx
 - **docsrc:** markdown/rst documentation.
-- **examples:** as the name implies!
-- **tests:** Unit and integration tests
-- **TopasBayesOpt:** source code
+
 
 
 
