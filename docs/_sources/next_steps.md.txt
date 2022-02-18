@@ -3,6 +3,29 @@
 These instructions assume you have already worked through at least one of the worked examples.
  If you have not, it is strongly recommended that you go back and do so before proceeding. 
 
+## All Optimisiers
+
+### read in and plot a previous log file
+
+Whenever an optimisation is run, a log file is created at BaseDirectory / SimulationName / logs/ OptimisationLogs.txt.
+You can read this file into a dictionary as follows:
+
+```python
+from TopasOpt.utilities import ReadInLogFile
+
+LogFileLoc = '/home/brendan/Documents/temp/NMtest/logs/OptimisationLogs.txt'
+LofFileDict = ReadInLogFile(LogFileLoc)
+```
+
+You are then free to create your own plotting routines to present this data any way
+you want, but we do provide a default ploting function:
+
+```python
+from TopasOpt.utilities import PlotLogFile
+
+LogFileLoc = '/home/brendan/Documents/temp/NMtest/logs/OptimisationLogs.txt'
+LofFileDict = PlotLogFile(LogFileLoc)
+```
 
 ## BayesianOptimiser
 
