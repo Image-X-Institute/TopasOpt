@@ -796,10 +796,6 @@ class BayesianOptimiser(TopasOptBaseClass):
                              f'{len(ParameterNames)} Parameters, but {len(bayes_length_scales)} bayes_length_scales. Quitting')
                 sys.exit(1)
             self.bayes_length_scales = bayes_length_scales
-        message = f'\nSetting the following length scales. Make sure they are in the right order!!\n'
-        for i, paramter_name in enumerate(ParameterNames):
-            message = message + paramter_name + f': {self.bayes_length_scales[i]}\n'
-        logger.info(f'{bcolors.OKGREEN}{message}{bcolors.ENDC}')
 
     def _create_p_bounds(self, optimisation_params):
         """
