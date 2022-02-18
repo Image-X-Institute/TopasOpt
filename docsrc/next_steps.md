@@ -14,7 +14,7 @@ You can read this file into a dictionary as follows:
 from TopasOpt.utilities import ReadInLogFile
 
 LogFileLoc = '/home/brendan/Documents/temp/NMtest/logs/OptimisationLogs.txt'
-LofFileDict = ReadInLogFile(LogFileLoc)
+LogFileDict = ReadInLogFile(LogFileLoc)
 ```
 
 You are then free to create your own plotting routines to present this data any way
@@ -24,7 +24,7 @@ you want, but we do provide a default ploting function:
 from TopasOpt.utilities import PlotLogFile
 
 LogFileLoc = '/home/brendan/Documents/temp/NMtest/logs/OptimisationLogs.txt'
-LofFileDict = PlotLogFile(LogFileLoc)
+PlotLogFile(LogFileLoc)
 ```
 
 ## BayesianOptimiser
