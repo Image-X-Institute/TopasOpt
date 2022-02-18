@@ -20,7 +20,7 @@ from bayes_opt.util import load_logs
 from bayes_opt.event import Events
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from .utilities import bcolors, FigureSpecs, newJSONLogger
+from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile
 import stat
 
 ch = logging.StreamHandler()
@@ -439,7 +439,8 @@ class TopasOptBaseClass:
         parameters and OF value. Optionally, the user can also pass the itteration at which
         these occured (which I recomend, it makes life easier)
 
-        :param x: the best parameter values
+        :param x: the best parameter values. **important:** these should be in alphabetical order of their respective
+            paramter names.
         :type x: array
         :param OF: the best objective function value
         :param Itteration: the Itteration these results occured at
@@ -453,7 +454,7 @@ class TopasOptBaseClass:
             Entry = f'\nBest parameter set: '
             if Itteration is not None:
                 Entry = Entry + f'Itteration: {Itteration}.'
-            for i, Parameter in enumerate(self.ParameterNames):
+            for i, Parameter in enumerate(sorted(self.ParameterNames)):
                 try:
                     Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
                 except IndexError:
@@ -464,6 +465,9 @@ class TopasOptBaseClass:
         print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
 
     def _Plot_Convergence(self):
+        """
+        ToDO:: Long term want to replace this with utilitiies.PlotLogFile
+        """
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
 
@@ -515,112 +519,6 @@ class TopasOptBaseClass:
         f = open(str(Filename), 'w')
         f.write(Attributes)
 
-    def _ReadInLogFile(self, LogFileLoc):
-        """
-        This function can be used to read in a log file to a dictionary
-        """
-
-        if not os.path.isfile(LogFileLoc):
-            logger.error(f'File not found:\n{LogFileLoc}\nQuitting')
-            sys.exit(1)
-
-        file1 = open(LogFileLoc, 'r')
-        Lines = file1.readlines()
-
-        Itteration = []
-        OF = []
-        LineItteration = 0
-        ResultsDict = {}
-        for line in Lines:
-            try:
-                d = {i.split(': ')[0]: i.split(': ')[1] for i in line.split(', ')}
-                # remaining keys are the things we want to track
-                for key in d.keys():
-                    if key == 'Best parameter set':
-                        # this is the last line
-                        break
-                    if LineItteration == 0:
-                        ResultsDict[key] = []
-                    ResultsDict[key].append(float(d[key]))
-                LineItteration += 1
-            except IndexError:
-                pass
-
-        return ResultsDict
-
-    def _PlotLogFile(self, LogFileLoc):
-        """
-        This function can be used to plot an existing log file
-        need to fix because now itteration and OF are stored in dict
-        """
-        ResultsDict = self._ReadInLogFile(LogFileLoc)
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(15, 5))
-
-        Itteration = ResultsDict.pop('Itteration')
-        OF = ResultsDict.pop('ObjectiveFunction')
-
-        axs.plot(Itteration, OF, 'C5',linewidth=2)
-        axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize*1.7)
-        axs.set_ylabel('Objective Function', fontsize=FigureSpecs.LabelFontSize*1.7)
-        axs.grid(True)
-        axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize*1.5)
-
-        try:
-            target_prediction = -1 * np.array(ResultsDict.pop('target_prediction_mean'))
-            target_prediction_std = np.array(ResultsDict.pop('target_prediction_std'))
-            axs.plot(Itteration, target_prediction, 'C0--',linewidth=2)
-            axs.fill_between(Itteration,
-                                target_prediction + target_prediction_std,
-                                target_prediction - target_prediction_std, alpha=0.3, color='C0')
-            axs.legend(['Actual', 'Predicted', r'$\sigma$'], fontsize=FigureSpecs.LabelFontSize*1.5)
-        except KeyError:
-            # predicted isn't always available
-            pass
-
-        ResultsDict.pop('CrossChannelLeakage')
-        MinValue = np.argmin(OF)
-        axs.plot(Itteration[MinValue], OF[MinValue], 'r-x')
-        # axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
-        LegendStrings = ResultsDict.keys()
-
-        if False:
-            for i, key in enumerate(ResultsDict.keys()):
-                try:
-                    ParameterVals = np.array(ResultsDict[key]) / ResultsDict[key][0]
-                except:
-                    print('hello_')
-                axs[1].plot(Itteration, ParameterVals)
-
-            axs[1].legend(LegendStrings)
-            axs[1].set_xlabel('Itteration number')
-            axs[1].set_ylabel('Parameter value')
-            axs[1].grid(True)
-
-            plt.tight_layout()
-
-        else:
-            # axs[1].scatter(OF, target_prediction)
-            # axs[1].set_xlabel('Actual Objective Function', fontsize=FigureSpecs.LabelFontSize)
-            # axs[1].set_ylabel('Predicted Objective Function', fontsize=FigureSpecs.LabelFontSize)
-            # NewMinLim = np.min([axs[1].get_ylim(), axs[1].get_xlim()])
-            # NewMaxLim = np.max([axs[1].get_ylim(), axs[1].get_xlim()])
-            # axs[1].set_ylim([NewMinLim, NewMaxLim])
-            # axs[1].set_xlim([NewMinLim, NewMaxLim])
-            # axs[1].plot([NewMinLim, NewMaxLim], [NewMinLim, NewMaxLim], 'k--')
-
-            Pearson = stats.pearsonr(OF[1:], target_prediction[1:])
-            Spearman = stats.spearmanr(OF[1:], target_prediction[1:])
-            print(f'Pearson Correlation: {Pearson}, Spearman Correlation: {Spearman}')
-            # plt.text(NewMinLim + abs(NewMinLim * 0.15), NewMaxLim - (abs(NewMaxLim * 0.5)),
-            #          f'Spearman: {Spearman[0]: 1.1f}\nPearson: {Pearson[0]: 1.1f}',
-            #          fontsize=FigureSpecs.LabelFontSize)
-
-            # axs[1].grid(True)
-            # axs[1].set_title('Actual versus predicted correlation', fontsize=FigureSpecs.TitleFontSize)
-        plt.tick_params(axis='both', which='major', labelsize=15)
-        plt.tight_layout()
-        plt.show()
-
     def _ConvertDictToVariables(self, x_new):
         """
         I'm trying to keep as much of the underlying code base compatible with multiple methods, so convert the x_new
@@ -654,7 +552,9 @@ class TopasOptBaseClass:
                     shutil.rmtree(file_path)
             except Exception as e:
                 logger.warning(f'Failed to delete {file_path} from results folder. Reason: {e}. continuing...')
-
+    
+    # public methods
+    
     def BlackBoxFunction(self, x_new):
         """
         Called Black Box function in the spirit of bayesian optimisation, this function simply takes the most recent
@@ -756,7 +656,8 @@ class NelderMeadOptimiser(TopasOptBaseClass):
         best_iteration = np.argmin(self.NelderMeadRes.final_simplex[1])
         best_OF = self.NelderMeadRes.final_simplex[1][best_iteration]
         best_params = self.NelderMeadRes.final_simplex[0][best_iteration]
-        self._write_final_log_entry(best_params, best_OF, best_iteration)
+        sort_ind = np.argsort(self.ParameterNames)  # need to sort parameters alphabetically
+        self._write_final_log_entry(best_params[sort_ind], best_OF, best_iteration)
 
 
 class BayesianOptimiser(TopasOptBaseClass):
@@ -849,7 +750,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         LogFile = Path(self.BaseDirectory) / self.SimulationName
         LogFile = LogFile / 'logs'
         LogFile = str(LogFile / 'OptimisationLogs.txt')
-        ResultsDict = self._ReadInLogFile(LogFile)
+        ResultsDict = ReadInLogFile(LogFile)
 
         # we need to format this into a an array based on ParameterNames
         ResultsArray = np.zeros([len(ResultsDict['Itteration']), len(self.ParameterNames)])
@@ -1046,6 +947,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         best = self.optimizer.max
         best_itteration = np.argmin(abs(self.optimizer.space.target- best['target']))
         self._write_final_log_entry(list(best['params'].values()), best['target'],Itteration=best_itteration)
+        # update logs with length scales:
         self._update_logs_with_length_scales()
 
     def RestartOptimisation(self):

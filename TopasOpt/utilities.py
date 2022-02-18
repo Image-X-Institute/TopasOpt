@@ -559,7 +559,99 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
         axs[1].legend(custom_legend_names, fontsize=FigureSpecs.LabelFontSize)
     plt.show()
 
+def ReadInLogFile(LogFileLoc):
+    """
+    Read in a log file and return as a dictionary
 
+    :param LogFileLoc: path to log file
+    :type LogFileLoc: string or pathlib.Path
+    """
+
+    if not os.path.isfile(LogFileLoc):
+        print(f'File not found:\n{LogFileLoc}\nQuitting')
+        sys.exit(1)
+
+    file1 = open(LogFileLoc, 'r')
+    Lines = file1.readlines()
+
+
+    LineItteration = 0
+    ResultsDict = {}
+    for line in Lines:
+        try:
+            d = {i.split(': ')[0]: i.split(': ')[1] for i in line.split(', ')}
+            # remaining keys are the things we want to track
+            for key in d.keys():
+                if key == 'Best parameter set' or 'length scales' in key:
+                    # this is the last line
+                    break
+                if LineItteration == 0:
+                    ResultsDict[key] = []
+                ResultsDict[key].append(float(d[key]))
+            LineItteration += 1
+        except IndexError:
+            pass
+
+    return ResultsDict
+
+def PlotLogFile(LogFileLoc):
+    """
+    This function can be used to plot an existing log file
+
+    This just replicates the functionality in Optimisers.TopasOptBaseClass._Plot_Convergence and it would be
+    more elegant to just have one function, but that would take some refactoring.
+    """
+    ResultsDict = ReadInLogFile(LogFileLoc)
+    Itteration = ResultsDict.pop('Itteration')
+    OF = ResultsDict.pop('ObjectiveFunction')
+
+    LowestVal = np.ones(np.size(OF)) * OF[0]
+    for i, val in enumerate(LowestVal):
+        if OF[i] < LowestVal[i]:
+            LowestVal[i:] = OF[i]
+
+    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+    axs.plot(Itteration, LowestVal, '-k', linewidth=2)
+    axs.plot(Itteration, OF, 'C6')
+    axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
+    axs.set_ylabel('Objective function', fontsize=FigureSpecs.LabelFontSize)
+    axs.grid(True)
+
+    try:
+        target_prediction = -1 * np.array(ResultsDict['target_prediction_mean'] )
+        target_prediction_std = np.array(ResultsDict['target_prediction_std'])
+        axs.plot(Itteration, target_prediction, 'C0')
+        axs.fill_between(Itteration,
+                         target_prediction + target_prediction_std,
+                         target_prediction - target_prediction_std, alpha=0.15, color='C0')
+        axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'])
+    except KeyError:
+        # predicted isn't  available for optimisers
+        axs.legend(['Best', 'Current'])
+
+    MinValue = np.argmin(OF)
+    axs.plot(Itteration[MinValue], OF[MinValue], 'r-x')
+    axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
+
+    try:
+        target_prediction = -1 * np.array(ResultsDict.pop('target_prediction_mean'))
+        target_prediction_std = np.array(ResultsDict.pop('target_prediction_std'))
+        axs.plot(Itteration, target_prediction, 'C0--',linewidth=2)
+        axs.fill_between(Itteration,
+                            target_prediction + target_prediction_std,
+                            target_prediction - target_prediction_std, alpha=0.3, color='C0')
+        axs.legend(['Actual', 'Predicted', r'$\sigma$'], fontsize=FigureSpecs.LabelFontSize*1.5)
+    except KeyError:
+        # predicted isn't always available
+        pass
+
+
+    MinValue = np.argmin(OF)
+    axs.plot(Itteration[MinValue], OF[MinValue], 'r-x')
+    # axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
+    LegendStrings = ResultsDict.keys()
+
+    plt.show()
 
 
 
