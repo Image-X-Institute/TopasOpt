@@ -289,25 +289,19 @@ Take a look at the plots in logs/SingleParameterPlots. These plots show the gaus
 
 In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.
 
-Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was.
+Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was. After running this example for 40 iterations, I got the following result:
 
-After running this example for 40 iterations, I got the following results:
+```
+Best parameter set: Itteration: 31., CollimatorThickness:  27.29, UpStreamApertureRadius:  1.95, DownStreamApertureRadius:  2.54, ObjectiveFunction: 1.12
+```
 
-Itteration: 0, UpStreamApertureRadius:  1.06, DownStreamApertureRadius:  1.72, CollimatorThickness:  39.02, target_prediction_mean:  0.00, target_prediction_std:  0.00, ObjectiveFunction:  13.42
+| Parameter                | Original Value | Random Starting Value | Recovered Value    |
+| ------------------------ | -------------- | --------------------- | ------------------ |
+| CollimatorThickness      | 27 mm          | 39.9 mm               | 27.3 mm (1.1% off) |
+| UpStreamApertureRadius   | 1.8 mm         | 1.14 mm               | 2.0 mm (9% off)    |
+| DownStreamApertureRadius | 2.5 mm         | 1.73 mm               | 2.5 mm (0% off)    |
 
-| Parameter                | Original Value | Random Starting Value | Recovered Value |
-| ------------------------ | -------------- | --------------------- | --------------- |
-| CollimatorThickness      | 27 mm          | 12.5 mm               | 26.0 mm         |
-| UpStreamApertureRadius   | 1.82 mm        | 2.46 mm               | 1.9 mm          |
-| DownStreamApertureRadius | 2.5 mm         | 1.62 mm               | 2.4 mm          |
-
-This is pretty good! In just 40 iterations, we recovered the original values to within 5% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here.
-
-If you require better accuracy, you have a few options:
-
-- Run more iterations. See Restarting Optimisation
-- Use these parameters as a starting guess, and run a new optimisation with a reduced search space
-- Note that there **will** be noise in the objective function. This is an inherent aspect of the monte carlo method, especially when we are trying to run fast simulations. At some point, this noise will limit the accuracy the optimiser could even theoretically achieve. See assessing and handling noise in the objective function.
+This is pretty good! In just 40 iterations, we recovered the original values to within 10% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here. It is also helpful to interpret these results in the context of the single parameter plots shown above. These plots suggest that the least sensitive parameter is the Upstream Aperture, which is the parameter we have the largest error in (9%). We might therefore expect that the dose profiles are not all that sensitive to this error. A comparison between the starting results and optimized results is shown at the end of this example. 
 
 ## Comparison with Nelder-Mead optimiser
 

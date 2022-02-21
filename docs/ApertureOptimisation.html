@@ -441,9 +441,10 @@ If the correlation isn’t great, you could have a look at RetrospectiveModelFit
 </div></blockquote>
 <p><img alt="_images/ApertureParameterPlots.png" src="_images/ApertureParameterPlots.png" />
 In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.</p>
-<p>Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was.</p>
-<p>After running this example for 40 iterations, I got the following results:</p>
-<p>Itteration: 0, UpStreamApertureRadius:  1.06, DownStreamApertureRadius:  1.72, CollimatorThickness:  39.02, target_prediction_mean:  0.00, target_prediction_std:  0.00, ObjectiveFunction:  13.42</p>
+<p>Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was. After running this example for 40 iterations, I got the following result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Best</span> <span class="n">parameter</span> <span class="nb">set</span><span class="p">:</span> <span class="n">Itteration</span><span class="p">:</span> <span class="mf">31.</span><span class="p">,</span> <span class="n">CollimatorThickness</span><span class="p">:</span>  <span class="mf">27.29</span><span class="p">,</span> <span class="n">UpStreamApertureRadius</span><span class="p">:</span>  <span class="mf">1.95</span><span class="p">,</span> <span class="n">DownStreamApertureRadius</span><span class="p">:</span>  <span class="mf">2.54</span><span class="p">,</span> <span class="n">ObjectiveFunction</span><span class="p">:</span> <span class="mf">1.12</span>
+</pre></div>
+</div>
 <table border="1" class="docutils">
 <thead>
 <tr>
@@ -457,29 +458,23 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 <tr>
 <td>CollimatorThickness</td>
 <td>27 mm</td>
-<td>12.5 mm</td>
-<td>26.0 mm</td>
+<td>39.9 mm</td>
+<td>27.3 mm (1.1% off)</td>
 </tr>
 <tr>
 <td>UpStreamApertureRadius</td>
-<td>1.82 mm</td>
-<td>2.46 mm</td>
-<td>1.9 mm</td>
+<td>1.8 mm</td>
+<td>1.14 mm</td>
+<td>2.0 mm (9% off)</td>
 </tr>
 <tr>
 <td>DownStreamApertureRadius</td>
 <td>2.5 mm</td>
-<td>1.62 mm</td>
-<td>2.4 mm</td>
+<td>1.73 mm</td>
+<td>2.5 mm (0% off)</td>
 </tr>
 </tbody>
-</table><p>This is pretty good! In just 40 iterations, we recovered the original values to within 5% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here.</p>
-<p>If you require better accuracy, you have a few options:</p>
-<ul class="simple">
-<li><p>Run more iterations. See Restarting Optimisation</p></li>
-<li><p>Use these parameters as a starting guess, and run a new optimisation with a reduced search space</p></li>
-<li><p>Note that there <strong>will</strong> be noise in the objective function. This is an inherent aspect of the monte carlo method, especially when we are trying to run fast simulations. At some point, this noise will limit the accuracy the optimiser could even theoretically achieve. See assessing and handling noise in the objective function.</p></li>
-</ul>
+</table><p>This is pretty good! In just 40 iterations, we recovered the original values to within 10% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here. It is also helpful to interpret these results in the context of the single parameter plots shown above. These plots suggest that the least sensitive parameter is the Upstream Aperture, which is the parameter we have the largest error in (9%). We might therefore expect that the dose profiles are not all that sensitive to this error. A comparison between the starting results and optimized results is shown at the end of this example.</p>
 </div>
 <div class="section" id="comparison-with-nelder-mead-optimiser">
 <h2>Comparison with Nelder-Mead optimiser<a class="headerlink" href="#comparison-with-nelder-mead-optimiser" title="Permalink to this headline">¶</a></h2>
