@@ -285,7 +285,7 @@ Take a look at the plots in logs/SingleParameterPlots. These plots show the gaus
 
 >  **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
-<img src=../../docsrc/_resources/ApertureOpt/ApertureParameterPlots.png alt="drawing" width="300"/>
+![](../../docsrc/_resources/ApertureOpt/ApertureParameterPlots.png)
 
 In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.
 

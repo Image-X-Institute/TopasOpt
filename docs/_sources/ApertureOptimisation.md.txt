@@ -13,7 +13,6 @@ In this example, we will optimise the geometry of an X-ray collimator. The geome
 You will need the data from the original simulation to complete this example; it is available [here](https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles) 
 
 ![](_resources/ApertureOpt/Sketch.png)
-
 ## environment set up
 
 If you need help with getting an appropriate environment set up, see HERE
@@ -25,7 +24,6 @@ To start with, create a folder somewhere called for instance 'ApertureOptExample
 When you have finished working through this example you should have a working directory which looks like this:
 
 ![](_resources/ApertureOpt/ApertureDirectoryStructure.jpg)
-
 
 
 ## Copy the base topas files
@@ -272,21 +270,18 @@ Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOpt
 To start with, have a look at ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.
 
 ![](_resources/ApertureOpt/ConvergencePlot.png)
-
 Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be < 0.5. 
 
 > **Note:** the model doesn't have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function
 
 ![](_resources/ApertureOpt/CorrelationPlot.png)
-
 If the correlation isn't great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts **after** it has seen each point. If this also isn't working, you have a serious problem with the model, since predicting something that has already happened isn't very difficult!! In this case, if your model didn't show great correlation, it's most likey simply due to the low number of iterations we have run.
 
 Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value. 
 
 >  **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
-<img src=../../docsrc/_resources/ApertureOpt/ApertureParameterPlots.png alt="drawing" width="300"/>
-
+![](_resources/ApertureOpt/ApertureParameterPlots.png)
 In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.
 
 Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was.
@@ -318,7 +313,6 @@ As a rule of thumb, Nelder-Mead will generally converge more quickly than the Ba
 ![](_resources/ApertureOpt/ConvergencePlotNM.png)
 
 
-
 | Parameter                | Original Value | Random Starting Value | Recovered Value |
 | ------------------------ | -------------- | --------------------- | --------------- |
 | CollimatorThickness      | 27 mm          | 12.5 mm               | 25.6 mm         |
@@ -345,7 +339,6 @@ compare_multiple_results(ResultsToCompare,custom_legend_names=custom_legend)
 Using this code, we can generate the following figure:
 
 ![](_resources/ApertureOpt/compare.png)
-
 ## Improving these results
 
 There are number of things you could do to improve these results, many of which are explained in a bit more detail in NEXT STEPS:

@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Next steps (work in progress!)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#all-optimisiers">All Optimisiers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#improving-accuracy">Improving accuracy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read-in-and-plot-a-previous-log-file">read in and plot a previous log file</a></li>
 </ul>
 </li>
@@ -178,6 +179,15 @@
 If you have not, it is strongly recommended that you go back and do so before proceeding.</p>
 <div class="section" id="all-optimisiers">
 <h2>All Optimisiers<a class="headerlink" href="#all-optimisiers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="improving-accuracy">
+<h3>Improving accuracy<a class="headerlink" href="#improving-accuracy" title="Permalink to this headline">¶</a></h3>
+<p>If you think you require better accuracy than the first result you get, you have a few options:</p>
+<ul class="simple">
+<li><p>Run more iterations.</p></li>
+<li><p>Use these parameters as a starting guess, and run a new optimisation with a reduced search space</p></li>
+<li><p>Note that there <strong>will</strong> be noise in the objective function. This is an inherent aspect of the monte carlo method, especially when we are trying to run fast simulations. At some point, this noise will limit the accuracy the optimiser could even theoretically achieve. See assessing and handling noise in the objective function below.</p></li>
+</ul>
+</div>
 <div class="section" id="read-in-and-plot-a-previous-log-file">
 <h3>read in and plot a previous log file<a class="headerlink" href="#read-in-and-plot-a-previous-log-file" title="Permalink to this headline">¶</a></h3>
 <p>Whenever an optimisation is run, a log file is created at BaseDirectory / SimulationName / logs/ OptimisationLogs.txt.

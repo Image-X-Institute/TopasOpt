@@ -5,7 +5,6 @@
 In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
 
 ![](_resources/ApertureOpt/Sketch.png)
-
 This is a much more difficult problem for several reasons:
 
 - We will optimise five parameters simultaneously instead of three. 
@@ -108,9 +107,7 @@ We are going to keep this relatively simple by just having four optimization par
 ## Analyzing the results
 
 ![](_resources/phaseSpaceOpt/ConvergencePlot.png)
-
 ![](_resources/phaseSpaceOpt/CorrelationPlot.png)
-
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recorded:
 
 ```
@@ -138,7 +135,6 @@ These plots show the predicted change in the objective function as each single p
 ![](_resources/phaseSpaceOpt/singeparamplots.png)
 
 
-
 ## Comparing the results:
 
 Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:
@@ -158,7 +154,6 @@ compare_multiple_results(FilesToCompare, abs_dose=False)
 Comparing our best result with the ground truth yields the below plot:
 
 ![](_resources/phaseSpaceOpt/compare.png)
-
 A few things to note about this plot:
 
 - although our optimiser didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth

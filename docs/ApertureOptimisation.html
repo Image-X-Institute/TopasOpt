@@ -428,18 +428,19 @@ python3 RunOptimisation_main.py
 <li><p><strong>TopasScripts:</strong> Contains the scripts used to run each iteration.</p></li>
 </ul>
 <p>To start with, have a look at ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.</p>
-<p><img alt="_images/ConvergencePlot.png" src="_images/ConvergencePlot.png" /></p>
-<p>Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be &lt; 0.5.</p>
+<p><img alt="_images/ConvergencePlot.png" src="_images/ConvergencePlot.png" />
+Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be &lt; 0.5.</p>
 <blockquote>
 <div><p><strong>Note:</strong> the model doesn’t have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function</p>
 </div></blockquote>
-<p><img alt="_images/CorrelationPlot.png" src="_images/CorrelationPlot.png" /></p>
-<p>If the correlation isn’t great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts <strong>after</strong> it has seen each point. If this also isn’t working, you have a serious problem with the model, since predicting something that has already happened isn’t very difficult!! In this case, if your model didn’t show great correlation, it’s most likey simply due to the low number of iterations we have run.</p>
+<p><img alt="_images/CorrelationPlot.png" src="_images/CorrelationPlot.png" />
+If the correlation isn’t great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts <strong>after</strong> it has seen each point. If this also isn’t working, you have a serious problem with the model, since predicting something that has already happened isn’t very difficult!! In this case, if your model didn’t show great correlation, it’s most likey simply due to the low number of iterations we have run.</p>
 <p>Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value.</p>
 <blockquote>
 <div><p><strong>warning:</strong> these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.</p>
 </div></blockquote>
-<img src=../../docsrc/_resources/ApertureOpt/ApertureParameterPlots.png alt="drawing" width="300"/><p>In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.</p>
+<p><img alt="_images/ApertureParameterPlots.png" src="_images/ApertureParameterPlots.png" />
+In this case, the correlation values are reasonable, so we should be reasonably confident in these plots. This is also indicated by the fact that the models own estimate of uncertainty (indicated by the blue shading) is low.</p>
 <p>Finally, open OptimisationLogs.txt and scroll to the bottom. This will tell you what the best guess for each parameter was.</p>
 <p>After running this example for 40 iterations, I got the following results:</p>
 <p>Itteration: 0, UpStreamApertureRadius:  1.06, DownStreamApertureRadius:  1.72, CollimatorThickness:  39.02, target_prediction_mean:  0.00, target_prediction_std:  0.00, ObjectiveFunction:  13.42</p>

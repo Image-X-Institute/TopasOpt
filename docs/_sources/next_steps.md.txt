@@ -5,6 +5,14 @@ These instructions assume you have already worked through at least one of the wo
 
 ## All Optimisiers
 
+### Improving accuracy
+
+If you think you require better accuracy than the first result you get, you have a few options:
+
+- Run more iterations.
+- Use these parameters as a starting guess, and run a new optimisation with a reduced search space
+- Note that there **will** be noise in the objective function. This is an inherent aspect of the monte carlo method, especially when we are trying to run fast simulations. At some point, this noise will limit the accuracy the optimiser could even theoretically achieve. See assessing and handling noise in the objective function below.
+
 ### read in and plot a previous log file
 
 Whenever an optimisation is run, a log file is created at BaseDirectory / SimulationName / logs/ OptimisationLogs.txt.
@@ -91,7 +99,6 @@ You can look through the source code to see how the different optimisers are imp
 ## Assess noise in the objective function
 
 You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
-
 
 
 
