@@ -96,6 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#create-topasobjectivefunction-py">Create TopasObjectiveFunction.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-the-example">Running the example</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#analyzing-the-results">Analyzing the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#neldermead-optimiser">NelderMead Optimiser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#comparing-the-results">Comparing the results:</a></li>
 </ul>
 </li>
@@ -334,25 +335,39 @@ Next, open up OptimisationLogs.txt, and scroll to the end; the best found soluti
 </div></blockquote>
 <p><img alt="_images/singeparamplots.png" src="_images/singeparamplots.png" /></p>
 </div>
+<div class="section" id="neldermead-optimiser">
+<h2>NelderMead Optimiser<a class="headerlink" href="#neldermead-optimiser" title="Permalink to this headline">¶</a></h2>
+<p>below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:</p>
+<p><img alt="_images/ConvergencePlotNM1.png" src="_images/ConvergencePlotNM1.png" />
+| Parameter          | Ground Truth | Allowed Range | Optimized |
+| —————— | ———— | ————- | ——— |
+| BeamEnergy         | 10           | 6-12          | 10.1      |
+| BeamPositionCutoff | 2            | 1-3           | 2.7       |
+| BeamPositionSpread | 0.3          | .1-1          | 1.0       |
+| BeamAngularSpread  | .07          | .01-1         | .09       |
+| BeamAngularCutoff  | 5            | 1-10          | 2.97      |</p>
+</div>
 <div class="section" id="comparing-the-results">
 <h2>Comparing the results:<a class="headerlink" href="#comparing-the-results" title="Permalink to this headline">¶</a></h2>
 <p>Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
 
-<span class="c1"># add all the files you want to compare to this list</span>
-<span class="n">FilesToCompare</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin&#39;</span><span class="p">]</span>
+<span class="n">OriginalDataPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin&#39;</span><span class="p">)</span>
+<span class="n">StartPoint</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_0.bin&#39;</span><span class="p">)</span>
+<span class="n">NM_DataPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_49.bin&#39;</span><span class="p">)</span>
+<span class="n">Bayes_DataPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_95.bin&#39;</span><span class="p">)</span>
 
-<span class="c1"># abs_dose = True if you don&#39;t want to normalise the plots</span>
-<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">FilesToCompare</span><span class="p">,</span> <span class="n">abs_dose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">FilesToCompare</span> <span class="o">=</span> <span class="p">[</span><span class="n">OriginalDataPath</span><span class="p">,</span><span class="n">StartPoint</span><span class="p">,</span> <span class="n">NM_DataPath</span><span class="p">,</span> <span class="n">Bayes_DataPath</span><span class="p">]</span>
+
+<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">FilesToCompare</span><span class="p">,</span> <span class="n">custom_legend_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Original Data&#39;</span><span class="p">,</span><span class="s1">&#39;Random Start Point&#39;</span><span class="p">,</span> <span class="s1">&#39;Nelder-Mead&#39;</span><span class="p">,</span> <span class="s1">&#39;Bayesian&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Comparing our best result with the ground truth yields the below plot:</p>
-<p><img alt="_images/compare1.png" src="_images/compare1.png" />
-A few things to note about this plot:</p>
+<p><img alt="_images/compare1.png" src="_images/compare1.png" /></p>
 <ul class="simple">
-<li><p>although our optimiser didn’t recover the exact parameters, the parameters it did select give a very good match to the ground truth</p></li>
+<li><p>although our optimisation didn’t recover the exact parameters, the parameters it did select give a very good match to the ground truth</p></li>
+<li><p>The Bayesian solution looks substantially better than the NM solution.</p></li>
 <li><p>We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles.</p></li>
 </ul>
 </div>
