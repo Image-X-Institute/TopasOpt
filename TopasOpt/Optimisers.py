@@ -946,7 +946,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         # update the logs with the best value:
         best = self.optimizer.max
         best_itteration = np.argmin(abs(self.optimizer.space.target- best['target']))
-        self._write_final_log_entry(list(best['params'].values()), best['target'],Itteration=best_itteration)
+        self._write_final_log_entry(list(best['params'].values()), -1*best['target'],Itteration=best_itteration)
         # update logs with length scales:
         self._update_logs_with_length_scales()
 

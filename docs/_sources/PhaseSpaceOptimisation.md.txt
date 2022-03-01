@@ -5,7 +5,6 @@
 In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
 
 ![](_resources/ApertureOpt/Sketch.png)
-
 This is a much more difficult problem for several reasons:
 
 - We will optimise five parameters simultaneously instead of three. 
@@ -108,9 +107,7 @@ We are going to keep this relatively simple by just having four optimization par
 ## Analyzing the results
 
 ![](_resources/phaseSpaceOpt/ConvergencePlot.png)
-
 ![](_resources/phaseSpaceOpt/CorrelationPlot.png)
-
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recorded:
 
 ```
@@ -136,30 +133,41 @@ These plots show the predicted change in the objective function as each single p
 > **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
 ![](_resources/phaseSpaceOpt/singeparamplots.png)
+## NelderMead Optimiser
 
+below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:
 
+![](_resources/phaseSpaceOpt/ConvergencePlotNM.png)
+| Parameter          | Ground Truth | Allowed Range | Optimized |
+| ------------------ | ------------ | ------------- | --------- |
+| BeamEnergy         | 10           | 6-12          | 10.1      |
+| BeamPositionCutoff | 2            | 1-3           | 2.7       |
+| BeamPositionSpread | 0.3          | .1-1          | 1.0       |
+| BeamAngularSpread  | .07          | .01-1         | .09       |
+| BeamAngularCutoff  | 5            | 1-10          | 2.97      |
 
 ## Comparing the results:
 
 Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:
 
 ```python
+from pathlib import Path
 from TopasOpt.utilities import compare_multiple_results
 
-# add all the files you want to compare to this list
-FilesToCompare = [
-    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_99.bin',
-    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
+OriginalDataPath = Path('../SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin')
+StartPoint = Path('C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_0.bin')
+NM_DataPath = Path('C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_49.bin')
+Bayes_DataPath = Path('C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_95.bin')
 
-# abs_dose = True if you don't want to normalise the plots
-compare_multiple_results(FilesToCompare, abs_dose=False)
+FilesToCompare = [OriginalDataPath,StartPoint, NM_DataPath, Bayes_DataPath]
+
+compare_multiple_results(FilesToCompare, custom_legend_names=['Original Data','Random Start Point', 'Nelder-Mead', 'Bayesian'])
+
 ```
 
 Comparing our best result with the ground truth yields the below plot:
 
 ![](_resources/phaseSpaceOpt/compare.png)
-
-A few things to note about this plot:
-
-- although our optimiser didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
+- although our optimisation didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
+- The Bayesian solution looks substantially better than the NM solution.
 - We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 

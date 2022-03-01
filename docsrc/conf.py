@@ -49,8 +49,8 @@ def _include_example_readmes_in_docs(readmelocation):
                 new_location = new_location.replace("\\","/")
                 if new_location[0] == '/':
                     new_location = new_location[1:]
-                # if new_location[-1] == ')':
-                #     new_location = new_location[0:-1]
+                if new_location[-1:] == '\n':
+                    new_location = new_location[0:-1]
                 list_of_lines[i] = '![](' + new_location
         readme_file = open(read_me, 'w')
         readme_file.writelines(list_of_lines)
