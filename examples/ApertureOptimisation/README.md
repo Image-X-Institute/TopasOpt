@@ -315,9 +315,14 @@ As a rule of thumb, Nelder-Mead will generally converge more quickly than the Ba
 
 | Parameter                | Original Value | Random Starting Value | Recovered Value |
 | ------------------------ | -------------- | --------------------- | --------------- |
-| CollimatorThickness      | 27 mm          | 12.5 mm               | 25.6 mm         |
-| UpStreamApertureRadius   | 1.82 mm        | 2.46 mm               | 2.06 mm         |
-| DownStreamApertureRadius | 2.5 mm         | 1.62 mm               | 2.29 mm         |
+| CollimatorThickness      | 27 mm          | 12.5 mm               | 39.4 mm         |
+| UpStreamApertureRadius   | 1.82 mm        | 2.46 mm               | 2.6 mm          |
+| DownStreamApertureRadius | 2.5 mm         | 1.62 mm               | 3.0 mm          |
+
+This is actually a very instructive and interesting result! Although the NelderMead algorithm has actually done a reasonable job of minmising the objective function (see "Comparison with original results" below), it has done a pretty bad job of actually finding the 'right' values. Although there are various ways we can improve this result, I think it is more informative to leave it like this, because it illustrates a few very important points:
+
+- it is very important to use an objective function that **really** captures what you think it does! in this case, the optimiser has matched our profile/ depth dose data by using a very long collimator, but with much larger upstream and downstream openings. We might be able to avoid this situation with a better objective function, for instance by also trying to optimise output factors or by incluing off axis profiles etc., BUT
+- This also nicely illustrates a limitation of the NelderMead approach. Basically, this algorithm will 'walk down' a slope. If your starting point is a long way from the true global minimum, this algorithm is very likely to get stuck in a local minimum, which is what has happened here. One way to avoid this is to repeat the optimisation using multiple start points. But realistically, it makes more sense to just use the Bayesian optimiser :-) 
 
 ## Comparison with original results
 
@@ -340,11 +345,13 @@ Using this code, we can generate the following figure:
 
 ![](../..//docsrc/_resources/ApertureOpt/compare.png)
 
+Again, it is very interseting to note that despite the fact that the NelderMead didn't do a great job of recovering our 'ground truth' parameters, it actually did a pretty good job of what we asked it to do: minimise the absolite difference betwee these plots.
+
 ## Improving these results
 
-There are number of things you could do to improve these results, many of which are explained in a bit more detail in NEXT STEPS:
+There are number of things you could do to improve these results, many of which are explained in a bit more detail in the [next steps](https://acrf-image-x-institute.github.io/TopasOpt/next_steps.html) section:
 
 - Run more iterations
 - Nelder-Mead: change the starting point, change the starting simplex
 - Making a better objective function: we arbitrarily chose an objective function based on a depth dose curve and profiles, but we could probably find some more sensitive metrics.
-- assess the noise in the objective function and decide if we need to run more particles or not. Note that if there is 10% noise, this is a  rough limit on how accurate to expect the optimisation to be. /
+- assess the noise in the objective function and decide if we need to run more particles or not. Note that if there is 10% noise, this is a  rough limit on how accurate to expect the optimisation to be.

@@ -24,6 +24,8 @@ The quickest way to get started is to go through the worked examples.
 
    /worked_examples
    /next_steps.md
+   /convergence_criteria.md
+   /designing_objective_functions.md
    /EnvironmentSetup.md
    /code_docs
 

@@ -60,6 +60,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps (work in progress!)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convergence_criteria.html">Convergence criteria</a></li>
+<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
 </ul>
@@ -406,22 +408,27 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 <td>CollimatorThickness</td>
 <td>27 mm</td>
 <td>12.5 mm</td>
-<td>25.6 mm</td>
+<td>39.4 mm</td>
 </tr>
 <tr>
 <td>UpStreamApertureRadius</td>
 <td>1.82 mm</td>
 <td>2.46 mm</td>
-<td>2.06 mm</td>
+<td>2.6 mm</td>
 </tr>
 <tr>
 <td>DownStreamApertureRadius</td>
 <td>2.5 mm</td>
 <td>1.62 mm</td>
-<td>2.29 mm</td>
+<td>3.0 mm</td>
 </tr>
 </tbody>
-</table></section>
+</table><p>This is actually a very instructive and interesting result! Although the NelderMead algorithm has actually done a reasonable job of minmising the objective function (see “Comparison with original results” below), it has done a pretty bad job of actually finding the ‘right’ values. Although there are various ways we can improve this result, I think it is more informative to leave it like this, because it illustrates a few very important points:</p>
+<ul class="simple">
+<li><p>it is very important to use an objective function that <strong>really</strong> captures what you think it does! in this case, the optimiser has matched our profile/ depth dose data by using a very long collimator, but with much larger upstream and downstream openings. We might be able to avoid this situation with a better objective function, for instance by also trying to optimise output factors or by incluing off axis profiles etc., BUT</p></li>
+<li><p>This also nicely illustrates a limitation of the NelderMead approach. Basically, this algorithm will ‘walk down’ a slope. If your starting point is a long way from the true global minimum, this algorithm is very likely to get stuck in a local minimum, which is what has happened here. One way to avoid this is to repeat the optimisation using multiple start points. But realistically, it makes more sense to just use the Bayesian optimiser :-)</p></li>
+</ul>
+</section>
 <section id="comparison-with-original-results">
 <h2>Comparison with original results<a class="headerlink" href="#comparison-with-original-results" title="Permalink to this headline"></a></h2>
 <p>We have seen that both optimizers did a reasonable job of recovering the original geometric parameters. We can also compare how the raw data looks. To compare multiple results we have included a function in utilities.compare_multiple_results, which is used like this:</p>
@@ -438,16 +445,17 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 </pre></div>
 </div>
 <p>Using this code, we can generate the following figure:</p>
-<p><img alt="_images/compare1.png" src="_images/compare1.png" /></p>
+<p><img alt="_images/compare1.png" src="_images/compare1.png" />
+Again, it is very interseting to note that despite the fact that the NelderMead didn’t do a great job of recovering our ‘ground truth’ parameters, it actually did a pretty good job of what we asked it to do: minimise the absolite difference betwee these plots.</p>
 </section>
 <section id="improving-these-results">
 <h2>Improving these results<a class="headerlink" href="#improving-these-results" title="Permalink to this headline"></a></h2>
-<p>There are number of things you could do to improve these results, many of which are explained in a bit more detail in NEXT STEPS:</p>
+<p>There are number of things you could do to improve these results, many of which are explained in a bit more detail in the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/next_steps.html">next steps</a> section:</p>
 <ul class="simple">
 <li><p>Run more iterations</p></li>
 <li><p>Nelder-Mead: change the starting point, change the starting simplex</p></li>
 <li><p>Making a better objective function: we arbitrarily chose an objective function based on a depth dose curve and profiles, but we could probably find some more sensitive metrics.</p></li>
-<li><p>assess the noise in the objective function and decide if we need to run more particles or not. Note that if there is 10% noise, this is a  rough limit on how accurate to expect the optimisation to be. /</p></li>
+<li><p>assess the noise in the objective function and decide if we need to run more particles or not. Note that if there is 10% noise, this is a  rough limit on how accurate to expect the optimisation to be.</p></li>
 </ul>
 </section>
 </section>
