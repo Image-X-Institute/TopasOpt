@@ -1,70 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Example 1: Geometry Optimisation &mdash; TopasOpt  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Example 2: Phase space optimisation" href="PhaseSpaceOptimisation.html" />
     <link rel="prev" title="Worked Examples" href="worked_examples.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> TopasOpt
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -72,19 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="worked_examples.html">Worked Examples</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Example 1: Geometry Optimisation</a><ul>
@@ -111,101 +64,59 @@
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">TopasOpt</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="worked_examples.html">Worked Examples</a> &raquo;</li>
-        
       <li>Example 1: Geometry Optimisation</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/ApertureOptimisation.md.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="example-1-geometry-optimisation">
-<h1>Example 1: Geometry Optimisation<a class="headerlink" href="#example-1-geometry-optimisation" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="example-1-geometry-optimisation">
+<h1>Example 1: Geometry Optimisation<a class="headerlink" href="#example-1-geometry-optimisation" title="Permalink to this headline"></a></h1>
 <p>The starting point for an optimisation is a working topas model. In this example we are going to optimise the geometry of a simple x-ray collimator. We are going to randomise the values shown in read, and see if we can recover the correct values using the Bayesian optimisation. To guide the optimisation, we will create an objective function which simply measures the difference between the original depth dose curves and profile data and those created by a given set of parameters.</p>
 <p>If you are an experienced python and topas user, you should allow 1-2 hours to set up this example (this will get much quicker once you get the hang of it; it takes me about 15 minutes).</p>
 <p>Actually running this example will take ~4 hours on a decent computer.</p>
-<div class="section" id="base-model-and-problem-overview">
-<h2>Base model and problem overview<a class="headerlink" href="#base-model-and-problem-overview" title="Permalink to this headline">¶</a></h2>
+<section id="base-model-and-problem-overview">
+<h2>Base model and problem overview<a class="headerlink" href="#base-model-and-problem-overview" title="Permalink to this headline"></a></h2>
 <p>In this example, we will optimise the geometry of an X-ray collimator. The geometry is shown below, with the parameters targeted for optimisation shown in red. The original values for each of these parameters are: Collimator Thickness = 54 mm, Up-stream aperture radius = 1.82 mm, and Down-stream aperture radius = 2.5 mm. In this example, each of these parameters will firt be assigned a random value. We will then attempt to recover the original values by constructing a simple objective function based on the differences between the original data and the current iteration.</p>
 <p>You will need the data from the original simulation to complete this example; it is available <a class="reference external" href="https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles">here</a></p>
 <p><img alt="_images/Sketch.png" src="_images/Sketch.png" /></p>
-</div>
-<div class="section" id="environment-set-up">
-<h2>environment set up<a class="headerlink" href="#environment-set-up" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="environment-set-up">
+<h2>environment set up<a class="headerlink" href="#environment-set-up" title="Permalink to this headline"></a></h2>
 <p>If you need help with getting an appropriate environment set up, see HERE</p>
-</div>
-<div class="section" id="directory-set-up">
-<h2>directory set up<a class="headerlink" href="#directory-set-up" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="directory-set-up">
+<h2>directory set up<a class="headerlink" href="#directory-set-up" title="Permalink to this headline"></a></h2>
 <p>To start with, create a folder somewhere called for instance ‘ApertureOptExample’ (or whatever). This is where you will store all the code necessary to run the optimisation. The rest of the instructions assume you are in this working directory.</p>
 <p>When you have finished working through this example you should have a working directory which looks like this:</p>
 <p><img alt="_images/ApertureDirectoryStructure.jpg" src="_images/ApertureDirectoryStructure.jpg" /></p>
-</div>
-<div class="section" id="copy-the-base-topas-files">
-<h2>Copy the base topas files<a class="headerlink" href="#copy-the-base-topas-files" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="copy-the-base-topas-files">
+<h2>Copy the base topas files<a class="headerlink" href="#copy-the-base-topas-files" title="Permalink to this headline"></a></h2>
 <p>The code will need to know where your base model is stored. The base model for this application is available <a class="reference external" href="https://downgit.github.io/#/home?url=https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles">here</a></p>
 <p>Download these files into a folder inside your working directory (ApertureOptExample in this example) called SimpleCollimatorExample_TopasFiles. Note that in principle these files can reside anywhere; we are going to put them inside the working directory to make this example as simple as possible!</p>
-</div>
-<div class="section" id="creating-generatetopasscript-py">
-<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="creating-generatetopasscript-py">
+<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this headline"></a></h2>
 <p>The first thing we will be needing is a function that generates your topas script.</p>
 <p>Create a python file called ‘temp_GenerateTopasScript.py’ (or whatever you want, the name isn’t important). Copy the below code into it (or use an interactive console if you prefer):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.TopasScriptGenerator</span> <span class="kn">import</span> <span class="n">generate_topas_script_generator</span>
@@ -232,9 +143,9 @@
 <blockquote>
 <div><p><strong>warning:</strong> There are probably situations which GenerateTopasScripts does not handle well. For instance, CAD file imports are currently unsupported. In general, you should think of the script created at this point as a first draft. You may have to do some further work on it to get it to do exactly what you want. We will make some edits to GenerateTopasScripts.py a bit later on in this example. (You can delete temp_GenerateTopasScript.py now if you want to, it has done its job. )</p>
 </div></blockquote>
-</div>
-<div class="section" id="creating-runoptimisation-py">
-<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="creating-runoptimisation-py">
+<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline"></a></h2>
 <p>Create a new file called RunOptimisation_main.py (or whatever you want, the name isn’t important). Copy the below code into it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -281,9 +192,9 @@
 <li><p><strong>TopasLocation</strong> is the path to your topas installation. If you followed the installation instructions, this will be at ~/topas, which is where the code will look by default.</p></li>
 <li><p><strong>KeepAllResults</strong> if False, only the last results files are kept (the logs record all results in either case)</p></li>
 </ul>
-</div>
-<div class="section" id="editing-generatetopasscript-py">
-<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="editing-generatetopasscript-py">
+<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Permalink to this headline"></a></h2>
 <p>Remember from earlier that GenerateTopasScripts.py currently regenerates the original topas scripts. For an optimisation, we need to be able to receive parameters from the optimiser, and build a model reflecting these parameters. Therefore we will have to make some changes to this script!</p>
 <p>Whenever GenerateTopasScript is called from the optimiser, it will be passed a dictionary that contains the variables defined in optimisation_params and their current values. We need to edit GenerateTopasScript so that when these parameters change, the topas parameters change accordingly. Firstly, we need to change three lines:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. change</span>
@@ -318,9 +229,9 @@
 <blockquote>
 <div><p><strong>Hint:</strong> Figuring out the optimal trade-off between simulation time and simulation noise is something that can take quite a while to get right! It can be helpful to run the same simulation e.g. 10 times, and assess the variance in the objective function against the accuracy of the result you hope to obtain with the optimization.</p>
 </div></blockquote>
-</div>
-<div class="section" id="creating-topasobjectivefunction-py">
-<h2>Creating TopasObjectiveFunction.py<a class="headerlink" href="#creating-topasobjectivefunction-py" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="creating-topasobjectivefunction-py">
+<h2>Creating TopasObjectiveFunction.py<a class="headerlink" href="#creating-topasobjectivefunction-py" title="Permalink to this headline"></a></h2>
 <p>Finally, create a file called TopasObjectiveFunction.py. The name of this <strong>does</strong> matter!</p>
 <p>The only things this file <strong>must</strong> do is</p>
 <ol class="simple">
@@ -400,9 +311,9 @@ Update the location of <code class="docutils literal notranslate"><span class="p
 <blockquote>
 <div><p><strong>Hint:</strong> if you want a guaranteed way to impress your friends and family, you can tell them that this is an L1 norm objective function</p>
 </div></blockquote>
-</div>
-<div class="section" id="running-the-example">
-<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="running-the-example">
+<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this headline"></a></h2>
 <p>You now have all the building blocks in place to run this example. To do so, you simply need to run RunOptimisation_main.py:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># from a command window:</span>
 python3 RunOptimisation_main.py 
@@ -412,9 +323,9 @@ python3 RunOptimisation_main.py
 <blockquote>
 <div><p><strong>warning:</strong> I have used very aggressive variance reduction in this example. Always be careful with <a class="reference external" href="https://topas.readthedocs.io/en/latest/parameters/variance/index.html">implementing variance reduction techniques</a>.</p>
 </div></blockquote>
-</div>
-<div class="section" id="interpreting-the-results">
-<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="interpreting-the-results">
+<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this headline"></a></h2>
 <p>Ok, you’ve gone away and drunk several beers while the optimisation was running, and you are now ready to see how it did!</p>
 <p>Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOptimisation script. An explanation of the folders you see here:</p>
 <ul class="simple">
@@ -433,7 +344,7 @@ Next, open CorrelationPlot.png. This shows a scatter plot of the predicted versu
 <blockquote>
 <div><p><strong>Note:</strong> the model doesn’t have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function</p>
 </div></blockquote>
-<p><img alt="_images/CorrelationPlot.png" src="_images/CorrelationPlot.png" />
+<p><img alt="_images/CorrelationPlot1.png" src="_images/CorrelationPlot1.png" />
 If the correlation isn’t great, you could have a look at RetrospectiveModelFit.png. This plots what the model predicts <strong>after</strong> it has seen each point. If this also isn’t working, you have a serious problem with the model, since predicting something that has already happened isn’t very difficult!! In this case, if your model didn’t show great correlation, it’s most likey simply due to the low number of iterations we have run.</p>
 <p>Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value.</p>
 <blockquote>
@@ -475,9 +386,9 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 </tr>
 </tbody>
 </table><p>This is pretty good! In just 40 iterations, we recovered the original values to within 10% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here. It is also helpful to interpret these results in the context of the single parameter plots shown above. These plots suggest that the least sensitive parameter is the Upstream Aperture, which is the parameter we have the largest error in (9%). We might therefore expect that the dose profiles are not all that sensitive to this error. A comparison between the starting results and optimized results is shown at the end of this example.</p>
-</div>
-<div class="section" id="comparison-with-nelder-mead-optimiser">
-<h2>Comparison with Nelder-Mead optimiser<a class="headerlink" href="#comparison-with-nelder-mead-optimiser" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="comparison-with-nelder-mead-optimiser">
+<h2>Comparison with Nelder-Mead optimiser<a class="headerlink" href="#comparison-with-nelder-mead-optimiser" title="Permalink to this headline"></a></h2>
 <p>A comparison of the same problem with the Nelder-Mead optimiser is below. In this case, Nelder Mead performs almost as well. Bayesian optimisation found a minimum objective function of 1.24 on the 30th iteration, while Nelder-Mead found a minimum value of 1.4 on the 19th iteration. For more complex situations , the difference between these two approaches can be substantially greater.</p>
 <p>As a rule of thumb, Nelder-Mead will generally converge more quickly than the Bayesian approach during the first ~10-20 iterations, but then tend to get stuck in a local minima, whereas the Bayesian approach will continue to explore. For simple objective function spaces Nelder-Mead can therefore be a better and more simple choice.</p>
 <p><img alt="_images/ConvergencePlotNM.png" src="_images/ConvergencePlotNM.png" /></p>
@@ -510,9 +421,9 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 <td>2.29 mm</td>
 </tr>
 </tbody>
-</table></div>
-<div class="section" id="comparison-with-original-results">
-<h2>Comparison with original results<a class="headerlink" href="#comparison-with-original-results" title="Permalink to this headline">¶</a></h2>
+</table></section>
+<section id="comparison-with-original-results">
+<h2>Comparison with original results<a class="headerlink" href="#comparison-with-original-results" title="Permalink to this headline"></a></h2>
 <p>We have seen that both optimizers did a reasonable job of recovering the original geometric parameters. We can also compare how the raw data looks. To compare multiple results we have included a function in utilities.compare_multiple_results, which is used like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
 
@@ -527,10 +438,10 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 </pre></div>
 </div>
 <p>Using this code, we can generate the following figure:</p>
-<p><img alt="_images/compare.png" src="_images/compare.png" /></p>
-</div>
-<div class="section" id="improving-these-results">
-<h2>Improving these results<a class="headerlink" href="#improving-these-results" title="Permalink to this headline">¶</a></h2>
+<p><img alt="_images/compare1.png" src="_images/compare1.png" /></p>
+</section>
+<section id="improving-these-results">
+<h2>Improving these results<a class="headerlink" href="#improving-these-results" title="Permalink to this headline"></a></h2>
 <p>There are number of things you could do to improve these results, many of which are explained in a bit more detail in NEXT STEPS:</p>
 <ul class="simple">
 <li><p>Run more iterations</p></li>
@@ -538,55 +449,38 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 <li><p>Making a better objective function: we arbitrarily chose an objective function based on a depth dose curve and profiles, but we could probably find some more sensitive metrics.</p></li>
 <li><p>assess the noise in the objective function and decide if we need to run more particles or not. Note that if there is 10% noise, this is a  rough limit on how accurate to expect the optimisation to be. /</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="PhaseSpaceOptimisation.html" class="btn btn-neutral float-right" title="Example 2: Phase space optimisation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="worked_examples.html" class="btn btn-neutral float-left" title="Worked Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PhaseSpaceOptimisation.html" class="btn btn-neutral float-right" title="Example 2: Phase space optimisation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Brendan Whelan(s).
-
-    </p>
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
