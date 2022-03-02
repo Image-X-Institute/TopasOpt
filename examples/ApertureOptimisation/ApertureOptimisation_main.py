@@ -16,7 +16,7 @@ optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
 # random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
 # optimisation_params['start_point'] = random_start_point
-optimisation_params['start_point'] = np.array([2.46, 1.62, 12.47])
+optimisation_params['start_point'] = np.array([2.46, 1.62, 35])
 # Remember true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 5
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.

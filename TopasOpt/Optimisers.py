@@ -125,11 +125,15 @@ class TopasOptBaseClass:
         # attempt the absolute imports from the optimisation directory:
         self.BaseDirectory = BaseDirectory
         self.OptimisationDirectory = OptimisationDirectory
+
         if not os.path.isdir(BaseDirectory):
             logger.error(
                 f'{bcolors.FAIL}Input BaseDirectory "{BaseDirectory}" does not exist. Exiting. {bcolors.ENDC}')
             sys.exit()
         self.SimulationName = SimulationName
+        _LogFileLoc  = Path(self.BaseDirectory) / self.SimulationName
+        _LogFileLoc  = _LogFileLoc  / 'logs'
+        self._LogFileLoc = str(_LogFileLoc  / 'OptimisationLogs.txt')
         self.Itteration = 0
         self.ItterationStart = 0
         # the starting values of our optimisation parameters are defined from the default geometry
@@ -405,11 +409,7 @@ class TopasOptBaseClass:
         :param OF: the current objective function value
         """
 
-        LogFile = Path(self.BaseDirectory) / self.SimulationName
-        LogFile = LogFile / 'logs'
-        LogFile = str(LogFile / 'OptimisationLogs.txt')
-
-        with open(LogFile, 'a') as f:
+        with open(self._LogFileLoc , 'a') as f:
             Entry = f'Itteration: {self.Itteration}'
             for i, Parameter in enumerate(self.ParameterNames):
                 try:
@@ -432,41 +432,38 @@ class TopasOptBaseClass:
             f.write(Entry)
         print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
 
-    def _write_final_log_entry(self, x, OF, Itteration=None):
+    def _write_final_log_entry(self):
         """
-        This method can optionally be called when the optimiser has finished running.
-        It worked similarly to _UpdateOptimisationLogs but it should be passed the best
-        parameters and OF value. Optionally, the user can also pass the itteration at which
-        these occured (which I recomend, it makes life easier)
-
-        :param x: the best parameter values. **important:** these should be in alphabetical order of their respective
-            paramter names.
-        :type x: array
-        :param OF: the best objective function value
-        :param Itteration: the Itteration these results occured at
+        This method can optionally be called when an optimiser has finished running.
+        It reads in the logs, then prints a message at the end summarising the best found solution.
         """
+        ResultsDict = ReadInLogFile(self._LogFileLoc)
 
-        LogFile = Path(self.BaseDirectory) / self.SimulationName
-        LogFile = LogFile / 'logs'
-        LogFile = str(LogFile / 'OptimisationLogs.txt')
+        best_iteration = np.argmin(ResultsDict['ObjectiveFunction'])
+        best_OF = ResultsDict['ObjectiveFunction'][best_iteration]
+        ResultsDict.pop('ObjectiveFunction')
+        ResultsDict.pop('Itteration')
+        # what's left is the results
+        ParameterValues = list(ResultsDict.values())
+        best_params = np.array([param_list[0] for param_list in ParameterValues])
+        sort_ind = np.argsort(self.ParameterNames)  # need to sort parameters alphabetically
+        best_params = best_params[sort_ind]
 
-        with open(LogFile, 'a') as f:
+
+        with open(self._LogFileLoc , 'a') as f:
             Entry = f'\nBest parameter set: '
-            if Itteration is not None:
-                Entry = Entry + f'Itteration: {Itteration}.'
-            for i, Parameter in enumerate(sorted(self.ParameterNames)):
-                try:
-                    Entry = Entry + f', {Parameter}: {x[0][i]: 1.2f}'
-                except IndexError:
-                    Entry = Entry + f', {Parameter}: {x[i]: 1.2f}'
 
-            Entry = Entry + f', ObjectiveFunction: {OF: 1.2f}\n'
+            Entry = Entry + f'Itteration: {best_iteration}.'
+            for i, Parameter in enumerate(sorted(self.ParameterNames)):
+                Entry = Entry + f', {Parameter}: {best_params[i]: 1.2f}'
+
+            Entry = Entry + f', ObjectiveFunction: {best_OF: 1.2f}\n'
             f.write(Entry)
         print(f'{bcolors.OKGREEN}{Entry}{bcolors.ENDC}')
 
     def _Plot_Convergence(self):
         """
-        ToDO:: Long term want to replace this with utilitiies.PlotLogFile
+        ToDO:: Long term want to replace this with utilitiies.Plotself._LogFileLoc 
         """
 
         ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
@@ -610,7 +607,9 @@ class NelderMeadOptimiser(TopasOptBaseClass):
 
     def _GenerateStartingSimplex(self):
         """
+        Enbles the user to optionally scale the starting simplex by some fraction.
         This is copied from the scipy source code (optimize around line 690), with a variable version of nonzdelt
+        The default is 0.1
         """
 
         if not type(self.NM_StartingSimplexRelativeVal) is float:
@@ -651,13 +650,7 @@ class NelderMeadOptimiser(TopasOptBaseClass):
         self.NelderMeadRes = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
-
-        # update final log entry
-        best_iteration = np.argmin(self.NelderMeadRes.final_simplex[1])
-        best_OF = self.NelderMeadRes.final_simplex[1][best_iteration]
-        best_params = self.NelderMeadRes.final_simplex[0][best_iteration]
-        sort_ind = np.argsort(self.ParameterNames)  # need to sort parameters alphabetically
-        self._write_final_log_entry(best_params[sort_ind], best_OF, best_iteration)
+        self._write_final_log_entry()
 
 
 class BayesianOptimiser(TopasOptBaseClass):
@@ -747,10 +740,8 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         :param optimizer: The bayesian optimiser object from RunOptimisation
         """
-        LogFile = Path(self.BaseDirectory) / self.SimulationName
-        LogFile = LogFile / 'logs'
-        LogFile = str(LogFile / 'OptimisationLogs.txt')
-        ResultsDict = ReadInLogFile(LogFile)
+
+        ResultsDict = ReadInLogFile(self._LogFileLoc)
 
         # we need to format this into a an array based on ParameterNames
         ResultsArray = np.zeros([len(ResultsDict['Itteration']), len(self.ParameterNames)])
@@ -864,11 +855,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         Entry = f'\nStarting length scales were {start_length}'
         Entry = Entry + f'\nOptimised length scales were {final_length}'
 
-        LogFile = Path(self.BaseDirectory) / self.SimulationName
-        LogFile = LogFile / 'logs'
-        LogFile = str(LogFile / 'OptimisationLogs.txt')
-
-        with open(LogFile, 'a') as f:
+        with open(self._LogFileLoc , 'a') as f:
             f.write(Entry)
 
     def RunOptimisation(self):
@@ -944,9 +931,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             self._plot_single_variable_objective(self.optimizer)
 
         # update the logs with the best value:
-        best = self.optimizer.max
-        best_itteration = np.argmin(abs(self.optimizer.space.target- best['target']))
-        self._write_final_log_entry(list(best['params'].values()), -1*best['target'],Itteration=best_itteration)
+        self._write_final_log_entry()
         # update logs with length scales:
         self._update_logs_with_length_scales()
 
