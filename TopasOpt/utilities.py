@@ -291,17 +291,14 @@ class WaterTankData:
         generate the data for plotting profiles.
         Note that this operates on each beamlet, NOT on the integral Dose Cube data
         """
-        # X profile
-        Xpts_prof = self.x # profile over entire X range
+        Xpts_prof = self.x  # profile over entire X range
         Ypts_prof = np.zeros(Xpts_prof.shape)
         Zpts_prof = self.PhantomSizeZ * np.ones(Xpts_prof.shape)  # at the middle of the water tank
         self.ProfileDose_X = self.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
         # Y profile
-        Yinterp = self.y  # profile over entire X range
-        Xinterp = np.zeros(Yinterp.shape)
-        Zinterp = self.PhantomSizeZ * np.ones(Xinterp.shape)
-        pts = np.stack([Xinterp, Yinterp, Zinterp])
-        pts = pts.T  # take the tranpose to get the dimnesions right
+        Ypts_prof = self.y  # profile over entire X range
+        Xpts_prof = np.zeros(Ypts_prof.shape)
+        Zpts_prof = self.PhantomSizeZ * np.ones(Xpts_prof.shape)
         self.ProfileDose_Y = self.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
 
         if not self.AbsDepthDose:
@@ -516,6 +513,7 @@ class WaterTankData:
             plt.tight_layout()
             plt.show()
 
+
 def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None):
     """
     this produces depth dose and profile plots for a list of topas .bin files.
@@ -559,6 +557,7 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
         axs[1].legend(custom_legend_names, fontsize=FigureSpecs.LabelFontSize)
     plt.show()
 
+
 def ReadInLogFile(LogFileLoc):
     """
     Read in a log file and return as a dictionary
@@ -593,6 +592,7 @@ def ReadInLogFile(LogFileLoc):
             pass
 
     return ResultsDict
+
 
 def PlotLogFile(LogFileLoc):
     """
