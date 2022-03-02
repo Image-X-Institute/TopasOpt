@@ -22,6 +22,7 @@ from sklearn.gaussian_process.kernels import Matern
 import logging
 from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile
 import stat
+from scipy.optimize import rosen
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
@@ -155,6 +156,13 @@ class TopasOptBaseClass:
         if '~' in TopasLocation:
             TopasLocation = os.path.expanduser(TopasLocation)
         self.TopasLocation = Path(TopasLocation)
+        self._testing_mode = False  # overwrite if True
+        if 'testing_mode' in str(self.TopasLocation):
+            self._testing_mode = True
+            logger.warning(f'Entering test mode because topas location = {self.TopasLocation}')
+
+
+        # this is where we try to load the user defined model generator and objective function
         try:
             _import_from_absolute_path(Path(self.OptimisationDirectory) / 'GenerateTopasScripts.py')
         except ModuleNotFoundError:
@@ -313,24 +321,15 @@ class TopasOptBaseClass:
                     print(f'{bcolors.FAIL}For {Paramter}, Starting value {self.StartingValues[i]} is greater '
                           f'than upper bound {self.UpperBounds[i]}{bcolors.ENDC}')
 
-        if (self.StartingValues == 0).any():
-            Names = np.asarray(self.ParameterNames, dtype=object)
-            ind = self.StartingValues == 0
-            Names = list(Names[ind])
-            logger.error(
-                f'{bcolors.FAIL}At the moment no starting values can be zero, because we use the starting values '
-                f'to create relative values.\nThis is a fairly inherent limiation of this code, fixable but not '
-                f'fixed!The following parameters have starting values of zero:\n{Names}{bcolors.ENDC}')
-            sys.exit(1)
-
         self._CreateVariableDictionary(self.StartingValues)
 
         # make sure topas binary exists
-        if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
-            logger.error(f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation}'
-                         f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
-                         f'\nQuitting{bcolors.ENDC}')
-            sys.exit(1)
+        if not self._testing_mode:
+            if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
+                logger.error(f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation}'
+                             f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
+                             f'\nQuitting{bcolors.ENDC}')
+                sys.exit(1)
 
     def _GenerateTopasModel(self, x):
         """
@@ -349,6 +348,30 @@ class TopasOptBaseClass:
 
         self._GenerateRunIterationShellScript()
 
+    def _setup_topas_emulator(self):
+        """
+        despite it's fancy sounding name, this isn't really an emulator at all
+        What it does is create a bash script that literally does nothing except print hello
+        But this allows us to test most of the functionality of this code when we are in testing mode,
+        without having to run time consuming topas simulations
+        """
+        if not os.path.isdir(Path(self.BaseDirectory) / self.SimulationName / 'bin'):
+            os.mkdir(Path(self.BaseDirectory) / self.SimulationName / 'bin')
+
+        EmulatorLocation = Path(self.BaseDirectory) / self.SimulationName / 'bin' / 'topas'
+        if os.path.isfile(EmulatorLocation):
+            # I don't think I should need to do this; the file should be overwritten if it exists, but this doesn't
+            # seem to be working so deleting it.
+            os.remove(EmulatorLocation)
+        self.TopasLocation = EmulatorLocation.parent.parent
+
+        f = open(EmulatorLocation, 'w+')
+        f.write('echo "Hello from topas emulator! I dont do anything except print this"')
+        # change file permissions:
+        st = os.stat(EmulatorLocation)
+        os.chmod(EmulatorLocation, st.st_mode | stat.S_IEXEC)
+        f.close()
+
     def _GenerateRunIterationShellScript(self):
 
         """
@@ -360,10 +383,7 @@ class TopasOptBaseClass:
             # seem to be working so deleting it.
             os.remove(ShellScriptLocation)
         self.ShellScriptLocation = ShellScriptLocation
-
-
         f = open(ShellScriptLocation, 'w+')
-
         # set up the environment etc.
         if self.ShellScriptHeader is None:
             f.write('# !/bin/bash')
@@ -443,12 +463,16 @@ class TopasOptBaseClass:
         best_OF = ResultsDict['ObjectiveFunction'][best_iteration]
         ResultsDict.pop('ObjectiveFunction')
         ResultsDict.pop('Itteration')
-        # what's left is the results
+        try:
+            ResultsDict.pop('target_prediction_mean')
+            ResultsDict.pop('target_prediction_std')
+        except KeyError:
+            pass
+        # what's left is the results (hopefully no one starts updating the log format!)
         ParameterValues = list(ResultsDict.values())
-        best_params = np.array([param_list[0] for param_list in ParameterValues])
+        best_params = np.array([param_list[best_iteration] for param_list in ParameterValues])
         sort_ind = np.argsort(self.ParameterNames)  # need to sort parameters alphabetically
         best_params = best_params[sort_ind]
-
 
         with open(self._LogFileLoc , 'a') as f:
             Entry = f'\nBest parameter set: '
@@ -549,7 +573,7 @@ class TopasOptBaseClass:
                     shutil.rmtree(file_path)
             except Exception as e:
                 logger.warning(f'Failed to delete {file_path} from results folder. Reason: {e}. continuing...')
-    
+
     # public methods
     
     def BlackBoxFunction(self, x_new):
@@ -558,17 +582,42 @@ class TopasOptBaseClass:
         parameter guesses, and solves the model.
         """
 
-        self._ConvertDictToVariables(x_new)
-        self._CreateVariableDictionary(self.x)
-        self._GenerateTopasModel(self.x)
-        if not self.KeepAllResults:
-            self._empty_results_folder()
-        self._RunTopasModel()
-        self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results', self.Itteration)
-        self.AllObjectiveFunctionValues.append(self.OF)
-        self._UpdateOptimisationLogs(self.x, self.OF)
-        self._Plot_Convergence()
-        self.Itteration = self.Itteration + 1
+        if self._testing_mode:
+            # this is a special section only intended for development, unit testing, etc.
+            # if you are here, it means 'testing_mode' is within your TopasLocation
+            self._ConvertDictToVariables(x_new)
+            self._CreateVariableDictionary(self.x)
+            self._GenerateTopasModel(self.x)
+            if not self.KeepAllResults:
+                self._empty_results_folder()
+            self._RunTopasModel()
+            # this is the part where we would normally read in the results and assess the objective function, but
+            # since we use TopasEmulator, there are no results. therefore we need to 'insert' them.
+            if self.x.shape[0] == 2:
+                x = self.x
+            elif self.x.shape[0] == 1:
+                x = self.x[0]
+            else:
+                logger.error('how have you managed this.')
+                sys.exit(1)
+            self.OF = np.min([rosen(x), 100])  # rosenbrock function can get huge, so just cap it at 100.
+            self.AllObjectiveFunctionValues.append(self.OF)
+            self._UpdateOptimisationLogs(self.x, self.OF)
+            self._Plot_Convergence()
+            self.Itteration = self.Itteration + 1
+        else:
+            # this is the normal optimisation
+            self._ConvertDictToVariables(x_new)
+            self._CreateVariableDictionary(self.x)
+            self._GenerateTopasModel(self.x)
+            if not self.KeepAllResults:
+                self._empty_results_folder()
+            self._RunTopasModel()
+            self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results', self.Itteration)
+            self.AllObjectiveFunctionValues.append(self.OF)
+            self._UpdateOptimisationLogs(self.x, self.OF)
+            self._Plot_Convergence()
+            self.Itteration = self.Itteration + 1
 
         if 'BayesianOptimiser' in str(self.__class__):
             # bit of a hack since bayesian optimise will seek maximum
@@ -599,6 +648,8 @@ class TopasOptBaseClass:
             f = open(FullSimName / 'readme.txt','w')
             f.write(self.ReadMeText)
 
+        if self._testing_mode:
+            self._setup_topas_emulator()
 
 class NelderMeadOptimiser(TopasOptBaseClass):
     """
@@ -648,7 +699,7 @@ class NelderMeadOptimiser(TopasOptBaseClass):
 
 
         self.NelderMeadRes = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
-                       options={'xatol': 1e-1, 'fatol': 1e-1, 'disp': True, 'initial_simplex': StartingSimplex,
+                       options={'disp': True, 'initial_simplex': StartingSimplex,
                                 'maxiter': self.MaxItterations, 'maxfev': self.MaxItterations})
         self._write_final_log_entry()
 
