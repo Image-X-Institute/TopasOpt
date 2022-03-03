@@ -44,12 +44,10 @@ This is just a pretty inherent limitation of the way this code is set up unfortu
 
 Just for fun, here are the results of the currently implemented optimisers at optimising the rosebrock function: 
 
-![](../../docsrc/_resources/Development/ConvergencePlot_nm.png)
+![](_resources/Development/ConvergencePlot_nm.png)
 
 
-
-![](../../docsrc/_resources/Development/ConvergencePlot_bayes.png)
-
+![](_resources/Development/ConvergencePlot_bayes.png)
 
 
 |                | **x** | **y** | **Itteration** |

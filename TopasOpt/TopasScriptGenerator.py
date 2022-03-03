@@ -1,3 +1,6 @@
+"""
+Convert topas parameter files into a python function that recreates the input files.
+"""
 import shutil
 import sys, os
 import logging
@@ -31,6 +34,9 @@ class generate_topas_script_generator:
 
     def __init__(self,OutputDirectory, TopasScriptLocation, IncludeFileStorageDirectory=None,
                  ErrorChecking=True):
+        """
+        init method TopasScriptGenerator. input options are in class docstring
+        """
 
         self.OutputDirectory = Path(OutputDirectory)
         self.TopasScriptLocation = TopasScriptLocation
@@ -38,6 +44,7 @@ class generate_topas_script_generator:
 
         if IncludeFileStorageDirectory is None:
             self.IncludeFileStorageDirectory = Path(OutputDirectory) / 'IncludeFiles'
+
         else:
             self.IncludeFileStorageDirectory = IncludeFileStorageDirectory
 
@@ -63,9 +70,6 @@ class generate_topas_script_generator:
         if not os.path.isdir(self.OutputDirectory):
             logger.error(f'Specified output directory does not exist: {self.OutputDirectory}')
 
-        if not os.path.isdir(self.IncludeFileStorageDirectory):
-            logger.error(f'IncludeFileStorageDirectory does not exist:\n{self.IncludeFileStorageDirectory}\nQuitting.')
-            sys.exit(1)
 
     def _handle_include_files(self, OriginalFileLocation, line):
         """

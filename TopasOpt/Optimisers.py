@@ -114,6 +114,9 @@ class TopasOptBaseClass:
                  NM_StartingSimplexRelativeVal=None, bayes_length_scales=None, bayes_UCBkappa=5,
                  bayes_KappaDecayIterations=10, TopasLocation='~/topas/',
                  ShellScriptHeader=None, Overwrite=False, bayes_GP_alpha=0.01, KeepAllResults=True):
+        """
+        init method for all optimisers. input options are in class docstring
+        """
 
         if 'TopasOptBaseClass' in str(self.__class__):
             logger.error('TopasOptBaseClass should not be called directly; it only exists for other optimisers'
@@ -185,7 +188,7 @@ class TopasOptBaseClass:
                     f'You have attempted to use the variable NM_StartingSimplexRelativeVal, but this does nothing'
                     f'in the Bayesian optimiser - it only works with the Nealder-Mead optimiser. Continuing'
                     f' and ignoring this parameter')
-            self.BayesOptLogLoc = self.BaseDirectory + '/' + self.SimulationName + '/' + 'logs/bayes_opt_logs.json'
+            self.BayesOptLogLoc = Path(self.BaseDirectory) / self.SimulationName / 'logs/bayes_opt_logs.json'
             self._BayesianOptimiser__RestartMode = False  # don't change!
             self._create_p_bounds(optimisation_params)  # Bayesian optimiser wants bounds in a slight differnt format
             self._create_suggested_points_to_probe(optimisation_params)
@@ -230,6 +233,7 @@ class TopasOptBaseClass:
                 self._GenerateStartingSimplex()
 
         self._CheckInputData()
+
 
     def _CreateVariableDictionary(self, x):
         """
@@ -651,6 +655,7 @@ class TopasOptBaseClass:
         if self._testing_mode:
             self._setup_topas_emulator()
 
+
 class NelderMeadOptimiser(TopasOptBaseClass):
     """
     Implementation of Nelder-Mead based on scipy. Allowed options are defined in TopasOptBaseClass
@@ -897,7 +902,9 @@ class BayesianOptimiser(TopasOptBaseClass):
             plt.close(fig)
 
     def _update_logs_with_length_scales(self):
-        # update the logs with the length scale information\
+        """
+        writes the original and optimised length scales to the end of a log file
+        """
         start_length = self.optimizer._gp.kernel.length_scale
         final_length = self.optimizer._gp.kernel_.length_scale
         keys = sorted(self.pbounds)
@@ -918,6 +925,8 @@ class BayesianOptimiser(TopasOptBaseClass):
         # set up directory structure
         if not self.__RestartMode:
             self.SetUpDirectoryStructure()
+        else:
+            self._setup_topas_emulator()
 
         # instantiate optimizer:
 
@@ -932,7 +941,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         if self.__RestartMode:
             # then load the previous log files:
             load_logs(self.optimizer, logs=[self.__PreviousBayesOptLogLoc])
-            bayes_opt_logger = newJSONLogger(path=self.BayesOptLogLoc)
+            bayes_opt_logger = newJSONLogger(path=str(self.BayesOptLogLoc))
             self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
             self.Itteration = len(self.optimizer.space.target)
@@ -942,7 +951,7 @@ class BayesianOptimiser(TopasOptBaseClass):
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
         else:
-            bayes_opt_logger = JSONLogger(path=self.BayesOptLogLoc)
+            bayes_opt_logger = JSONLogger(path=str(self.BayesOptLogLoc))
             self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             # first guess is nonsense but we need the vectors to be the same length
             self.target_prediction_mean.append(0)

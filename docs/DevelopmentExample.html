@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Development example &mdash; TopasOpt  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> TopasOpt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps (work in progress!)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convergence_criteria.html">Convergence criteria</a></li>
+<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AddingNewOptimisers.html">Adding new optimisation algorithms - work in progress!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TopasOpt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Development example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/DevelopmentExample.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="development-example">
+<h1>Development example<a class="headerlink" href="#development-example" title="Permalink to this headline"></a></h1>
+<p>This example is aimed at people who want to help develop this library, either by adding new optimisers
+or extending existing optimisers! This is also demonstrates how the intergration tests are implemented in this
+repository.</p>
+<p>A major issue with optimising monte carlo sims is that they are very slow. This can make development and testing very
+painful! For this reason, we have included functionality where one can call a ‘Topas Emulator’. Basically this
+is just a function that does nothing, allowing you to test your optimisation algorithm on <a class="reference external" href="https://en.wikipedia.org/wiki/Rosenbrock_function">the rosenbrock function</a>,
+which is a very commonly used function to test optimisers, and has a known global minimum.</p>
+<p>This example demonstrates this process.</p>
+<section id="set-up-base-directory">
+<h2>Set up base directory<a class="headerlink" href="#set-up-base-directory" title="Permalink to this headline"></a></h2>
+<p>You will want to set up your base directory in a same way that you did in the other examples. The key difference is:</p>
+<ul class="simple">
+<li><p>GenerateTopasScripts code do nothing, and can be almost empty</p></li>
+<li><p>When you instantiate the optimser, you <strong>must</strong> set TopasLocation=’testing_mode’.</p></li>
+</ul>
+<p>GenerateTopasScripts:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">GenerateTopasScripts</span><span class="p">(</span><span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="o">**</span><span class="n">variable_dict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;dummy_script&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;dummy_script&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>TopasObjectiveFunction</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">def</span> <span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<p>This approach tests a lot of the code, but it doesn’t test</p>
+<ol class="simple">
+<li><p>The users own code (GenerateTopasScripts and TopasObjectiveFunction), and, perhaps more importantly;</p></li>
+<li><p>it doesn’t test the ability of this code to find and correctly use those codes.</p></li>
+</ol>
+<p>This is just a pretty inherent limitation of the way this code is set up unfortunately.</p>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h2>
+<p>Just for fun, here are the results of the currently implemented optimisers at optimising the rosebrock function:</p>
+<p><img alt="_images/ConvergencePlot_nm.png" src="_images/ConvergencePlot_nm.png" /></p>
+<p><img alt="_images/ConvergencePlot_bayes.png" src="_images/ConvergencePlot_bayes.png" /></p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th></th>
+<th><strong>x</strong></th>
+<th><strong>y</strong></th>
+<th><strong>Itteration</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NelderMead</strong></td>
+<td>0.95</td>
+<td>0.95</td>
+<td>95</td>
+</tr>
+<tr>
+<td><strong>Bayesian</strong></td>
+<td>1</td>
+<td>1</td>
+<td>14</td>
+</tr>
+</tbody>
+</table><p>The ground truth value is x=1, y=1 - we can see that in this case the Bayesian optimser found the true ground truth on the 14th iteration. The NM never found it, but was steadily converging towards it and probably would have gotten there (or very close) with enough iterations.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
