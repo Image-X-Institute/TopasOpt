@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Environment set up" href="EnvironmentSetup.html" />
+    <link rel="next" title="Convergence criteria" href="convergence_criteria.html" />
     <link rel="prev" title="Example 2: Phase space optimisation" href="PhaseSpaceOptimisation.html" /> 
 </head>
 
@@ -52,11 +52,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#setting-length-scales-in-the-gaussian-process-model">Setting length scales in the gaussian process model</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#using-different-optimisation-algorithms">Using different optimisation algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#adding-new-optimisation-algorithms">Adding new optimisation algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#assess-noise-in-the-objective-function">Assess noise in the objective function</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="convergence_criteria.html">Convergence criteria</a></li>
+<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AddingNewOptimisers.html">Adding new optimisation algorithms - work in progress!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
 </ul>
@@ -143,11 +143,6 @@ you want, but we do provide a default ploting function:</p>
 </div>
 <p>Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.</p>
-</section>
-</section>
-<section id="using-different-optimisation-algorithms">
-<h2>Using different optimisation algorithms<a class="headerlink" href="#using-different-optimisation-algorithms" title="Permalink to this headline"></a></h2>
-<p>The most common optimisation algorithms work on gradients, but when the input is based on monte carlo simulation results, we cannot easily provide derivatives for the objective function, or even assume that it is differentiable.  We believe that in most scenarios, Bayesian optimisation is the ideal approach for this scenario, because it performs well for expensive, noisy, black box objective functions. However, there may be situations where other algorithms perform faster. In particular, if your problem is relatively straight forward it may not be worth the additional overhead of training and understandning Gaussian process models. As such, you can also use some other gradient free optimisation techniques, in particular the Nelder-Mead algorithm and Powell’s method. Both of these use the default <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html">scipy implementation</a>.</p>
 <p>Example of switching between different optimisers is below. For detailed documentation on what options are available for the different optimisers, see the code documentaiton. ADD HYPERLINKS!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
 <span class="c1"># OR </span>
@@ -156,23 +151,20 @@ length scales used were, and what the fitted length scales at the end of the run
 <span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">PowelOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="adding-new-optimisation-algorithms">
-<h2>Adding new optimisation algorithms<a class="headerlink" href="#adding-new-optimisation-algorithms" title="Permalink to this headline"></a></h2>
-<p>It is also possible to add new optimisation algorithms, by inheriting from the optimisation base class, e.g.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.Optimisers</span> <span class="kn">import</span> <span class="n">TopasOptBaseClass</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="n">The</span> <span class="n">Base</span> <span class="k">class</span> <span class="nc">contains</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">basic</span> <span class="n">functionality</span> <span class="n">an</span> <span class="n">optimser</span> <span class="n">will</span> <span class="n">need</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="n">generating</span> <span class="n">models</span><span class="p">,</span> <span class="n">reading</span> <span class="n">results</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="n">This</span> <span class="n">inheritance</span> <span class="n">mechanism</span> <span class="n">makes</span> <span class="n">it</span> <span class="n">fairly</span> <span class="n">quick</span> <span class="n">to</span> <span class="nb">set</span> <span class="n">up</span> <span class="n">new</span> <span class="n">algorithms</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="n">the</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Nelder</span><span class="o">-</span><span class="n">Mead</span> <span class="n">algorithm</span> <span class="n">requires</span> <span class="n">only</span> <span class="mi">45</span> <span class="n">lines</span> <span class="n">of</span> <span class="n">code</span><span class="o">.</span> 
+
+<span class="n">You</span> <span class="n">can</span> <span class="n">look</span> <span class="n">through</span> <span class="n">the</span> <span class="n">source</span> <span class="n">code</span> <span class="n">to</span> <span class="n">see</span> <span class="n">how</span> <span class="n">the</span> <span class="n">different</span> <span class="n">optimisers</span> <span class="n">are</span> <span class="n">implemented</span><span class="o">.</span>
+
+<span class="c1">## Assess noise in the objective function</span>
+
+<span class="n">You</span> <span class="n">can</span> <span class="n">use</span> <span class="n">your</span> <span class="n">GenerateTopasScripts</span> <span class="n">function</span> <span class="n">to</span> <span class="n">create</span> <span class="mi">10</span> <span class="n">identical</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">run</span> <span class="n">them</span> <span class="nb">all</span><span class="p">,</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">assess</span> <span class="n">the</span> <span class="n">reslts</span> <span class="k">with</span> <span class="n">TopasObjectiveFunction</span><span class="o">.</span> <span class="n">If</span> <span class="n">the</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span> <span class="n">function</span> <span class="ow">is</span> <span class="n">higher</span> <span class="n">than</span> <span class="n">the</span> <span class="n">precision</span> <span class="n">you</span> <span class="n">would</span> <span class="n">ultimately</span> <span class="n">like</span> <span class="n">to</span> <span class="n">converge</span> <span class="n">to</span> <span class="n">then</span> <span class="n">you</span> <span class="n">are</span> <span class="n">unlikely</span> <span class="n">to</span> <span class="n">get</span> <span class="n">a</span> <span class="n">great</span> <span class="n">result</span><span class="o">.</span> <span class="n">E</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="k">if</span> <span class="n">the</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span> <span class="n">function</span> <span class="ow">is</span> <span class="mi">20</span><span class="o">%</span> <span class="ow">and</span> <span class="n">you</span> <span class="n">hope</span> <span class="n">to</span> <span class="n">be</span> <span class="n">within</span> <span class="mi">10</span><span class="o">%</span> <span class="n">of</span> <span class="n">the</span> <span class="n">true</span> <span class="n">optimum</span> <span class="n">you</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">trouble</span><span class="o">.</span> <span class="n">For</span> <span class="n">the</span> <span class="n">Bayesian</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">you</span> <span class="n">may</span> <span class="n">be</span> <span class="n">able</span> <span class="n">to</span> <span class="n">handle</span> <span class="n">noise</span> <span class="n">by</span> <span class="n">increasing</span> <span class="n">bayes_GP_alpha</span><span class="o">.</span>
 
 
-<span class="k">class</span> <span class="nc">NewOptimiser</span><span class="p">(</span><span class="n">TopasOptBaseClass</span><span class="p">):</span>
-   <span class="c1"># your code here</span>
+
 </pre></div>
 </div>
-<p>The Base class contains all the basic functionality an optimser will need, such as generating models, reading results, etc. This inheritance mechanism makes it fairly quick to set up new algorithms, e.g. the implementation of the Nelder-Mead algorithm requires only 45 lines of code.</p>
-<p>You can look through the source code to see how the different optimisers are implemented.</p>
 </section>
-<section id="assess-noise-in-the-objective-function">
-<h2>Assess noise in the objective function<a class="headerlink" href="#assess-noise-in-the-objective-function" title="Permalink to this headline"></a></h2>
-<p>You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.</p>
 </section>
 </section>
 
@@ -181,7 +173,7 @@ length scales used were, and what the fitted length scales at the end of the run
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="PhaseSpaceOptimisation.html" class="btn btn-neutral float-left" title="Example 2: Phase space optimisation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="EnvironmentSetup.html" class="btn btn-neutral float-right" title="Environment set up" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="convergence_criteria.html" class="btn btn-neutral float-right" title="Convergence criteria" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -10,3 +10,5 @@ __pycache__
 build
 *.egg-info
 TopasOpt/*.egg-info
+tests/development_test/*
+test/.pytest_cache

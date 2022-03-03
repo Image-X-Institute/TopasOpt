@@ -66,9 +66,6 @@ Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationN
 Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.
 
-## Using different optimisation algorithms
-
-The most common optimisation algorithms work on gradients, but when the input is based on monte carlo simulation results, we cannot easily provide derivatives for the objective function, or even assume that it is differentiable.  We believe that in most scenarios, Bayesian optimisation is the ideal approach for this scenario, because it performs well for expensive, noisy, black box objective functions. However, there may be situations where other algorithms perform faster. In particular, if your problem is relatively straight forward it may not be worth the additional overhead of training and understandning Gaussian process models. As such, you can also use some other gradient free optimisation techniques, in particular the Nelder-Mead algorithm and Powell's method. Both of these use the default [scipy implementation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html).
 
 Example of switching between different optimisers is below. For detailed documentation on what options are available for the different optimisers, see the code documentaiton. ADD HYPERLINKS!
 
@@ -80,16 +77,7 @@ Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, Simulati
 Optimiser = to.PowelOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
 ```
 
-## Adding new optimisation algorithms
 
-It is also possible to add new optimisation algorithms, by inheriting from the optimisation base class, e.g.
-
-```python
-from TopasOpt.Optimisers import TopasOptBaseClass
-
-
-class NewOptimiser(TopasOptBaseClass):
-   # your code here
 ```
 
 The Base class contains all the basic functionality an optimser will need, such as generating models, reading results, etc. This inheritance mechanism makes it fairly quick to set up new algorithms, e.g. the implementation of the Nelder-Mead algorithm requires only 45 lines of code. 

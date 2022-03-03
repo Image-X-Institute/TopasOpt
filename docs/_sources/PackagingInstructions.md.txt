@@ -14,6 +14,6 @@ rm -r dist
 # build distribution packages
 python -m build
 # upload built package
-python3 -m twine upload --repository testpypi dist/*  # if testing
+python3 -m twine upload --repository testpypi dist/*  # if tests
 twine upload dist/*  # for real
 ```

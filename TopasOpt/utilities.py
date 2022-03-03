@@ -51,6 +51,9 @@ class newJSONLogger(JSONLogger):
     Thanks to: https://github.com/fmfn/BayesianOptimization/issues/159
     """
     def __init__(self, path):
+        """
+        I have to put a docstring here because I can't figure out how to make interrogate ignore it :-/
+        """
         self._path = None
         super(JSONLogger, self).__init__()
         self._path = path if path[-5:] == ".json" else path + ".json"

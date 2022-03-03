@@ -26,6 +26,6 @@ ReadMeText = 'This is an example in which the rosen function is minimised, and d
 # Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'NM_OptimisationTest', OptimisationDirectory,
 #                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.4)
 
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                 TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False)
 Optimiser.RunOptimisation()

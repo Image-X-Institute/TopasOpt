@@ -1,6 +1,6 @@
 # Example 2: Phase space optimisation
 
-> **Note:** in this example it is assumed you have already completed the first example on Geometry optimisation.
+> **Note:** in this example it is assumed you have already completed the [first example on Geometry optimisation](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html).
 
 In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
 

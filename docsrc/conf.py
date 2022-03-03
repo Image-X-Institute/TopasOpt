@@ -61,7 +61,8 @@ def _include_example_readmes_in_docs(readmelocation):
 this_directory = Path(__file__).parent
 example_directory = this_directory.parent / 'examples'
 example_readmes = [example_directory / 'ApertureOptimisation' / 'README.md',
-                   example_directory / 'PhaseSpaceOptimisation' / 'README.md']
+                   example_directory / 'PhaseSpaceOptimisation' / 'README.md',
+                   example_directory / 'DevelopmentExample' / 'README.md']
 _include_example_readmes_in_docs(example_readmes)
 
 
