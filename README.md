@@ -1,10 +1,7 @@
 # TopasOpt
 
-[![Travis](https://img.shields.io/travis/fmfn/BayesianOptimization/master.svg?label=Travis%20CI)](https://travis-ci.org/fmfn/BayesianOptimization)
-[![Codecov](https://codecov.io/github/fmfn/BayesianOptimization/badge.svg?branch=master&service=github)](https://codecov.io/github/fmfn/BayesianOptimization?branch=master)
-[![Pypi](https://img.shields.io/pypi/v/bayesian-optimization.svg)](https://pypi.python.org/pypi/bayesian-optimization)
+![](docsrc/_resources/interrogate_badge.svg) ![](docsrc/_resources/coverage.svg)
 
-![](/home/brendan/python/TopasOpt/docsrc/_resources/interrogate_badge.svg)
 
 This code provides a framework for performing inverse optimisation on monte carlo radiation transport 
 simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC).
