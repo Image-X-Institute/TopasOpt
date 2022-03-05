@@ -10,7 +10,8 @@ import os
 def test_TopasOpt_docstrings_coverage():
 
     desired_coverage = 99
-    TopasOpt_location = str(Path('../TopasOpt').resolve())
+    this_directory = Path(__file__).parent
+    TopasOpt_location = str(this_directory.parent / 'TopasOpt')
     assert os.path.isdir(TopasOpt_location)
     cov = coverage.InterrogateCoverage(paths=[TopasOpt_location], excluded=('__init__',))
     results = cov.get_coverage()

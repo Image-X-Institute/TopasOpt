@@ -1,5 +1,7 @@
 # TopasOpt
 
+![](docsrc/_resources/interrogate_badge.svg) ![](docsrc/_resources/coverage.svg)
+
 
 This code provides a framework for performing inverse optimisation on monte carlo radiation transport 
 simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu&q=topas+MC).
@@ -23,7 +25,7 @@ Detailed documents are provided [here](https://acrf-image-x-institute.github.io/
 - **examples:** as the name implies!
 - **docs:** html documentation created from docsrc using sphinx
 - **docsrc:** markdown/rst documentation.
-
+- **tests:** tests which are run on push
 
 
 

@@ -595,6 +595,8 @@ class TopasOptBaseClass:
             if not self.KeepAllResults:
                 self._empty_results_folder()
             self._RunTopasModel()
+            self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results',
+                                                  self.Itteration)
             # this is the part where we would normally read in the results and assess the objective function, but
             # since we use TopasEmulator, there are no results. therefore we need to 'insert' them.
             if self.x.shape[0] == 2:
@@ -686,7 +688,6 @@ class NelderMeadOptimiser(TopasOptBaseClass):
             sim[k + 1] = y
 
         self.StartingSimplex = sim
-        self.StartingSimplexSupplied = True
 
     def RunOptimisation(self):
         """
@@ -940,7 +941,7 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         if self.__RestartMode:
             # then load the previous log files:
-            load_logs(self.optimizer, logs=[self.__PreviousBayesOptLogLoc])
+            load_logs(self.optimizer, logs=[self.BayesOptLogLoc])
             bayes_opt_logger = newJSONLogger(path=str(self.BayesOptLogLoc))
             self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
@@ -1003,5 +1004,15 @@ class BayesianOptimiser(TopasOptBaseClass):
         in your optimisation script; the code will do the rest automatically.
         """
         self.__RestartMode = True
-        self.__PreviousBayesOptLogLoc = self.BayesOptLogLoc
+
+
+        # delete the end of run info from the log file
+        with open(self._LogFileLoc, "r") as f:
+            lines = f.readlines()
+        with open(self._LogFileLoc, "w") as f:
+            for line in lines:
+                if line[0:10] == 'Itteration':
+                    f.write(line)
+
         self.RunOptimisation()
+

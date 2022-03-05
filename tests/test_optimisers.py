@@ -13,7 +13,8 @@ import os
 import sys
 import numpy as np
 from pathlib import Path
-
+this_dir = Path(__file__).parent
+sys.path.insert(0, str(this_dir.parent))
 from TopasOpt import Optimisers as to
 from TopasOpt.utilities import ReadInLogFile
 
@@ -33,17 +34,16 @@ optimisation_params['start_point'] = np.array([0, 0])
 optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This directory only exists for testing; it can be deleted'
-
+#
 def test_Nelder_Mead():
     ## Test Nelder Mead:
     Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False)
+                                    KeepAllResults=False, NM_StartingSimplexRelativeVal=0.2)
     Optimiser.RunOptimisation()
-    best_solution_number = np.argmin(Optimiser.AllObjectiveFunctionValues)
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
-    OF = ResultsDict['ObjectiveFunction']
+    best_solution_number = np.argmin(ResultsDict['ObjectiveFunction'])
     best_x = ResultsDict['x'][best_solution_number]
     best_y = ResultsDict['y'][best_solution_number]
     assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth
@@ -51,13 +51,29 @@ def test_Nelder_Mead():
 
 def test_Bayesian():
     ## Test Bayesian
+    optimisation_params['Nitterations'] = 50
     Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False)
+                                    KeepAllResults=False, bayes_length_scales=.2)
     Optimiser.RunOptimisation()
-    best_solution_number = np.argmin(Optimiser.AllObjectiveFunctionValues)
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
+    best_solution_number = np.argmin(ResultsDict['ObjectiveFunction'])
+    best_x = ResultsDict['x'][best_solution_number]
+    best_y = ResultsDict['y'][best_solution_number]
+    assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth
+    assert 0.9 <= best_y <= 1.1  # test answer within plus/minus 10% of truth
+
+def test_BayesianRestart():
+    optimisation_params['Nitterations'] = optimisation_params['Nitterations'] + 10
+    ## Test Bayesian
+    Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                    TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
+                                    KeepAllResults=False, bayes_length_scales=0.1)
+    Optimiser.RestartOptimisation()
+    # read in the log file:
+    ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
+    best_solution_number = np.argmin(ResultsDict['ObjectiveFunction'])
     best_x = ResultsDict['x'][best_solution_number]
     best_y = ResultsDict['y'][best_solution_number]
     assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth

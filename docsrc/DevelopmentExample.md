@@ -26,26 +26,24 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
 
 TopasObjectiveFunction
 ```python
-
+"""
+This does nothing, it is just here to enable tests to run
+"""
 def TopasObjectiveFunction(ResultsLocation, iteration):
-    pass
+    return 0
 ```
 
 
 ## Limitations
 
-This approach tests a lot of the code, but it doesn't test 
-1. The users own code (GenerateTopasScripts and TopasObjectiveFunction), and, perhaps more importantly;
-2. it doesn't test the ability of this code to find and correctly use those codes.
+This approach tests a lot of the code, but it doesn't test the users own code (GenerateTopasScripts and TopasObjectiveFunction).
 
-This is just a pretty inherent limitation of the way this code is set up unfortunately. 
 
 ## Results
 
 Just for fun, here are the results of the currently implemented optimisers at optimising the rosebrock function: 
 
 ![](_resources/Development/ConvergencePlot_nm.png)
-
 
 ![](_resources/Development/ConvergencePlot_bayes.png)
 

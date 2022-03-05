@@ -12,3 +12,4 @@ build
 TopasOpt/*.egg-info
 tests/development_test/*
 test/.pytest_cache
+.coverage
