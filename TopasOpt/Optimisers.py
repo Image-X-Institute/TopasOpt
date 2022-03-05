@@ -940,7 +940,7 @@ class BayesianOptimiser(TopasOptBaseClass):
 
         if self.__RestartMode:
             # then load the previous log files:
-            load_logs(self.optimizer, logs=[self.__PreviousBayesOptLogLoc])
+            load_logs(self.optimizer, logs=[self.BayesOptLogLoc])
             bayes_opt_logger = newJSONLogger(path=str(self.BayesOptLogLoc))
             self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
@@ -1003,5 +1003,15 @@ class BayesianOptimiser(TopasOptBaseClass):
         in your optimisation script; the code will do the rest automatically.
         """
         self.__RestartMode = True
-        self.__PreviousBayesOptLogLoc = self.BayesOptLogLoc
+
+
+        # delete the end of run info from the log file
+        with open(self._LogFileLoc, "r") as f:
+            lines = f.readlines()
+        with open(self._LogFileLoc, "w") as f:
+            for line in lines:
+                if line[0:10] == 'Itteration':
+                    f.write(line)
+
         self.RunOptimisation()
+
