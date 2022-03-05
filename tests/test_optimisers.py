@@ -39,7 +39,7 @@ def test_Nelder_Mead():
     ## Test Nelder Mead:
     Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False)
+                                    KeepAllResults=False, NM_StartingSimplexRelativeVal=0.2)
     Optimiser.RunOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
@@ -55,7 +55,7 @@ def test_Bayesian():
     optimisation_params['Nitterations'] = 50
     Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False)
+                                    KeepAllResults=False, bayes_length_scales=.2)
     Optimiser.RunOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
@@ -70,7 +70,7 @@ def test_BayesianRestart():
     ## Test Bayesian
     Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False)
+                                    KeepAllResults=False, bayes_length_scales=0.2)
     Optimiser.RestartOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
