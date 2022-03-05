@@ -44,7 +44,6 @@ def test_Nelder_Mead():
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
     best_solution_number = np.argmin(ResultsDict['ObjectiveFunction'])
-    OF = ResultsDict['ObjectiveFunction']
     best_x = ResultsDict['x'][best_solution_number]
     best_y = ResultsDict['y'][best_solution_number]
     assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth
@@ -70,7 +69,7 @@ def test_BayesianRestart():
     ## Test Bayesian
     Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False, bayes_length_scales=0.2)
+                                    KeepAllResults=False, bayes_length_scales=0.1)
     Optimiser.RestartOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')

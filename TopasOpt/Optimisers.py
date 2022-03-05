@@ -688,7 +688,6 @@ class NelderMeadOptimiser(TopasOptBaseClass):
             sim[k + 1] = y
 
         self.StartingSimplex = sim
-        self.StartingSimplexSupplied = True
 
     def RunOptimisation(self):
         """
