@@ -8,7 +8,9 @@ integration tests
 
 import sys
 from pathlib import Path
-sys.path.insert(0, '../TopasOpt')
+this_dir = Path(__file__).parent
+sys.path.insert(0, str(this_dir.parent))
+
 import numpy as np
 from TopasOpt.utilities import WaterTankData, ReadInLogFile, PlotLogFile, compare_multiple_results
 
@@ -16,7 +18,9 @@ def test_WaterTankData():
     """
     Not sure how to test plotting methods without causing a blocking call...
     """
-    ResultsLocation = str(Path('../examples/SimpleCollimatorExample_TopasFiles/Results').resolve())
+    this_directory = Path(__file__).parent
+
+    ResultsLocation = str(this_directory.parent / 'examples' / 'SimpleCollimatorExample_TopasFiles' / 'Results')
     WT = WaterTankData(ResultsLocation, 'WaterTank.bin')
     
     # Extract some data
