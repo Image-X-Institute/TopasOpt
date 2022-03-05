@@ -595,6 +595,8 @@ class TopasOptBaseClass:
             if not self.KeepAllResults:
                 self._empty_results_folder()
             self._RunTopasModel()
+            self.OF = self.TopasObjectiveFunction(Path(self.BaseDirectory) / self.SimulationName / 'Results',
+                                                  self.Itteration)
             # this is the part where we would normally read in the results and assess the objective function, but
             # since we use TopasEmulator, there are no results. therefore we need to 'insert' them.
             if self.x.shape[0] == 2:

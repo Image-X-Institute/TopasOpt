@@ -15,8 +15,6 @@ import numpy as np
 from pathlib import Path
 this_dir = Path(__file__).parent
 sys.path.insert(0, str(this_dir.parent))
-
-print(f'Helloe!!! {sys.path[0]} Helloe! {this_dir.parent}')
 from TopasOpt import Optimisers as to
 from TopasOpt.utilities import ReadInLogFile
 
@@ -33,7 +31,7 @@ optimisation_params['ParameterNames'] = ['x', 'y']
 optimisation_params['UpperBounds'] = np.array([1, 1])
 optimisation_params['LowerBounds'] = np.array([-1, -1])
 optimisation_params['start_point'] = np.array([0, 0])
-optimisation_params['Nitterations'] = 20
+optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This directory only exists for testing; it can be deleted'
 #
