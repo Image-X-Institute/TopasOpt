@@ -2,7 +2,7 @@ Code documentation
 ==================
 The following documentation is generated directly from the source code.
 It should enable an overview of the different options which are available for
-different optimisers. It is most likely to be of interest to developers, especially if I actually did a good job writing the rest of the documentation!
+different optimisers. 
 
 
 

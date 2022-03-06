@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Environment set up" href="EnvironmentSetup.html" /> 
+    <link rel="prev" title="Developer Notes" href="DeveloperNotes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,10 +40,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps (work in progress!)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convergence_criteria.html">Convergence criteria</a></li>
 <li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AddingNewOptimisers.html">Adding new optimisation algorithms - work in progress!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.Optimisers">Optimisers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.TopasScriptGenerator">TopasScriptGenerator</a></li>
@@ -80,7 +79,7 @@
 <h1>Code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline"></a></h1>
 <p>The following documentation is generated directly from the source code.
 It should enable an overview of the different options which are available for
-different optimisers. It is most likely to be of interest to developers, especially if I actually did a good job writing the rest of the documentation!</p>
+different optimisers.</p>
 <section id="module-TopasOpt.Optimisers">
 <span id="optimisers"></span><h2>Optimisers<a class="headerlink" href="#module-TopasOpt.Optimisers" title="Permalink to this headline"></a></h2>
 <p>This module contains the specific optimisation algorithms for TopasOpt. Most functionality is defined in TopasOptBaseClass,
@@ -152,7 +151,7 @@ For instance if the user enter 0.1, all length scales will be set to 10% of the 
 this is the default behavior. <strong>Array</strong>: Finally, the user is free to simply specify what length scales to use for each parameter. Make sure
 you enter them in alphabetical order as this is the order used internally by the optimiser.</p></li>
 <li><p><strong>bayes_UCBkappa</strong> (<em>float</em><em>, </em><em>optional</em>) – Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
-<a href="#id1"><span class="problematic" id="id2">`</span></a>here`_&lt;<a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb</a>&gt;
+<a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">this notebook</a>
 for explanation</p></li>
 <li><p><strong>bayes_KappaDecayIterations</strong> (<em>int</em><em>, </em><em>optional</em>) – Bayes-specific parameter. Over the last N iterations, kappa will decay to be
 almost 0 (highly exploitive). For explantion of kappa decay see <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/pull/221">here</a></p></li>
@@ -407,7 +406,7 @@ Thanks to: <a class="reference external" href="https://github.com/fmfn/BayesianO
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="EnvironmentSetup.html" class="btn btn-neutral float-left" title="Environment set up" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="DeveloperNotes.html" class="btn btn-neutral float-left" title="Developer Notes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

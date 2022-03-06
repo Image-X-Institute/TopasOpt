@@ -87,7 +87,7 @@ class TopasOptBaseClass:
         you enter them in alphabetical order as this is the order used internally by the optimiser.
     :type bayes_length_scales: None, float, or array (optional)
     :param bayes_UCBkappa: Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
-        `here`_<https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb>
+        `this notebook <https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb>`_
         for explanation
     :type bayes_UCBkappa: float, optional
     :param bayes_KappaDecayIterations: Bayes-specific parameter. Over the last N iterations, kappa will decay to be
