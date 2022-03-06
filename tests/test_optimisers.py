@@ -52,7 +52,7 @@ def test_Nelder_Mead():
 def test_Bayesian():
     ## Test Bayesian
     optimisation_params['Nitterations'] = 50
-    optimisation_params['Suggestions'] = [0.7, 0.7]
+    optimisation_params['Suggestions'] = np.array([0.7, 0.7])
 
     Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
