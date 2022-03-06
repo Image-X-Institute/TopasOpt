@@ -14,6 +14,7 @@ sys.path.insert(0, str(this_dir.parent))
 import numpy as np
 from TopasOpt.utilities import WaterTankData, ReadInLogFile, PlotLogFile, compare_multiple_results
 
+
 def test_WaterTankData():
     """
     Not sure how to test plotting methods without causing a blocking call...
@@ -28,6 +29,3 @@ def test_WaterTankData():
     Ypts_prof = np.zeros(Xpts_prof.shape)
     Zpts_prof = WT.PhantomSizeZ * np.ones(Xpts_prof.shape)  # at the middle of the water tank
     WT.ProfileDose_X = WT.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
-
-
-    

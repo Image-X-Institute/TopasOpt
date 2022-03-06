@@ -52,9 +52,12 @@ def test_Nelder_Mead():
 def test_Bayesian():
     ## Test Bayesian
     optimisation_params['Nitterations'] = 50
+    optimisation_params['Suggestions'] = [0.7, 0.7]
+
     Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False, bayes_length_scales=.2)
+                                    KeepAllResults=False, bayes_length_scales=.2, bayes_KappaDecayIterations=12,
+                                     bayes_UCBkappa=6)
     Optimiser.RunOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
