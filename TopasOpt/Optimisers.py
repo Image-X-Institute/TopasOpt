@@ -250,7 +250,6 @@ class TopasOptBaseClass:
 
         return optimisation_params
 
-
     def _CreateVariableDictionary(self, x):
         """
         Use the input information to create a dictionary of geometric inputs. This creates an elegant method to
@@ -328,18 +327,20 @@ class TopasOptBaseClass:
                 if self.StartingValues[0][i] < self.LowerBounds[i]:
                     print(f'{bcolors.FAIL}For {Paramter}, Starting value {self.StartingValues[0][i]} is less than '
                           f'Lower bound {self.LowerBounds[i]}{bcolors.ENDC}')
-                    sys.exit()
+                    sys.exit(1)
                 elif self.StartingValues[0][i] > self.UpperBounds[i]:
                     print(f'{bcolors.FAIL}For {Paramter}, Starting value {self.StartingValues[0][i]} is greater '
                           f'than upper bound {self.UpperBounds[i]}{bcolors.ENDC}')
+                    sys.exit(1)
             except IndexError:
                 if self.StartingValues[i] < self.LowerBounds[i]:
                     print(f'{bcolors.FAIL}For {Paramter}, Starting value {self.StartingValues[i]} is less than '
                           f'Lower bound {self.LowerBounds[i]}{bcolors.ENDC}')
-                    sys.exit()
+                    sys.exit(1)
                 elif self.StartingValues[i] > self.UpperBounds[i]:
                     print(f'{bcolors.FAIL}For {Paramter}, Starting value {self.StartingValues[i]} is greater '
                           f'than upper bound {self.UpperBounds[i]}{bcolors.ENDC}')
+                    sys.exit(1)
 
         self._CreateVariableDictionary(self.StartingValues)
 
@@ -393,7 +394,6 @@ class TopasOptBaseClass:
         f.close()
 
     def _GenerateRunIterationShellScript(self):
-
         """
         This will generate a bash script called 'RunAllFiles', which, funnily enough, can be used to run all files generated!
         """
