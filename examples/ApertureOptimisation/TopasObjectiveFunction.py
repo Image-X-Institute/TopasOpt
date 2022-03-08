@@ -10,7 +10,7 @@ def CalculateObjectiveFunction(TopasResults):
     particles used between the different simulations
     """
 
-    OriginalDataLoc = os.path.realpath('../SimpleCollimatorExample_TopasFiles/Results')
+    OriginalDataLoc = os.path.realpath('SimpleCollimatorExample_TopasFiles/Results')
     File = 'WaterTank'
     OriginalResults = WaterTankData(OriginalDataLoc, File)
 
@@ -47,4 +47,3 @@ def TopasObjectiveFunction(ResultsLocation, iteration):
     TopasResults = WaterTankData(path, file)
     OF = CalculateObjectiveFunction(TopasResults)
     return OF
-

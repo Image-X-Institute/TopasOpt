@@ -18,7 +18,13 @@ from scipy.stats import linregress
 from pathlib import Path
 plt.interactive(False)
 
-logging.basicConfig(level=logging.WARNING)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
+ch.setFormatter(formatter)
+logger = logging.getLogger(__name__)
+logger.addHandler(ch)
+logger.setLevel(logging.INFO)  # This toggles all the logging in your app
+logger.propagate = False
 
 class bcolors:
     """

@@ -168,16 +168,16 @@ class TopasOptBaseClass:
         # this is where we try to load the user defined model generator and objective function
         try:
             _import_from_absolute_path(Path(self.OptimisationDirectory) / 'GenerateTopasScripts.py')
-        except ModuleNotFoundError:
-            logger.error(f'could not find required file at {str(Path(self.OptimisationDirectory) / "GenerateTopasScript.py")}.'
+        except ModuleNotFoundError as e:
+            logger.error(f'Failed to import required file at {str(Path(self.OptimisationDirectory) / "GenerateTopasScript.py")}.'
                          f'\nQuitting')
-            sys.exit(1)
+            raise e
         try:
             _import_from_absolute_path(Path(self.OptimisationDirectory) / 'TopasObjectiveFunction.py')
-        except ModuleNotFoundError:
-            logger.error(f'could not find required file at {str(Path(self.OptimisationDirectory) / "TopasObjectiveFunction.py")}.'
+        except ModuleNotFoundError as e:
+            logger.error(f'Failed to import required file at {str(Path(self.OptimisationDirectory) / "TopasObjectiveFunction.py")}.'
                          f'\nQuitting')
-            sys.exit(1)
+            raise e
         self.TopasScriptGenerator = GenerateTopasScripts.GenerateTopasScripts
         self.TopasObjectiveFunction = TopasObjectiveFunction.TopasObjectiveFunction
 
