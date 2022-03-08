@@ -46,9 +46,9 @@ from pathlib import Path
 
 this_directory = Path(__file__).parent  # figures out where your working directory is located
 
-# nb: the order is important to make sure that a phase space files are correctly classified
+# nb: the order is important to make sure that a phase space files are correctly classified - they should be entered in the same order they will be run
 generate_topas_script_generator(this_directory, ['../SimpleCollimatorExample_TopasFiles/SimpleCollimator.tps',
-                                                  '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
+ '../SimpleCollimatorExample_TopasFiles/WaterTank.tps'])
 ```
 
 > **Tip:** CreateTopasScript is a code that takes a code and generates a code that generates a code. If that makes your head hurt you are not alone!

@@ -529,7 +529,7 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
     :type custom_legend_names: list, optional
     """
 
-    LineStyles = ['C0-', 'C2--', 'C3:', 'C4-.']
+    LineStyles = ['C0-', 'C2--', 'C3:', 'C4-.', 'C5-', 'C6--', 'C7:']
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=[10, 5])
     legend_names = []
     for i, bin_file in enumerate(BinFiles):

@@ -121,52 +121,55 @@ These values are copied into the below table along with the ground truth values 
 
 | Parameter          | Ground Truth | Allowed Range | Optimized |
 | ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 9.6       |
-| BeamPositionCutoff | 2            | 1-3           | 2.3       |
-| BeamPositionSpread | 0.3          | .1-1          | .31       |
-| BeamAngularSpread  | .07          | .01-1         | .01       |
-| BeamAngularCutoff  | 5            | 1-10          | 8.1       |
+| BeamEnergy         | 10           | 6-12          | 9.6 (4%)  |
+| BeamPositionCutoff | 2            | 1-3           | 2.3 (15%) |
+| BeamPositionSpread | 0.3          | .1-1          | .31 (3%)  |
+| BeamAngularSpread  | .07          | .01-1         | .01 (86%) |
+| BeamAngularCutoff  | 5            | 1-10          | 8.1 (62%) |
 
 Our model actually seems to have done quite a good job!
 
 Another thing that is interesting to look at can be found in the logs/SingleParameterPlots directly.
 
-These plots show the predicted change in the objective function as each single parameter is varied and all other parameters are held at their optimal value. From these plots, we can see that the most sensitive parameters seem to be BeamEnergy, BeamPositionSpread, and BeamAngularSpread. The parameter we got the worst estimate for was BeamAngularCutoff, but from these plots it appears that the solution isn't very sensitive to this parameter. Note also that there is fairly high uncertainty in it's estimate.
-
 > **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
 ![](../../docsrc/_resources/phaseSpaceOpt/singeparamplots.png)
 
+These plots show the predicted change in the objective function as each single parameter is varied and all other parameters are held at their optimal value. From these plots, we can see that the most sensitive parameters seem to be BeamEnergy, BeamPositionSpread, and BeamAngularSpread. 
+
+The worset parameter estimates are for BeamAngularSpread and BeamAngularCutoff. Looking at the plots above, BeamAngularCutoff is not predicted to be a very sensitive parameter anyway, so perhaps it is not surprising that the prediction is not very good. And while the percentage error in BeamAngularSpread  is large, the *absolute* error is very small - the true value is .01, and we found .07 in a range of 0-1. So this is actually pretty good too. 
+
 ## NelderMead Optimiser
 
-below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:
+Below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:
 
 ![](../../docsrc/_resources/phaseSpaceOpt/ConvergencePlotNM.png)
 
 | Parameter          | Ground Truth | Allowed Range | Optimized |
 | ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 10.1      |
+| BeamEnergy         | 10           | 6-12          | 7.8       |
 | BeamPositionCutoff | 2            | 1-3           | 2.7       |
 | BeamPositionSpread | 0.3          | .1-1          | 1.0       |
-| BeamAngularSpread  | .07          | .01-1         | .09       |
-| BeamAngularCutoff  | 5            | 1-10          | 2.97      |
+| BeamAngularSpread  | .07          | .01-1         | 0.1       |
+| BeamAngularCutoff  | 5            | 1-10          | 2.7       |
+
+Like we have seen previously, the Nelder-Mead optimiser is completely outperformed by the Bayesian Optimiser. Nelder-Mead initially converges very quickly, but then is essentially 'stuck' in a set of parameters. 
 
 ## Comparing the results:
 
 Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:
 
 ```python
-from pathlib import Path
 from TopasOpt.utilities import compare_multiple_results
 
-OriginalDataPath = Path('../SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin')
-StartPoint = Path('C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_0.bin')
-NM_DataPath = Path('C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_49.bin')
-Bayes_DataPath = Path('C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_95.bin')
+# update paths to point to wherever your results are.
+ResultsToCompare = ['SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin',
+                    'C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_0.bin',
+                    'C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_95.bin',
+                    'C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_65.bin']
 
-FilesToCompare = [OriginalDataPath,StartPoint, NM_DataPath, Bayes_DataPath]
-
-compare_multiple_results(FilesToCompare, custom_legend_names=['Original Data','Random Start Point', 'Nelder-Mead', 'Bayesian'])
+custom_legend = ['Original', 'RandomStartPoint', 'Bayesian', 'NelderMead']
+compare_multiple_results(ResultsToCompare, custom_legend_names=custom_legend)
 
 ```
 
@@ -174,6 +177,6 @@ Comparing our best result with the ground truth yields the below plot:
 
 ![](../../docsrc/_resources/phaseSpaceOpt/compare.png)
 
-- although our optimisation didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
-- The Bayesian solution looks substantially better than the NM solution.
+- although our optimization didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
+- The Bayesian solution looks substantially better than the NM solution, as we would expect based on how closely the parameters match the ground truth.
 - We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 

@@ -1,6 +1,7 @@
 """
-this script is called whenever the module is instantiated; the below are set as module level attributes.
-The version has to be manually updated ehre whenever something is pushed back to PyPi
+TopasOpt is a library for performing inverse optimisation with Topas Monte Carlo.
+Please see the docs page for more info:
+https://acrf-image-x-institute.github.io/TopasOpt/
 """
 __author__ = 'Brendan Whelan'
 __version__ = '0.1.7'
