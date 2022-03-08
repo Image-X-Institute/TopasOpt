@@ -95,7 +95,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     SimpleCollimator.append('dc:So/Beam/BeamAngularSpreadY = ' + str(variable_dict['BeamAngularSpread']) + ' deg')
 
 
-    SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 200000')
+    SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 50')
     SimpleCollimator.append('')
     SimpleCollimator.append('# # Electron source position')
     SimpleCollimator.append('# ------------------------------------------------------------')

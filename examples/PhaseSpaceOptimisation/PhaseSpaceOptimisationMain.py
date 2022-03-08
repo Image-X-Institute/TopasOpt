@@ -23,11 +23,11 @@ optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
-# Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest', OptimisationDirectory,
-#                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, length_scales=0.1)
+Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest', OptimisationDirectory,
+                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, bayes_length_scales=0.1)
 
 
-Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest_NM', OptimisationDirectory,
-                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
+# Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest_NM', OptimisationDirectory,
+#                                    TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, NM_StartingSimplexRelativeVal=.2)
 
 Optimiser.RunOptimisation()

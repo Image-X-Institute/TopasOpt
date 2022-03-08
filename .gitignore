@@ -13,3 +13,5 @@ TopasOpt/*.egg-info
 tests/development_test/*
 test/.pytest_cache
 .coverage
+examples/ApertureOptimisation/SimpleCollimatorExample_TopasFiles
+examples/PhaseSpaceOptimisation/SimpleCollimatorExample_TopasFiles
