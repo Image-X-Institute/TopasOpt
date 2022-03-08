@@ -123,6 +123,7 @@ class TopasOptBaseClass:
                          'to inherit. Quitting')
             sys.exit(1)
 
+        optimisation_params = self._convert_optimisation_params_to_numpy(optimisation_params)
         self.ReadMeText = ReadMeText  # this gets written to base directory
         self.ShellScriptHeader = ShellScriptHeader
         self.KeepAllResults = KeepAllResults
@@ -233,6 +234,21 @@ class TopasOptBaseClass:
                 self._GenerateStartingSimplex()
 
         self._CheckInputData()
+
+    def _convert_optimisation_params_to_numpy(self, optimisation_params):
+        """
+        This simply checks if any of the supplied parameters are a list instead of an array, and converts them
+        if so
+        """
+        for param_key in list(optimisation_params.keys()):
+            if param_key == 'ParameterNames':
+                continue
+            if isinstance(optimisation_params[param_key],list):
+                optimisation_params[param_key] = np.array(optimisation_params[param_key])
+            if not isinstance(optimisation_params[param_key],np.ndarray):
+                logger.error(f'{bcolors.FAIL} optimisation param {param_key} should be a list or an array....')
+
+        return optimisation_params
 
 
     def _CreateVariableDictionary(self, x):
