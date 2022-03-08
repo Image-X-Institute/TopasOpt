@@ -17,8 +17,8 @@ def test_topas_script_generator():
     this_directory = Path(__file__).parent
 
     # we will use the files from our examples directory as a test
-    Input_files = [this_directory.parent / 'examples' / 'SimpleCollimatorExample_TopasFiles' / 'SimpleCollimator.tps',
-                   this_directory.parent / 'examples' / 'SimpleCollimatorExample_TopasFiles' / 'WaterTank.tps']
+    Input_files = [this_directory.parent / 'docsrc' / '_resources' / 'SimpleCollimator.tps',
+                   this_directory.parent / 'docsrc' / '_resources' / 'WaterTank.tps']
 
 
     generate_topas_script_generator(this_directory, Input_files)
