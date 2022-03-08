@@ -248,7 +248,7 @@ class TopasOptBaseClass:
         elif np.ndim(x) == 2:
             self.VariableDict = {self.ParameterNames[i]: x[0][i] for i in range(len(self.ParameterNames))}
         else:
-            logger.error('seomthing wrong with input parameter format...')
+            logger.error('seomthing wrong with input parameter format...quitting')
             sys.exit(1)
 
         for key in self.VariableDict.keys():
@@ -285,8 +285,8 @@ class TopasOptBaseClass:
                     elif os.path.isdir(file_path):
                         shutil.rmtree(file_path)
                 except Exception as e:
-                    logger.error(f'Failed to delete {file_path}. Reason: {e}. Quitting')
-                    sys.exit(1)
+                    logger.error(f'Failed to delete {file_path}.')
+                    raise e
 
     def _CheckInputData(self):
         """

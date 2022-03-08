@@ -187,9 +187,9 @@ class WaterTankData:
                 logging.warning('unable to detect dose unit; reading in without conversion')
             self.dose.data['Sum'] = self.dose.data['Sum'] * DoseConverter
 
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             logging.warning(f'{bcolors.FAIL}Could not find one of the input files or file header: {self.CurrentFile}{bcolors.ENDC}\n')
-            sys.exit(1)
+            raise e
 
         if np.max(self.dose.data['Sum'])<1e-16:
             logging.error(f'there is no data in the dose file {FileLocation}')
