@@ -15,17 +15,17 @@ import numpy as np
 from TopasOpt.utilities import WaterTankData, ReadInLogFile, PlotLogFile, compare_multiple_results
 
 
-def test_WaterTankData():
-    """
-    Not sure how to test plotting methods without causing a blocking call...
-    """
-    this_directory = Path(__file__).parent
-
-    ResultsLocation = str(this_directory.parent / 'examples' / 'SimpleCollimatorExample_TopasFiles' / 'Results')
-    WT = WaterTankData(ResultsLocation, 'WaterTank.bin')
-    
-    # Extract some data
-    Xpts_prof = WT.x  # profile over entire X range
-    Ypts_prof = np.zeros(Xpts_prof.shape)
-    Zpts_prof = WT.PhantomSizeZ * np.ones(Xpts_prof.shape)  # at the middle of the water tank
-    WT.ProfileDose_X = WT.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
+# def test_WaterTankData():
+#     """
+#     Not sure how to test plotting methods without causing a blocking call...
+#     """
+#     this_directory = Path(__file__).parent
+#
+#     ResultsLocation = str(this_directory.parent / 'examples' / 'SimpleCollimatorExample_TopasFiles' / 'Results')
+#     WT = WaterTankData(ResultsLocation, 'WaterTank.bin')
+#
+#     # Extract some data
+#     Xpts_prof = WT.x  # profile over entire X range
+#     Ypts_prof = np.zeros(Xpts_prof.shape)
+#     Zpts_prof = WT.PhantomSizeZ * np.ones(Xpts_prof.shape)  # at the middle of the water tank
+#     WT.ProfileDose_X = WT.ExtractDataFromDoseCube(Xpts_prof, Ypts_prof, Zpts_prof)
