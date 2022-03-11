@@ -164,25 +164,23 @@ Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutof
 
 These values are copied into the below table along with the ground truth values and the range we allowed them to vary over:
 
-| Parameter          | Ground Truth | Allowed Range | Optimized |
-| ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 9.6 (4%)  |
-| BeamPositionCutoff | 2            | 1-3           | 2.3 (15%) |
-| BeamPositionSpread | 0.3          | .1-1          | .31 (3%)  |
-| BeamAngularSpread  | .07          | .01-1         | .01 (86%) |
-| BeamAngularCutoff  | 5            | 1-10          | 8.1 (62%) |
+| Parameter          | Ground Truth | Allowed Range | Optimized    |
+| ------------------ | ------------ | ------------- | ------------ |
+| BeamEnergy         | 10           | 6-12          | 9.98 (0.2%%) |
+| BeamPositionCutoff | 2            | 1-3           | 1.88 (6%)    |
+| BeamPositionSpread | 0.3          | .1-1          | .1 (66%)     |
+| BeamAngularSpread  | .07          | .01-1         | .19 (171%)   |
+| BeamAngularCutoff  | 5            | 1-10          | 1.0 (80%)    |
 
-Our model actually seems to have done quite a good job!
+We have obtained very close matches to BeamEnergy and BeamPositionCutoff. For the other parameters, we are quite a long way off in percentage terms - although, in absolute terms we are still often pretty close, it's just because many of these parameters have very small starting values that the percentages look so bad.
 
-Another thing that is interesting to look at can be found in the logs/SingleParameterPlots directly.
+An interesting question is - "well, which of these parameters is actually likely to be important in out objective function." You can address this by looking at the plots in logs/SingleParameterPlots:
 
 > **warning:** these plots show the value of the objective function predicted by the model. In the instances where the correlation between the predicted and actual objective functions is high, you can trust that these plots at least correlate with reality. But if the correlation is low, these plots are essentially nonsense.
 
-![](../../docsrc/_resources/phaseSpaceOpt/singeparamplots.png)
+![](../../docsrc/_resources/phaseSpaceOpt/singleparameterplots.png)
 
 These plots show the predicted change in the objective function as each single parameter is varied and all other parameters are held at their optimal value. From these plots, we can see that the most sensitive parameters seem to be BeamEnergy, BeamPositionSpread, and BeamAngularSpread. 
-
-The worset parameter estimates are for BeamAngularSpread and BeamAngularCutoff. Looking at the plots above, BeamAngularCutoff is not predicted to be a very sensitive parameter anyway, so perhaps it is not surprising that the prediction is not very good. And while the percentage error in BeamAngularSpread  is large, the *absolute* error is very small - the true value is .01, and we found .07 in a range of 0-1. So this is actually pretty good too. 
 
 ## NelderMead Optimiser
 
