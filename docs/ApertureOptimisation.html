@@ -105,7 +105,6 @@
 <h2>Base model and problem overview<a class="headerlink" href="#base-model-and-problem-overview" title="Permalink to this headline"></a></h2>
 <p>In this example, we will optimise the geometry of an X-ray collimator. The geometry is shown below, with the parameters targeted for optimisation shown in red. The original values for each of these parameters are: Collimator Thickness = 54 mm, Up-stream aperture radius = 1.82 mm, and Down-stream aperture radius = 2.5 mm. This is modelled in two stages: in stage one an electron beam hits the target and the resultant collimated X-ray beam is scored below the secondary collimator. In stage 2, this phase space is used to simulate the dose in the water tank.</p>
 <p>In this example, each of these parameters will first be assigned a random value. We will then attempt to recover the original values by constructing a simple objective function based on the differences between the original data and the current iteration.</p>
-<p>You will need the data from the original simulation to complete this example; it is available <a class="reference external" href="https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles">here</a></p>
 <p><img alt="_images/Sketch.png" src="_images/Sketch.png" /></p>
 </section>
 <section id="directory-set-up">
@@ -116,16 +115,16 @@
 </section>
 <section id="copy-the-base-topas-files">
 <h2>Copy the base topas files<a class="headerlink" href="#copy-the-base-topas-files" title="Permalink to this headline"></a></h2>
-<p>The code will need to know where your base model is stored. The base model for this application is available <a class="reference external" href="https://downgit.github.io/#/home?url=https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles">here</a>. Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!</p>
+<p>The code will need to know where your base model is stored. The base model for this application is available <a class="reference external" href="https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true">here</a>. Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!</p>
 <blockquote>
 <div><p>hint: if you are running this example inside a command window use the following commands:</p>
+</div></blockquote>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget -O start_files.zip https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw<span class="o">=</span><span class="nb">true</span>
 <span class="c1"># ^this is all one line!</span>
 unzip start_files.zip
 rm start_files.zip
 </pre></div>
 </div>
-</div></blockquote>
 </section>
 <section id="creating-generatetopasscript-py">
 <h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this headline"></a></h2>
