@@ -112,6 +112,32 @@ which is a very commonly used function to test optimisers, and has a known globa
     <span class="k">return</span> <span class="mi">0</span>
 </pre></div>
 </div>
+<p>developmen_main.py:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
+
+<span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/brendan/Documents/temp&#39;</span>
+<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;development_test&#39;</span>
+<span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
+<span class="c1"># set up optimisation params for rosen function:</span>
+<span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;ParameterNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="c1"># Remember true values are  [1.82, 2.5, 27]</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # you can suggest points to test if you want - we won&#39;t here.</span>
+<span class="n">ReadMeText</span> <span class="o">=</span> <span class="s1">&#39;This is an example in which the rosen function is minimised, and demonstrates how this library&#39;</span> \
+             <span class="s1">&#39;can be tested without actually calling topas&#39;</span>
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NelderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>
+                                <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;testing_mode&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">Optimiser</span><span class="o">.</span><span class="n">RunOptimisation</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 <section id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
