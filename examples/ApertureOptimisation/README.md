@@ -16,8 +16,6 @@ In this example, we will optimise the geometry of an X-ray collimator. The geome
 
 In this example, each of these parameters will first be assigned a random value. We will then attempt to recover the original values by constructing a simple objective function based on the differences between the original data and the current iteration.
 
-You will need the data from the original simulation to complete this example; it is available [here](https://github.sydney.edu.au/Image-X/TopasBayesOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles) 
-
 ![](../../docsrc/_resources/ApertureOpt/Sketch.png)
 
 ## directory set up
@@ -29,19 +27,18 @@ When you have finished working through this example you should have a working di
 ![](../../docsrc/_resources/ApertureOpt/ApertureDirectoryStructure.jpg)
 
 
-
 ## Copy the base topas files
 
-The code will need to know where your base model is stored. The base model for this application is available [here](https://downgit.github.io/#/home?url=https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/SimpleCollimatorExample_TopasFiles). Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!  
+The code will need to know where your base model is stored. The base model for this application is available [here](https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true). Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!  
 
 > hint: if you are running this example inside a command window use the following commands:
->
-> ```bash
-> wget -O start_files.zip https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true
-> # ^this is all one line!
-> unzip start_files.zip
-> rm start_files.zip
-> ```
+
+```bash
+wget -O start_files.zip https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true
+# ^this is all one line!
+unzip start_files.zip
+rm start_files.zip
+```
 
 ## Creating GenerateTopasScript.py
 
