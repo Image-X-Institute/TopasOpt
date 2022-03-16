@@ -622,7 +622,7 @@ def PlotLogFile(LogFileLoc):
     fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
     axs.plot(Itteration, LowestVal, '-k', linewidth=2)
     axs.plot(Itteration, OF, 'C6')
-    axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
+    axs.set_xlabel('Iteration number', fontsize=FigureSpecs.LabelFontSize)
     axs.set_ylabel('Objective function', fontsize=FigureSpecs.LabelFontSize)
     axs.grid(True)
 
@@ -633,7 +633,7 @@ def PlotLogFile(LogFileLoc):
         axs.fill_between(Itteration,
                          target_prediction + target_prediction_std,
                          target_prediction - target_prediction_std, alpha=0.15, color='C0')
-        axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'])
+        axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'], fontsize=FigureSpecs.LabelFontSize)
     except KeyError:
         # predicted isn't  available for optimisers
         axs.legend(['Best', 'Current'])
@@ -641,25 +641,6 @@ def PlotLogFile(LogFileLoc):
     MinValue = np.argmin(OF)
     axs.plot(Itteration[MinValue], OF[MinValue], 'r-x')
     axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
-
-    try:
-        target_prediction = -1 * np.array(ResultsDict.pop('target_prediction_mean'))
-        target_prediction_std = np.array(ResultsDict.pop('target_prediction_std'))
-        axs.plot(Itteration, target_prediction, 'C0--',linewidth=2)
-        axs.fill_between(Itteration,
-                            target_prediction + target_prediction_std,
-                            target_prediction - target_prediction_std, alpha=0.3, color='C0')
-        axs.legend(['Actual', 'Predicted', r'$\sigma$'], fontsize=FigureSpecs.LabelFontSize*1.5)
-    except KeyError:
-        # predicted isn't always available
-        pass
-
-
-    MinValue = np.argmin(OF)
-    axs.plot(Itteration[MinValue], OF[MinValue], 'r-x')
-    # axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
-    LegendStrings = ResultsDict.keys()
-
     plt.show()
 
 
