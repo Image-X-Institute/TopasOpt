@@ -284,7 +284,7 @@ To start with, have a look at logs/ConvergencePlot.png, This will show you the a
 
 ![](../../docsrc/_resources/ApertureOpt/ConvergencePlot.png)
 
-Next, open logs/CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be < 0.5. 
+Next, open logs/CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be > 0.5. 
 
 > **Note:** the gaussian process model doesn't have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function
 

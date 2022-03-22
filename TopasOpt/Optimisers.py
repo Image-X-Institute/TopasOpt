@@ -143,7 +143,7 @@ class TopasOptBaseClass:
         self.ItterationStart = 0
         # the starting values of our optimisation parameters are defined from the default geometry
         self.ParameterNames = optimisation_params['ParameterNames']
-        self.StartingValues = optimisation_params['start_point']
+        self.StartingValues = optimisation_params['start_point'].astype(float)
         if self.StartingValues is None:
             logger.error('you must define a start point')
             sys.exit()
@@ -151,7 +151,7 @@ class TopasOptBaseClass:
             self.x = self.StartingValues
         self.UpperBounds = optimisation_params['UpperBounds']
         self.LowerBounds = optimisation_params['LowerBounds']
-        self.MaxItterations = optimisation_params['Nitterations']
+        self.MaxItterations = int(optimisation_params['Nitterations'])
         self._CreateVariableDictionary([self.StartingValues])
         self.SuggestionsProbed = 0  # always starts at 0
         self.Overwrite = Overwrite
@@ -239,15 +239,16 @@ class TopasOptBaseClass:
     def _convert_optimisation_params_to_numpy(self, optimisation_params):
         """
         This simply checks if any of the supplied parameters are a list instead of an array, and converts them
-        if so
+        if so. will also cast all parameters to floats - if user enntered e.g. 1, python treats it as int
         """
         for param_key in list(optimisation_params.keys()):
-            if param_key == 'ParameterNames':
+            if param_key == 'ParameterNames' or param_key == 'Nitterations':
                 continue
-            if isinstance(optimisation_params[param_key],list):
+            if isinstance(optimisation_params[param_key], list):
                 optimisation_params[param_key] = np.array(optimisation_params[param_key])
-            if not isinstance(optimisation_params[param_key],np.ndarray):
+            if not isinstance(optimisation_params[param_key], np.ndarray):
                 logger.error(f'{bcolors.FAIL} optimisation param {param_key} should be a list or an array....')
+            optimisation_params[param_key].astype(float)
 
         return optimisation_params
 

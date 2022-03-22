@@ -39,7 +39,7 @@ def test_Nelder_Mead():
     ## Test Nelder Mead:
     Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False, NM_StartingSimplexRelativeVal=0.2)
+                                    KeepAllResults=False, NM_StartingSimplexRelativeVal=.1)
     Optimiser.RunOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
