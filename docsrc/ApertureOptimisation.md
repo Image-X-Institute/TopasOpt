@@ -128,12 +128,12 @@ Whenever GenerateTopasScript is called from the optimiser, it will be passed a d
 # 1. change
 SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = 1.82 mm')
 # to
-SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = ' + str(variable_dict['DownStreamApertureRadius']) + ' mm')
+SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = ' + str(variable_dict['UpStreamApertureRadius']) + ' mm')
 
 # 2. change
 SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = 2.5 mm')
 # to
-SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_dict['UpStreamApertureRadius']) + ' mm')
+SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_dict['DownStreamApertureRadius']) + ' mm')
 
 # 3. change
 SimpleCollimator.append('d:Ge/SecondaryCollimator/HL         = 27 mm')
@@ -281,7 +281,7 @@ Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOpt
 To start with, have a look at logs/ConvergencePlot.png, This will show you the actual and predicted value of the objective function at each iteration. Ideally, you should see that the predictions get better (better correlation) with more iterations. The best point found is marked with a red cross.
 
 ![](_resources/ApertureOpt/ConvergencePlot.png)
-Next, open logs/CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be < 0.5. 
+Next, open logs/CorrelationPlot.png. This shows a scatter plot of the predicted versus actual objective function across all iterations. If the gaussian process model is working well, you should see reasonable correlation, and both correlation metrics should be > 0.5. 
 
 > **Note:** the gaussian process model doesn't have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function
 
