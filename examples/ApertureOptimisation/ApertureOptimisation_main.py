@@ -27,6 +27,7 @@ ReadMeText = 'This is a public service announcement, this is only a test'
 # Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'NM_OptimisationTest', OptimisationDirectory,
 #                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.4)
 
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False)
+Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
+                                   NM_StartingSimplexRelativeVal=0.2)
 Optimiser.RunOptimisation()
