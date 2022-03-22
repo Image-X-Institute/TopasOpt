@@ -130,12 +130,12 @@ Whenever GenerateTopasScript is called from the optimiser, it will be passed a d
 # 1. change
 SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = 1.82 mm')
 # to
-SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = ' + str(variable_dict['DownStreamApertureRadius']) + ' mm')
+SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin2      = ' + str(variable_dict['UpStreamApertureRadius']) + ' mm')
 
 # 2. change
 SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = 2.5 mm')
 # to
-SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_dict['UpStreamApertureRadius']) + ' mm')
+SimpleCollimator.append('d:Ge/SecondaryCollimator/RMin1      = ' + str(variable_dict['DownStreamApertureRadius']) + ' mm')
 
 # 3. change
 SimpleCollimator.append('d:Ge/SecondaryCollimator/HL         = 27 mm')
