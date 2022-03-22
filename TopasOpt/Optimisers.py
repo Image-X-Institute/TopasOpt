@@ -231,6 +231,7 @@ class TopasOptBaseClass:
             self.StartingSimplexSupplied = False
             self.NM_StartingSimplexRelativeVal = NM_StartingSimplexRelativeVal
             if self.NM_StartingSimplexRelativeVal:  # nb None evaluates as False
+                self.StartingSimplexSupplied = True
                 self._GenerateStartingSimplex()
 
         self._CheckInputData()
@@ -718,7 +719,6 @@ class NelderMeadOptimiser(TopasOptBaseClass):
             StartingSimplex = None
 
         bnds = tuple(zip(self.LowerBounds, self.UpperBounds))
-
 
         self.NelderMeadRes = minimize(self.BlackBoxFunction, self.StartingValues, method='Nelder-Mead', bounds=bnds,
                        options={'disp': True, 'initial_simplex': StartingSimplex,
