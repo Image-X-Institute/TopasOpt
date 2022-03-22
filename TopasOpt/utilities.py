@@ -455,7 +455,7 @@ class WaterTankData:
         elif dir == 'Y':
             Ypts = self.y
             Xpts = np.zeros(Ypts.shape)
-            AbcissaPlot = Xpts
+            AbcissaPlot = Ypts
             AbcissaLabel = 'Y [mm]'
 
         leg_strings = []
