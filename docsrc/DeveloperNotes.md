@@ -64,8 +64,8 @@ class NewOptimiser(TopasOptBaseClass):
     # note all __init__ is handled in TopasOptBaseClass. You can see the source code for an example. You don't have to do it
     # exactly like this if you don't want - feel free to add your own __init__ and then use super().__init__ if you want.
 
-	def _some_supporting_method(self):
-        # all methods should be private except for RunOptimisation and RestartOptimisation. I prefer soft-private formalism, e.g. 		  # prefix your methods with a single underscore.
+    def _some_supporting_method(self):
+	# all methods should be private except for RunOptimisation and RestartOptimisation. I prefer soft-private formalism, e.g. 		  # prefix your methods with a single underscore.
         pass
     
     def RunOptimisation(self):  # public method
