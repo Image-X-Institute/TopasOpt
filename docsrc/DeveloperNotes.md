@@ -74,7 +74,7 @@ class NewOptimiser(TopasOptBaseClass):
         # the function you want to minimise is self.BlackBoxFunction, which your optimiser has inherited from TOpasOptBaseClass
         self.minimise(self.BlackBoxFunction)  # for example
         
-    def RestartOptimisation(self):  # this can be another handy public method but is not possible for all optimisers or required.
+    def RestartOptimisation(self):  # this can be another handy public method but is not required or even possible for all optimisers.
         pass
 
 ```
