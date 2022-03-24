@@ -700,10 +700,19 @@ class NelderMeadOptimiser(TopasOptBaseClass):
         for k in range(N):
             y = np.array(self.StartingValues, copy=True)
             if y[k] != 0:
+                store_yk_temp = y[k]  # yuck, surely someone can do better than this
                 y[k] = (1 + nonzdelt) * y[k]
+                if y[k] > self.UpperBounds[k]:
+                    y[k] = (1 - nonzdelt) * store_yk_temp
+                if y[k]  < self.LowerBounds[k]:
+                    logger.warning('unable to generate starting simplex within bounds. Simplex will be clipped to bounds.'
+                                   'To avoid this behavior, consider changing the starting point, bounds, or value of'
+                                   'NM_StartingSimplexRelativeVal')
             else:
                 y[k] = zdelt
             sim[k + 1] = y
+
+
 
         self.StartingSimplex = sim
 
