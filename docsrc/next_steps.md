@@ -87,6 +87,8 @@ You can look through the source code to see how the different optimisers are imp
 ## Assess noise in the objective function
 
 You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
+```
 
+## NelderMeadOptimiser
 
-
+- Choice of starting simplex.
