@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Example 2: Phase space optimisation &mdash; TopasOpt  documentation</title>
+  <title>Phase space optmisation example &mdash; TopasOpt  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Development example" href="DevelopmentExample.html" />
-    <link rel="prev" title="Example 1: Geometry Optimisation" href="ApertureOptimisation.html" /> 
+    <link rel="prev" title="Geometry Optimisation Example" href="ApertureOptimisation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,8 +40,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="worked_examples.html">Worked Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html">Example 1: Geometry Optimisation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 2: Phase space optimisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html">Geometry Optimisation Example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Phase space optmisation example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#directory-set-up">Directory set up</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-generatetopasscript-py">Creating GenerateTopasScript.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-runoptimisation-py">Creating RunOptimisation.py</a></li>
@@ -78,7 +78,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="worked_examples.html">Worked Examples</a> &raquo;</li>
-      <li>Example 2: Phase space optimisation</li>
+      <li>Phase space optmisation example</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/PhaseSpaceOptimisation.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -88,12 +88,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="example-2-phase-space-optimisation">
-<h1>Example 2: Phase space optimisation<a class="headerlink" href="#example-2-phase-space-optimisation" title="Permalink to this headline"></a></h1>
+  <section id="phase-space-optmisation-example">
+<h1>Phase space optmisation example<a class="headerlink" href="#phase-space-optmisation-example" title="Permalink to this headline"></a></h1>
 <blockquote>
-<div><p><strong>Note:</strong> in this example it is assumed you have already completed the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">first example on Geometry optimisation</a>.</p>
+<div><p><strong>Note:</strong> in this example it is assumed you have already completed the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">example on Geometry optimisation</a>.</p>
 </div></blockquote>
-<p>In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:</p>
+<p>In this example, we are going to optimise the same model as in the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">ApertureOptimisation example</a>, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:</p>
 <p><img alt="_images/Sketch.png" src="_images/Sketch.png" />
 This is a much more difficult problem for several reasons:</p>
 <ul class="simple">
@@ -106,7 +106,7 @@ This is a much more difficult problem for several reasons:</p>
 </section>
 <section id="creating-generatetopasscript-py">
 <h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this headline"></a></h2>
-<p>This step is the same as in example 1; you should create your base line topas script as described in that example</p>
+<p>This step is the same as in the geometry example; you should create your base line topas script as described in that example</p>
 </section>
 <section id="creating-runoptimisation-py">
 <h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline"></a></h2>
@@ -173,7 +173,7 @@ This is a much more difficult problem for several reasons:</p>
 </section>
 <section id="create-topasobjectivefunction-py">
 <h2>Create TopasObjectiveFunction.py<a class="headerlink" href="#create-topasobjectivefunction-py" title="Permalink to this headline"></a></h2>
-<p>We need to create an objective function. Since our basic problem is the same in example 1, we are using a very similar objective function. However, because we expect the results aren’t especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html">here</a>.</p>
+<p>We need to create an objective function. Since our basic problem is the same in the Aperture Optimisation example, we are using a very similar objective function. However, because we expect the results aren’t especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html">here</a>.</p>
 <p>Note that there’s a lot of things we could do to make this objective function better  - especially in light of the NelderMead results from the first example! But for now I am just keeping these examples very simple.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">WaterTankData</span>
@@ -333,7 +333,7 @@ These plots show the predicted change in the objective function as each single p
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ApertureOptimisation.html" class="btn btn-neutral float-left" title="Example 1: Geometry Optimisation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ApertureOptimisation.html" class="btn btn-neutral float-left" title="Geometry Optimisation Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="DevelopmentExample.html" class="btn btn-neutral float-right" title="Development example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

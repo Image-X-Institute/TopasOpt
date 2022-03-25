@@ -1,4 +1,4 @@
-# Example 1: Geometry Optimisation
+# Geometry Optimisation Example
 
 The starting point for an optimisation is a working topas model. In this example we are going to optimise the geometry of a simple x-ray collimator. We are going to randomise the values shown in read, and see if we can recover the correct values using the Bayesian optimisation. To guide the optimisation, we will create an objective function which simply measures the difference between the original depth dose curves and profile data and those created by a given set of parameters.
 
@@ -329,18 +329,11 @@ and the results:
 
 | Parameter                | Original Value | Random Starting Value | Recovered Value |
 | ------------------------ | -------------- | --------------------- | --------------- |
-| CollimatorThickness      | 27 mm          | 39.9 mm               | 39.4 mm (48%)   |
-| UpStreamApertureRadius   | 1.82 mm        | 1.14 mm               | 2.6 mm (37%)    |
-| DownStreamApertureRadius | 2.5 mm         | 1.73 mm               | 3.0 mm (31%)    |
+| CollimatorThickness      | 27 mm          | 39.9 mm               | 27.9 (3.3 %)    |
+| UpStreamApertureRadius   | 1.82 mm        | 1.14 mm               | 2.26 (24.2 %)   |
+| DownStreamApertureRadius | 2.5 mm         | 1.73 mm               | 2.51 (0.4 %)    |
 
-OK - this optimiser did terribly!! What gives?
-
-This is actually a very instructive and interesting result. Looking at the convergence plot above, the NelderMead algorithm has actually done a reasonable job of minmising the objective function from it's starting value. What has actually happened here is the result of two effects:
-
-1. Our objective function is based on the water tank results. This is only a **surrogate** for what we really care about, which is the geometric parameters. As we see below, and in the convergence plot, the NM approach actually did what we we asked it to reasonably well - it's just that what we asked it to do wasn't as well defined as it could be! 
-2. The NelderMead algorithm got stuck in a local minimum, in which it used a much larger collimator thickness  in conjunction with larger aperture openings to produce dose profiles that actually match the original  case pretty well. Getting stuck in local minima is in fact the major weakness of this algorithm. 
-
-We could almost certainly improve this result (which is a bit unfair to the NM algorithm at the moment), but we will leave it like this because it is a rather instructive example of how things can go wrong!
+In this case, the NelderMead Optimiser has also done a great job, almost as good as the Bayesian optimiser. For complex objective functions, the NelderMead approach has a tendency to get stuck in local minima. However for simple situations, it will often converge mode quickly than the Bayesian approach, since it doesn't have to learn the underlying objective function to be effective.
 
 ## Comparison with ground truth data
 
@@ -349,20 +342,19 @@ To compare multiple results we have included a function in utilities.compare_mul
 ```python
 from TopasOpt.utilities import compare_multiple_results
 
-# update paths to point to wherever your results are.
-ResultsToCompare = ['SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin',
-                    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/BayesianApertureOpt/Results/WaterTank_itt_29.bin',
-                    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/NM_OptimisationTest/Results/WaterTank_itt_17.bin']
+LogFileLoc = ['Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin',
+              'Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_31.bin',
+              'Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_0.bin',
+              'C:/Users/bwhe3635/Documents/temp/TopasOpt/docsrc/_resources/WaterTank.bin']
 
-custom_legend = ['Original','Bayesian','NelderMead']
-compare_multiple_results(ResultsToCompare,custom_legend_names=custom_legend)
+custom_legend = ['NelderMead','Bayesian','Random Start','Ground Truth']
+
+compare_multiple_results(LogFileLoc, custom_legend_names=custom_legend)
 ```
 
 Using this code, we can generate the following figure:
 
 ![](_resources/ApertureOpt/compare.png)
-Again, it is very interseting to note that despite the fact that the NelderMead didn't do a great job of recovering our 'ground truth' parameters, it actually did a pretty good job of what we asked it to do: minimise the absolite difference betwee these plots.
-
 ## Improving these results
 
 There are number of things you could do to improve these results, many of which are explained in a bit more detail in the [next steps](https://acrf-image-x-institute.github.io/TopasOpt/next_steps.html) section:
