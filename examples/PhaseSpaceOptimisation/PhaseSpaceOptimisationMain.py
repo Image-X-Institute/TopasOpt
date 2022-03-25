@@ -28,6 +28,6 @@ Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, 'PhaseSpace
 
 
 # Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, 'PhaseSpaceOptimisationTest_NM', OptimisationDirectory,
-#                                    TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, NM_StartingSimplexRelativeVal=.2)
+#                                    TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, NM_StartingSimplex=.2)
 
 Optimiser.RunOptimisation()

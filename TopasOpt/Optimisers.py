@@ -73,11 +73,11 @@ class TopasOptBaseClass:
     :type OptimisationDirectory: string or Path
     :param ReadMeText: If supplied, is written to a readme file in BaseDirectory
     :type ReadMeText: string, optional
-    :param NM_StartingSimplexRelativeVal: This is a Nelder-Mead specific parameter which controls the size of the
+    :param NM_StartingSimplex: This is a Nelder-Mead specific parameter which controls the size of the
         starting simplex. A value of .1 will create a starting simplex that is spans 10% of the starting values,
         which is the default behavior. If this is defined and non-Nelder-Mead optimisers are used it does nothing
         (and hopefully you will be warned accordingly)
-    :type NM_StartingSimplexRelativeVal: float, optional
+    :type NM_StartingSimplex: float, optional
     :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process
         model. If supplied to non-Bayes optimisers it does nothing (and hopefully you will be warned accordingly).
         This can be supplied as one of three things: **None**: in this case, the default is used: length_scale=1.0
@@ -111,7 +111,7 @@ class TopasOptBaseClass:
 
     def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                  ReadMeText=None,
-                 NM_StartingSimplexRelativeVal=None, bayes_length_scales=None, bayes_UCBkappa=5,
+                 NM_StartingSimplex=None, bayes_length_scales=None, bayes_UCBkappa=5,
                  bayes_KappaDecayIterations=10, TopasLocation='~/topas/',
                  ShellScriptHeader=None, Overwrite=False, bayes_GP_alpha=0.01, KeepAllResults=True):
         """
@@ -184,9 +184,9 @@ class TopasOptBaseClass:
 
         # put optimiser specific stuff in blocks like this:
         if 'BayesianOptimiser' in str(self.__class__):
-            if NM_StartingSimplexRelativeVal is not None:
+            if NM_StartingSimplex is not None:
                 logger.warning(
-                    f'You have attempted to use the variable NM_StartingSimplexRelativeVal, but this does nothing'
+                    f'You have attempted to use the variable NM_StartingSimplex, but this does nothing'
                     f'in the Bayesian optimiser - it only works with the Nealder-Mead optimiser. Continuing'
                     f' and ignoring this parameter')
             self.BayesOptLogLoc = Path(self.BaseDirectory) / self.SimulationName / 'logs/bayes_opt_logs.json'
@@ -229,8 +229,8 @@ class TopasOptBaseClass:
                     f' and ignoring this parameter')
 
             self.StartingSimplexSupplied = False
-            self.NM_StartingSimplexRelativeVal = NM_StartingSimplexRelativeVal
-            if self.NM_StartingSimplexRelativeVal:  # nb None evaluates as False
+            self.NM_StartingSimplex = NM_StartingSimplex
+            if self.NM_StartingSimplex:  # nb None evaluates as False
                 self.StartingSimplexSupplied = True
                 self._GenerateStartingSimplex()
 
@@ -683,36 +683,40 @@ class NelderMeadOptimiser(TopasOptBaseClass):
 
     def _GenerateStartingSimplex(self):
         """
-        Enbles the user to optionally scale the starting simplex by some fraction.
+        Enbles the user to enter their own starting simplex, or optionally scale the starting simplex by some fraction.
         This is copied from the scipy source code (optimize around line 690), with a variable version of nonzdelt
         The default is 0.1
         """
 
-        if not type(self.NM_StartingSimplexRelativeVal) is float:
-            logger.error('Starting simplex can only be defined as a relative parameter, e.g. 0.1')
+        if isinstance(self.NM_StartingSimplex, float):
+            # then we generate a simplex based on the starting values
+            N = len(self.StartingValues)
+            nonzdelt = self.NM_StartingSimplex
+            zdelt = self.NM_StartingSimplex / 200  # based on the scipy code where zdelt - nonzdelt/200
+            sim = np.empty((N + 1, N), dtype=self.StartingValues.dtype)
+            sim[0] = self.StartingValues
+            for k in range(N):
+                y = np.array(self.StartingValues, copy=True)
+                if y[k] != 0:
+                    store_yk_temp = y[k]  # yuck, surely someone can do better than this
+                    y[k] = (1 + nonzdelt) * y[k]
+                    if y[k] > self.UpperBounds[k]:
+                        y[k] = (1 - nonzdelt) * store_yk_temp
+                    if y[k]  < self.LowerBounds[k]:
+                        logger.warning('unable to generate starting simplex within bounds. Simplex will be clipped to bounds.'
+                                       'To avoid this behavior, consider changing the starting point, bounds, or value of'
+                                       'NM_StartingSimplex')
+                else:
+                    y[k] = zdelt
+                sim[k + 1] = y
+        elif isinstance(self.NM_StartingSimplex, np.ndarray)or isinstance(self.NM_StartingSimplex, list):
+            sim = self.NM_StartingSimplex
+            # then we assume the user entered their own simplex. No additional error handling is included because
+            # scipy do their own
+        else:
+            logger.error('Starting simplex can only be defined as a relative parameter, e.g. 0.1, or as an array of size'
+                         '[N+1, N]. Quitting')
             sys.exit(1)
-
-        N = len(self.StartingValues)
-        nonzdelt = self.NM_StartingSimplexRelativeVal
-        zdelt = self.NM_StartingSimplexRelativeVal / 200  # based on the scipy code where zdelt - nonzdelt/200
-        sim = np.empty((N + 1, N), dtype=self.StartingValues.dtype)
-        sim[0] = self.StartingValues
-        for k in range(N):
-            y = np.array(self.StartingValues, copy=True)
-            if y[k] != 0:
-                store_yk_temp = y[k]  # yuck, surely someone can do better than this
-                y[k] = (1 + nonzdelt) * y[k]
-                if y[k] > self.UpperBounds[k]:
-                    y[k] = (1 - nonzdelt) * store_yk_temp
-                if y[k]  < self.LowerBounds[k]:
-                    logger.warning('unable to generate starting simplex within bounds. Simplex will be clipped to bounds.'
-                                   'To avoid this behavior, consider changing the starting point, bounds, or value of'
-                                   'NM_StartingSimplexRelativeVal')
-            else:
-                y[k] = zdelt
-            sim[k + 1] = y
-
-
 
         self.StartingSimplex = sim
 

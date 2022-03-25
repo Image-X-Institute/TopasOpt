@@ -12,12 +12,14 @@ optimisation_params = {}
 optimisation_params['ParameterNames'] = ['x', 'y']
 optimisation_params['UpperBounds'] = np.array([1, 1])
 optimisation_params['LowerBounds'] = np.array([-1, -1])
-optimisation_params['start_point'] = np.array([0, 0])
+optimisation_params['start_point'] = np.array([.9, .9])
 # Remember true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is an example in which the rosen function is minimised, and demonstrates how this library' \
              'can be tested without actually calling topas'
+
 Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False)
+                                TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
+                                   NM_StartingSimplex=0.2)
 Optimiser.RunOptimisation()

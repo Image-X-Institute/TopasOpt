@@ -39,7 +39,7 @@ def test_Nelder_Mead():
     ## Test Nelder Mead:
     Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
                                     TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
-                                    KeepAllResults=False, NM_StartingSimplexRelativeVal=.1)
+                                    KeepAllResults=False, NM_StartingSimplex=.1)
     Optimiser.RunOptimisation()
     # read in the log file:
     ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
@@ -48,6 +48,22 @@ def test_Nelder_Mead():
     best_y = ResultsDict['y'][best_solution_number]
     assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth
     assert 0.9 <= best_y <= 1.1  # test answer within plus/minus 10% of truth
+
+def test_Nelder_Mead_UserDefinedSimplex():
+    ## Test Nelder Mead:
+    starting_sim = [[0.9, 0.9], [0.72, 0.9], [0.9, 0.72]]
+    Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                    TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True,
+                                    KeepAllResults=False, NM_StartingSimplex=starting_sim)
+    Optimiser.RunOptimisation()
+    # read in the log file:
+    ResultsDict = ReadInLogFile(BaseDirectory / SimulationName / 'logs' / 'OptimisationLogs.txt')
+    best_solution_number = np.argmin(ResultsDict['ObjectiveFunction'])
+    best_x = ResultsDict['x'][best_solution_number]
+    best_y = ResultsDict['y'][best_solution_number]
+    assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth
+    assert 0.9 <= best_y <= 1.1  # test answer within plus/minus 10% of truth
+
 
 def test_Bayesian():
     ## Test Bayesian
