@@ -21,7 +21,6 @@ The quickest way to get started is to go through the worked examples.
 
    /worked_examples
    /next_steps.md
-   /designing_objective_functions.md
    /EnvironmentSetup.md
    /DeveloperNotes.md
    /code_docs
