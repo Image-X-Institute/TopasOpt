@@ -20,7 +20,7 @@ from bayes_opt.util import load_logs
 from bayes_opt.event import Events
 from sklearn.gaussian_process.kernels import Matern
 import logging
-from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile
+from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile, PlotLogFile
 import stat
 from scipy.optimize import rosen
 
@@ -63,8 +63,8 @@ class TopasOptBaseClass:
     An important thing to note is that the variables from all optimisers are defined here, which means some of these options
     are specific to a particular optimiser. We may find a more elegant way to handle this in future!
 
-    :param optimisation_params: Parameters to be optimised. Must match parameters for PhaserBeamLine
-    :type optimisation_params: list
+    :param optimisation_params: Parameters to be optimised.
+    :type optimisation_params: list or array
     :param BaseDirectory: Place where all the topas simulation results are stored
     :type BaseDirectory: string
     :param SimulationName: Specific folder for this simulation
@@ -254,9 +254,8 @@ class TopasOptBaseClass:
 
     def _CreateVariableDictionary(self, x):
         """
-        Use the input information to create a dictionary of geometric inputs. This creates an elegant method to
-        create phaser geometries downstream in _GenerateTopasModel
-
+        Use the input information to create a dictionary of geometric inputs.
+        This is what gets passed to build the topas model
         x is the current list of parameter guesses.
         """
 
@@ -512,43 +511,10 @@ class TopasOptBaseClass:
         ToDO:: Long term want to replace this with utilitiies.Plotself._LogFileLoc 
         """
 
-        ItterationVector = np.arange(self.ItterationStart, self.Itteration + 1)
-
-        # create lowest val at each iteration
-        LowestVal = np.ones(np.size(self.AllObjectiveFunctionValues)) * self.AllObjectiveFunctionValues[0]
-        for i, val in enumerate(LowestVal):
-            if self.AllObjectiveFunctionValues[i] < LowestVal[i]:
-                LowestVal[i:] = self.AllObjectiveFunctionValues[i]
-
-
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-        axs.plot(ItterationVector, LowestVal, '-k', linewidth=2)
-        axs.plot(ItterationVector, self.AllObjectiveFunctionValues, 'C6')
-        axs.set_xlabel('Itteration number', fontsize=FigureSpecs.LabelFontSize)
-        axs.set_ylabel('Objecti'
-                          've function', fontsize=FigureSpecs.LabelFontSize)
-        axs.grid(True)
-
-        try:
-            target_prediction = -1 * np.array(self.target_prediction_mean, )
-            axs.plot(ItterationVector, target_prediction, 'C0')
-            axs.fill_between(ItterationVector,
-                                target_prediction + self.target_prediction_std,
-                                target_prediction - self.target_prediction_std, alpha=0.15, color='C0')
-            axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'])
-        except AttributeError:
-            # predicted isn't  available for optimisers
-            axs.legend(['Best', 'Current'])
-
-        MinValue = np.argmin(self.AllObjectiveFunctionValues)
-        axs.plot(ItterationVector[MinValue], self.AllObjectiveFunctionValues[MinValue], 'r-x')
-        axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
-
-
         SaveLoc = Path(self.BaseDirectory) / self.SimulationName
-        SaveLoc = SaveLoc / 'logs'
-        plt.savefig(SaveLoc / 'ConvergencePlot.png')
-        plt.close(fig)
+        SaveLoc = SaveLoc / 'logs' / 'ConvergencePlot.png'
+        PlotLogFile(self._LogFileLoc, SaveLoc)
+
 
     def _CopySelf(self):
         """

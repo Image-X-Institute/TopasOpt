@@ -603,12 +603,15 @@ def ReadInLogFile(LogFileLoc):
     return ResultsDict
 
 
-def PlotLogFile(LogFileLoc):
+def PlotLogFile(LogFileLoc, save_loc=None):
     """
     This function can be used to plot an existing log file
 
-    This just replicates the functionality in Optimisers.TopasOptBaseClass._Plot_Convergence and it would be
-    more elegant to just have one function, but that would take some refactoring.
+    :param LogFileLoc: location of log file
+    :type LogFileLoc: string or pathlib.Path
+    :param save_loc: if supplied, will attempt to save the log file there without displaying it.
+        No error checking included! If not supplied, behaviour is instead to show the plot
+    :type save_loc: string or pathlib.Path
     """
     ResultsDict = ReadInLogFile(LogFileLoc)
     Itteration = ResultsDict.pop('Itteration')
@@ -641,7 +644,12 @@ def PlotLogFile(LogFileLoc):
     MinValue = np.argmin(OF)
     axs.plot(Itteration[MinValue], OF[MinValue], 'r-x')
     axs.set_title('Convergence Plot', fontsize=FigureSpecs.TitleFontSize)
-    plt.show()
+
+    if save_loc:
+        plt.savefig(save_loc)
+        plt.close(fig)
+    else:
+        plt.show()
 
 
 

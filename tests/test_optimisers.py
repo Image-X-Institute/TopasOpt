@@ -19,7 +19,7 @@ from TopasOpt import Optimisers as to
 from TopasOpt.utilities import ReadInLogFile
 
 # set up file structure (same for all tests)
-BaseDirectory =  Path('./temp_test').resolve()
+BaseDirectory = Path('./temp_test').resolve()
 if not os.path.isdir(BaseDirectory):
     os.mkdir(BaseDirectory)  # delete this at the end!!
 SimulationName = 'development_test'
