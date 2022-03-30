@@ -122,23 +122,24 @@ Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationN
 Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.
 
+## Tuning exploration/ exploitation
 
-Example of switching between different optimisers is below. For detailed documentation on what options are available for the different optimisers, see the code documentaiton. ADD HYPERLINKS!
+You can read more about this concept [here](https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb). The exploration/exploitation tradeoff is controlled by the parameter ```bayes_UCBkappa``` by default it is set to 5, which is a fairly exploratory approach. You can make it higher for more exploration, or lower for more exploitation. By default, we also have a ```bayes_KappaDecayIterations=10```. this means that over the last 10 iterations, the algorithm will begin to come more and more exploitive. So basically the default settings give you the best of both worlds!!
 
-```python
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
-# OR 
-Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
-# OR 
-Optimiser = to.PowelOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
+## Handling noisy objective functions
+
+If you have a noisy objective function, and the gaussian process model is tending to overfit to noisy data points (you can check logs/RetrospectiveModelFit.png to get an idea of this), you can increase the parameter ```bayes_GP_alpha``` which by default is set to .01. I haven't figured out the exact meaning of this parameter, but basically you should make it larger if your model is being overfit! 
+
+## Further stuff
+
+The Bayesian optimisation is based on [this code](https://github.com/fmfn/BayesianOptimization). This code has a lot of options to tune that we don't give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique. 
+
+
+
+
 ```
 
 
-```
-
-The Base class contains all the basic functionality an optimser will need, such as generating models, reading results, etc. This inheritance mechanism makes it fairly quick to set up new algorithms, e.g. the implementation of the Nelder-Mead algorithm requires only 45 lines of code. 
-
-You can look through the source code to see how the different optimisers are implemented.
 
 ## Assess noise in the objective function
 
@@ -147,7 +148,7 @@ You can use your GenerateTopasScripts function to create 10 identical scripts, r
 
 ## NelderMeadOptimiser
 
-## Choose the starting simplex
+### Choose the starting simplex
 
 The NelderMead method is based on the concept of a simplex, which is a shape with [n+1] vertices, where n is the number of parameters. For instance, in a one dimension, the simplex has two vertices. The algorithm works by changing the position of these vertices according to a set of rules - expand, contract, reflect, or shrink.
 

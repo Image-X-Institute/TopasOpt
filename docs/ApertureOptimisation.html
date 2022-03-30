@@ -61,7 +61,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps (work in progress!)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
@@ -451,14 +450,14 @@ and the results:</p>
 <p>To compare multiple results we have included a function in utilities.compare_multiple_results, which is used like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
 
-<span class="n">LogFileLoc</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin&#39;</span><span class="p">,</span>
+<span class="n">ResultFiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin&#39;</span><span class="p">,</span>
               <span class="s1">&#39;Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_31.bin&#39;</span><span class="p">,</span>
               <span class="s1">&#39;Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_0.bin&#39;</span><span class="p">,</span>
               <span class="s1">&#39;C:/Users/bwhe3635/Documents/temp/TopasOpt/docsrc/_resources/WaterTank.bin&#39;</span><span class="p">]</span>
 
 <span class="n">custom_legend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NelderMead&#39;</span><span class="p">,</span><span class="s1">&#39;Bayesian&#39;</span><span class="p">,</span><span class="s1">&#39;Random Start&#39;</span><span class="p">,</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">]</span>
 
-<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">LogFileLoc</span><span class="p">,</span> <span class="n">custom_legend_names</span><span class="o">=</span><span class="n">custom_legend</span><span class="p">)</span>
+<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">ResultFiles</span><span class="p">,</span> <span class="n">custom_legend_names</span><span class="o">=</span><span class="n">custom_legend</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Using this code, we can generate the following figure:</p>

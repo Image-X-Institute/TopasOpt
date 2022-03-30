@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Designing objective functions" href="designing_objective_functions.html" />
+    <link rel="next" title="Environment set up" href="EnvironmentSetup.html" />
     <link rel="prev" title="Development example" href="DevelopmentExample.html" /> 
 </head>
 
@@ -60,11 +60,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#setting-length-scales-in-the-gaussian-process-model">Setting length scales in the gaussian process model</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#neldermeadoptimiser">NelderMeadOptimiser</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#choose-the-starting-simplex">Choose the starting simplex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tuning-exploration-exploitation">Tuning exploration/ exploitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#handling-noisy-objective-functions">Handling noisy objective functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#further-stuff">Further stuff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neldermeadoptimiser">NelderMeadOptimiser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#choose-the-starting-simplex">Choose the starting simplex</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
@@ -198,18 +202,21 @@ you want, but we do provide a default ploting function:</p>
 </div>
 <p>Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.</p>
-<p>Example of switching between different optimisers is below. For detailed documentation on what options are available for the different optimisers, see the code documentaiton. ADD HYPERLINKS!</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
-<span class="c1"># OR </span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NealderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
-<span class="c1"># OR </span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">PowelOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
-</pre></div>
-</div>
+</section>
+</section>
+<section id="tuning-exploration-exploitation">
+<h2>Tuning exploration/ exploitation<a class="headerlink" href="#tuning-exploration-exploitation" title="Permalink to this headline"></a></h2>
+<p>You can read more about this concept <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">here</a>. The exploration/exploitation tradeoff is controlled by the parameter <code class="docutils literal notranslate"><span class="pre">bayes_UCBkappa</span></code> by default it is set to 5, which is a fairly exploratory approach. You can make it higher for more exploration, or lower for more exploitation. By default, we also have a <code class="docutils literal notranslate"><span class="pre">bayes_KappaDecayIterations=10</span></code>. this means that over the last 10 iterations, the algorithm will begin to come more and more exploitive. So basically the default settings give you the best of both worlds!!</p>
+</section>
+<section id="handling-noisy-objective-functions">
+<h2>Handling noisy objective functions<a class="headerlink" href="#handling-noisy-objective-functions" title="Permalink to this headline"></a></h2>
+<p>If you have a noisy objective function, and the gaussian process model is tending to overfit to noisy data points (you can check logs/RetrospectiveModelFit.png to get an idea of this), you can increase the parameter <code class="docutils literal notranslate"><span class="pre">bayes_GP_alpha</span></code> which by default is set to .01. I haven’t figured out the exact meaning of this parameter, but basically you should make it larger if your model is being overfit!</p>
+</section>
+<section id="further-stuff">
+<h2>Further stuff<a class="headerlink" href="#further-stuff" title="Permalink to this headline"></a></h2>
+<p>The Bayesian optimisation is based on <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">this code</a>. This code has a lot of options to tune that we don’t give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-<span class="n">The</span> <span class="n">Base</span> <span class="k">class</span> <span class="nc">contains</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">basic</span> <span class="n">functionality</span> <span class="n">an</span> <span class="n">optimser</span> <span class="n">will</span> <span class="n">need</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="n">generating</span> <span class="n">models</span><span class="p">,</span> <span class="n">reading</span> <span class="n">results</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="n">This</span> <span class="n">inheritance</span> <span class="n">mechanism</span> <span class="n">makes</span> <span class="n">it</span> <span class="n">fairly</span> <span class="n">quick</span> <span class="n">to</span> <span class="nb">set</span> <span class="n">up</span> <span class="n">new</span> <span class="n">algorithms</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="n">the</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Nelder</span><span class="o">-</span><span class="n">Mead</span> <span class="n">algorithm</span> <span class="n">requires</span> <span class="n">only</span> <span class="mi">45</span> <span class="n">lines</span> <span class="n">of</span> <span class="n">code</span><span class="o">.</span> 
 
-<span class="n">You</span> <span class="n">can</span> <span class="n">look</span> <span class="n">through</span> <span class="n">the</span> <span class="n">source</span> <span class="n">code</span> <span class="n">to</span> <span class="n">see</span> <span class="n">how</span> <span class="n">the</span> <span class="n">different</span> <span class="n">optimisers</span> <span class="n">are</span> <span class="n">implemented</span><span class="o">.</span>
 
 <span class="c1">## Assess noise in the objective function</span>
 
@@ -217,12 +224,10 @@ length scales used were, and what the fitted length scales at the end of the run
 </pre></div>
 </div>
 </section>
-</section>
 <section id="neldermeadoptimiser">
 <h2>NelderMeadOptimiser<a class="headerlink" href="#neldermeadoptimiser" title="Permalink to this headline"></a></h2>
-</section>
 <section id="choose-the-starting-simplex">
-<h2>Choose the starting simplex<a class="headerlink" href="#choose-the-starting-simplex" title="Permalink to this headline"></a></h2>
+<h3>Choose the starting simplex<a class="headerlink" href="#choose-the-starting-simplex" title="Permalink to this headline"></a></h3>
 <p>The NelderMead method is based on the concept of a simplex, which is a shape with [n+1] vertices, where n is the number of parameters. For instance, in a one dimension, the simplex has two vertices. The algorithm works by changing the position of these vertices according to a set of rules - expand, contract, reflect, or shrink.</p>
 <p>Clearly, the position of the starting simplex will be of crucial importance in the convergence of this algorithm. Like a lot of things in optimisation, sometimes there can be more art than science in choosing the starting simplex well! In general, choosing it to span a larger space will result in more exploraratory behavior, while a smaller space will be quicker to converge but more likely to get stuck in a local minima (these are only rules of thumb!!). We provide three ways to choose the starting simplex, using the parameter <code class="docutils literal notranslate"><span class="pre">NM_StartingSimplex</span></code>:</p>
 <ul class="simple">
@@ -232,13 +237,14 @@ length scales used were, and what the fitted length scales at the end of the run
 </ul>
 </section>
 </section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="DevelopmentExample.html" class="btn btn-neutral float-left" title="Development example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="designing_objective_functions.html" class="btn btn-neutral float-right" title="Designing objective functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="EnvironmentSetup.html" class="btn btn-neutral float-right" title="Environment set up" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

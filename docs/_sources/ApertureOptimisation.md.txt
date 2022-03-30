@@ -342,14 +342,14 @@ To compare multiple results we have included a function in utilities.compare_mul
 ```python
 from TopasOpt.utilities import compare_multiple_results
 
-LogFileLoc = ['Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin',
+ResultFiles = ['Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin',
               'Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_31.bin',
               'Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_0.bin',
               'C:/Users/bwhe3635/Documents/temp/TopasOpt/docsrc/_resources/WaterTank.bin']
 
 custom_legend = ['NelderMead','Bayesian','Random Start','Ground Truth']
 
-compare_multiple_results(LogFileLoc, custom_legend_names=custom_legend)
+compare_multiple_results(ResultFiles, custom_legend_names=custom_legend)
 ```
 
 Using this code, we can generate the following figure:
