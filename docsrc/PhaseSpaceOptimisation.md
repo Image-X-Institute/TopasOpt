@@ -18,7 +18,7 @@ Since we are now running a new optimisation, you have to create a new base direc
 
 This step is the same as in the geometry example; you should create your base line topas script as described in that example
 
-## Creating RunOptimisation.py
+## Creating main_RunOptimisation.py
 
 The following is the script to run this optimisation. Remember to change the BaseDirectory to a place that exists on your computer!
 
@@ -180,18 +180,31 @@ These plots show the predicted change in the objective function as each single p
 
 ## NelderMead Optimiser
 
+To switch to the Nelder-Mead optimiser, change the following line in main_RunOptimisation.py:
+
+```python
+#change
+Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True)
+# to:
+Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, 			                    NM_StartingSimplexRelativeVal=0.2)
+```
+
+NM_StartingSimplexRelativeVal is a parameter that determines the size of the starting simplex based on your starting position. A value of 0.2 will define additional simplex vertices at x0*1.2. Increase this value to make the algorithm more exploratory; read more [here](https://acrf-image-x-institute.github.io/TopasOpt/next_steps.html#neldermeadoptimiser)
+
 Below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:
 
 ![](_resources/phaseSpaceOpt/ConvergencePlotNM.png)
-| Parameter          | Ground Truth | Allowed Range | Optimized |
-| ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 7.8       |
-| BeamPositionCutoff | 2            | 1-3           | 2.7       |
-| BeamPositionSpread | 0.3          | .1-1          | 1.0       |
-| BeamAngularSpread  | .07          | .01-1         | 0.1       |
-| BeamAngularCutoff  | 5            | 1-10          | 2.7       |
+| Parameter          | Ground Truth | Allowed Range | Optimized    |
+| ------------------ | ------------ | ------------- | ------------ |
+| BeamEnergy         | 10           | 6-12          | 9.95 (0.5%)  |
+| BeamPositionCutoff | 2            | 1-3           | 2.37 (18.5%) |
+| BeamPositionSpread | 0.3          | .1-1          | 0.24 (20%)   |
+| BeamAngularSpread  | .07          | .01-1         | 0.13 (85.7%) |
+| BeamAngularCutoff  | 5            | 1-10          | 1.83 (63.4%) |
 
-Like we have seen in our [previous example](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html), the Nelder-Mead optimiser is completely outperformed by the Bayesian Optimiser. Nelder-Mead initially converges very quickly, but then is essentially 'stuck' in a set of parameters. 
+At least in terms of average error, the Nelder-Mead algorithm has actually performed the Bayesian Optimiser in this instance (65% versus 38%). However, as we will see below, in practical terms these algorithms have performed similarly. 
 
 ## Comparing the results:
 
@@ -201,10 +214,10 @@ Maybe you want to take a look at how a given iteration has performed versus the 
 from TopasOpt.utilities import compare_multiple_results
 
 # update paths to point to wherever your results are.
-ResultsToCompare = ['SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin',
-                    'C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_0.bin',
-                    'C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_95.bin',
-                    'C:/Users/Brendan/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest_NM/Results/WaterTank_itt_65.bin']
+ResultsToCompare = ['/home/brendan/python/TopasOpt/docsrc/_resources/WaterTank',
+                    '/home/brendan/GoliathHome2/Documents/temp/PhaseSpaceOptimisationTutorial_bayes/Results/WaterTank_itt_0',
+                    '/home/brendan/GoliathHome2/Documents/temp/PhaseSpaceOptimisationTutorial_bayes/Results/WaterTank_itt_62',
+                    '/home/brendan/GoliathHome2/Documents/temp/PhaseSpaceOptimisationTutorial_NM/Results/WaterTank_itt_56']
 
 custom_legend = ['Original', 'RandomStartPoint', 'Bayesian', 'NelderMead']
 compare_multiple_results(ResultsToCompare, custom_legend_names=custom_legend)
@@ -217,3 +230,4 @@ Comparing our best result with the ground truth yields the below plot:
 - although our Bayesian optimization didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
 - The NM did not do so well, getting stuck in a local minimum again.
 - We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 
+

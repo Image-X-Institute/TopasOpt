@@ -38,7 +38,7 @@ The tests are automatically run one someone does ```git push```, but if you ever
 
 - To run the tests, just run ```pytest``` from the command line at the repository root
 - To assess coverage of tests ```coverage run -m pytest``` then ```coverage report```
-- We require <99% of docstrings are present. To get details stats on what doc strings are missing, run ```interrogate ../TopasOpt -vv```
+- We require >99% of docstrings are present. To get details stats on what doc strings are missing, run ```interrogate ../TopasOpt -vv```
 
 ## Building documentation
 
