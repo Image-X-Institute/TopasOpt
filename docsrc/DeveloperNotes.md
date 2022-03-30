@@ -58,7 +58,7 @@ If you want to include a new example in the documents, follow these instructions
 This library has been designed to make it easy to add new optimisation algorithms. The basic approach for a new optimiser is below
 
 ```python
-from TopasOpt.Optimisers import TopasOptBaseClassnn   # only necesary if you are not adding directly to TopasOpt.Optimisers.py
+from TopasOpt.Optimisers import TopasOptBaseClass   # only necesary if you are not adding directly to TopasOpt.Optimisers.py
 
 class NewOptimiser(TopasOptBaseClass):
     # note all __init__ is handled in TopasOptBaseClass. You can see the source code for an example. You don't have to do it
