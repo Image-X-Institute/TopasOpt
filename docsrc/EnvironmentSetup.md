@@ -34,7 +34,7 @@ pip install TopasOpt
 # test installation:
 python3  # enter a python session
 import TopasOpt
-Topas.__version__  # just to check it's there - should print e.g. 0.0.2
+TopasOpt.__version__  # just to check it's there - should print e.g. 0.0.2
 exit()  # exit python session.
 ```
 
