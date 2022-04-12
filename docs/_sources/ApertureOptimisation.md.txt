@@ -72,14 +72,14 @@ You can delete temp_GenerateTopasScript.py now if you want to, it has done its j
 Create a new file called RunOptimisation_main.py (or whatever you want, the name isn't important). Copy the below code into it:
 
 ```python
-import sys
 import numpy as np
 from pathlib import Path
 from TopasOpt import Optimisers as to
 
-BaseDirectory =  '/home/brendan/Documents/temp'  #update with where you want results stored!
-SimulationName = 'ApertureOptimisationTutorial'  # this folder will be created inside BaseDirectory
+BaseDirectory =  '/home/brendan/Documents/temp'
+SimulationName = 'NMtest'
 OptimisationDirectory = Path(__file__).parent
+
 
 # set up optimisation params:
 optimisation_params = {}
@@ -87,22 +87,21 @@ optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApe
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
-random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
-optimisation_params['start_point'] = random_start_point
-
+# random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
+# optimisation_params['start_point'] = random_start_point
+optimisation_params['start_point'] = np.array([2.46, 1.62, 35])
+# Remember true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 40
-# optimisation_params['Suggestions'] # for the bayesian optimiser you can suggest points to test if you want - we won't here.
+# optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
-# Bayesian optimiser
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True,  KeepAllResults=True)
 
-# or switch to nelder mead:
-# Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'NM_OptimisationTest', OptimisationDirectory,
-#                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
-
+Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                 SimulationName='GeometryOptimisationTest_Bayes', 
+                                 OptimisationDirectory=OptimisationDirectory, TopasLocation='~/topas37', 
+                                 ReadMeText=ReadMeText, Overwrite=True, bayes_length_scales=0.1)
 Optimiser.RunOptimisation()
+
 
 
 ```
@@ -318,7 +317,11 @@ Another optimisation algorithm commonly applied to these types of problems is th
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, 	 OptimisationDirectory, TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True)
 
 # to
-Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'ApertureOptimisationTutorial_NM', OptimisationDirectory,                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
+Optimiser = to.NelderMeadOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                   SimulationName='GeometryOptimisationTest_NM', OptimisationDirectory=OptimisationDirectory,
+                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
+                                   NM_StartingSimplex=0.2)
+
 # note we changed SimulationName so we won't overwrite the previous results
 ````
 
