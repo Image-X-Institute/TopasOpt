@@ -22,7 +22,11 @@ optimisation_params['Nitterations'] = 5
 ReadMeText = 'This is a public service announcement, this is only a test'
 
 
-Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
-                                   NM_StartingSimplexRelativeVal=0.2)
+Optimiser = to.NelderMeadOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                   SimulationName='GeometryOptimisationTest_NM', OptimisationDirectory=OptimisationDirectory,
+                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
+                                   NM_StartingSimplex=0.2)
+
+
+
 Optimiser.RunOptimisation()

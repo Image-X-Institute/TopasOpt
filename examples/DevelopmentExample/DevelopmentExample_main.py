@@ -19,7 +19,8 @@ optimisation_params['Nitterations'] = 100
 ReadMeText = 'This is an example in which the rosen function is minimised, and demonstrates how this library' \
              'can be tested without actually calling topas'
 
-Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
+Optimiser = to.NelderMeadOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                   SimulationName=SimulationName, OptimisationDirectory=OptimisationDirectory,
+                                   TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
                                    NM_StartingSimplex=0.2)
 Optimiser.RunOptimisation()
