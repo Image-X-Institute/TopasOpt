@@ -1,4 +1,4 @@
-# Next steps (work in progress!)
+# Next steps
 
 These instructions assume you have already worked through at least one of the worked examples.
  If you have not, it is strongly recommended that you go back and do so before proceeding. 
@@ -59,7 +59,7 @@ At the moment, this code is primarily set up to terminate based on number of ite
 
 At the moment, these aren't coded , but will be considered in future versions!
 
-## All Optimisiers
+## All Optimisers
 
 ### Improving accuracy
 
@@ -122,15 +122,15 @@ Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationN
 Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.
 
-## Tuning exploration/ exploitation
+### Tuning exploration/ exploitation
 
 You can read more about this concept [here](https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb). The exploration/exploitation tradeoff is controlled by the parameter ```bayes_UCBkappa``` by default it is set to 5, which is a fairly exploratory approach. You can make it higher for more exploration, or lower for more exploitation. By default, we also have a ```bayes_KappaDecayIterations=10```. this means that over the last 10 iterations, the algorithm will begin to come more and more exploitive. So basically the default settings give you the best of both worlds!!
 
-## Handling noisy objective functions
+### Handling noisy objective functions
 
 If you have a noisy objective function, and the gaussian process model is tending to overfit to noisy data points (you can check logs/RetrospectiveModelFit.png to get an idea of this), you can increase the parameter ```bayes_GP_alpha``` which by default is set to .01. I haven't figured out the exact meaning of this parameter, but basically you should make it larger if your model is being overfit! 
 
-## Further stuff
+### For the hard core nerds...
 
 The Bayesian optimisation is based on [this code](https://github.com/fmfn/BayesianOptimization). This code has a lot of options to tune that we don't give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique. 
 

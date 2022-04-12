@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Next steps (work in progress!) &mdash; TopasOpt  documentation</title>
+  <title>Next steps &mdash; TopasOpt  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -40,7 +40,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Next steps (work in progress!)</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Next steps</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#designing-objective-functions">Designing objective functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#competing-objectives">Competing objectives</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#hard-boundaries">Hard boundaries</a></li>
@@ -49,7 +49,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#convergence-criteria">Convergence criteria</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#all-optimisiers">All Optimisiers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#all-optimisers">All Optimisers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#improving-accuracy">Improving accuracy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read-in-and-plot-a-previous-log-file">read in and plot a previous log file</a></li>
 </ul>
@@ -58,11 +58,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#restart-an-optimisation">Restart an optimisation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load-and-interact-with-the-gaussian-process-model">Load and interact with the gaussian process model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#setting-length-scales-in-the-gaussian-process-model">Setting length scales in the gaussian process model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tuning-exploration-exploitation">Tuning exploration/ exploitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-noisy-objective-functions">Handling noisy objective functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#for-the-hard-core-nerds">For the hard core nerds…</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#tuning-exploration-exploitation">Tuning exploration/ exploitation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#handling-noisy-objective-functions">Handling noisy objective functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#further-stuff">Further stuff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#neldermeadoptimiser">NelderMeadOptimiser</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#choose-the-starting-simplex">Choose the starting simplex</a></li>
 </ul>
@@ -88,7 +88,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Next steps (work in progress!)</li>
+      <li>Next steps</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/next_steps.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,8 +98,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="next-steps-work-in-progress">
-<h1>Next steps (work in progress!)<a class="headerlink" href="#next-steps-work-in-progress" title="Permalink to this headline"></a></h1>
+  <section id="next-steps">
+<h1>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline"></a></h1>
 <p>These instructions assume you have already worked through at least one of the worked examples.
 If you have not, it is strongly recommended that you go back and do so before proceeding.</p>
 <section id="designing-objective-functions">
@@ -148,8 +148,8 @@ If you have not, it is strongly recommended that you go back and do so before pr
 </ul>
 <p>At the moment, these aren’t coded , but will be considered in future versions!</p>
 </section>
-<section id="all-optimisiers">
-<h2>All Optimisiers<a class="headerlink" href="#all-optimisiers" title="Permalink to this headline"></a></h2>
+<section id="all-optimisers">
+<h2>All Optimisers<a class="headerlink" href="#all-optimisers" title="Permalink to this headline"></a></h2>
 <section id="improving-accuracy">
 <h3>Improving accuracy<a class="headerlink" href="#improving-accuracy" title="Permalink to this headline"></a></h3>
 <p>If you think you require better accuracy than the first result you get, you have a few options:</p>
@@ -203,17 +203,16 @@ you want, but we do provide a default ploting function:</p>
 <p>Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.</p>
 </section>
-</section>
 <section id="tuning-exploration-exploitation">
-<h2>Tuning exploration/ exploitation<a class="headerlink" href="#tuning-exploration-exploitation" title="Permalink to this headline"></a></h2>
+<h3>Tuning exploration/ exploitation<a class="headerlink" href="#tuning-exploration-exploitation" title="Permalink to this headline"></a></h3>
 <p>You can read more about this concept <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">here</a>. The exploration/exploitation tradeoff is controlled by the parameter <code class="docutils literal notranslate"><span class="pre">bayes_UCBkappa</span></code> by default it is set to 5, which is a fairly exploratory approach. You can make it higher for more exploration, or lower for more exploitation. By default, we also have a <code class="docutils literal notranslate"><span class="pre">bayes_KappaDecayIterations=10</span></code>. this means that over the last 10 iterations, the algorithm will begin to come more and more exploitive. So basically the default settings give you the best of both worlds!!</p>
 </section>
 <section id="handling-noisy-objective-functions">
-<h2>Handling noisy objective functions<a class="headerlink" href="#handling-noisy-objective-functions" title="Permalink to this headline"></a></h2>
+<h3>Handling noisy objective functions<a class="headerlink" href="#handling-noisy-objective-functions" title="Permalink to this headline"></a></h3>
 <p>If you have a noisy objective function, and the gaussian process model is tending to overfit to noisy data points (you can check logs/RetrospectiveModelFit.png to get an idea of this), you can increase the parameter <code class="docutils literal notranslate"><span class="pre">bayes_GP_alpha</span></code> which by default is set to .01. I haven’t figured out the exact meaning of this parameter, but basically you should make it larger if your model is being overfit!</p>
 </section>
-<section id="further-stuff">
-<h2>Further stuff<a class="headerlink" href="#further-stuff" title="Permalink to this headline"></a></h2>
+<section id="for-the-hard-core-nerds">
+<h3>For the hard core nerds…<a class="headerlink" href="#for-the-hard-core-nerds" title="Permalink to this headline"></a></h3>
 <p>The Bayesian optimisation is based on <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">this code</a>. This code has a lot of options to tune that we don’t give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
 
@@ -223,6 +222,7 @@ length scales used were, and what the fitted length scales at the end of the run
 <span class="n">You</span> <span class="n">can</span> <span class="n">use</span> <span class="n">your</span> <span class="n">GenerateTopasScripts</span> <span class="n">function</span> <span class="n">to</span> <span class="n">create</span> <span class="mi">10</span> <span class="n">identical</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">run</span> <span class="n">them</span> <span class="nb">all</span><span class="p">,</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">assess</span> <span class="n">the</span> <span class="n">reslts</span> <span class="k">with</span> <span class="n">TopasObjectiveFunction</span><span class="o">.</span> <span class="n">If</span> <span class="n">the</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span> <span class="n">function</span> <span class="ow">is</span> <span class="n">higher</span> <span class="n">than</span> <span class="n">the</span> <span class="n">precision</span> <span class="n">you</span> <span class="n">would</span> <span class="n">ultimately</span> <span class="n">like</span> <span class="n">to</span> <span class="n">converge</span> <span class="n">to</span> <span class="n">then</span> <span class="n">you</span> <span class="n">are</span> <span class="n">unlikely</span> <span class="n">to</span> <span class="n">get</span> <span class="n">a</span> <span class="n">great</span> <span class="n">result</span><span class="o">.</span> <span class="n">E</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="k">if</span> <span class="n">the</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span> <span class="n">function</span> <span class="ow">is</span> <span class="mi">20</span><span class="o">%</span> <span class="ow">and</span> <span class="n">you</span> <span class="n">hope</span> <span class="n">to</span> <span class="n">be</span> <span class="n">within</span> <span class="mi">10</span><span class="o">%</span> <span class="n">of</span> <span class="n">the</span> <span class="n">true</span> <span class="n">optimum</span> <span class="n">you</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">trouble</span><span class="o">.</span> <span class="n">For</span> <span class="n">the</span> <span class="n">Bayesian</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">you</span> <span class="n">may</span> <span class="n">be</span> <span class="n">able</span> <span class="n">to</span> <span class="n">handle</span> <span class="n">noise</span> <span class="n">by</span> <span class="n">increasing</span> <span class="n">bayes_GP_alpha</span><span class="o">.</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="neldermeadoptimiser">
 <h2>NelderMeadOptimiser<a class="headerlink" href="#neldermeadoptimiser" title="Permalink to this headline"></a></h2>
