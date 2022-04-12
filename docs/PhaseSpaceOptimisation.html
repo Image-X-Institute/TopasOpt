@@ -235,7 +235,7 @@ We are going to keep this relatively simple by just having four optimization par
 <section id="analyzing-the-results">
 <h2>Analyzing the results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline"></a></h2>
 <p><img alt="_images/ConvergencePlot1.png" src="_images/ConvergencePlot1.png" />
-<img alt="_images/CorrelationPlot.png" src="_images/CorrelationPlot.png" />
+<img alt="_images/CorrelationPlot1.png" src="_images/CorrelationPlot1.png" />
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recorded:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Best</span> <span class="n">parameter</span> <span class="nb">set</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.5824966507848057</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;BeamAngularCutoff&#39;</span><span class="p">:</span> <span class="mf">8.093521167768209</span><span class="p">,</span> <span class="s1">&#39;BeamAngularSpread&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;BeamEnergy&#39;</span><span class="p">:</span> <span class="mf">9.606637841613118</span><span class="p">,</span> <span class="s1">&#39;BeamPositionCutoff&#39;</span><span class="p">:</span> <span class="mf">2.265724252124363</span><span class="p">,</span> <span class="s1">&#39;BeamPositionSpread&#39;</span><span class="p">:</span> <span class="mf">0.309694887480956</span><span class="p">}}</span>
 </pre></div>
@@ -319,7 +319,7 @@ These plots show the predicted change in the objective function as each single p
 </pre></div>
 </div>
 <p>Comparing our best result with the ground truth yields the below plot:</p>
-<p><img alt="_images/compare.png" src="_images/compare.png" /></p>
+<p><img alt="_images/compare1.png" src="_images/compare1.png" /></p>
 <ul class="simple">
 <li><p>although our Bayesian optimization didn’t recover the exact parameters, the parameters it did select give a very good match to the ground truth</p></li>
 <li><p>The NM did not do so well, getting stuck in a local minimum again.</p></li>
