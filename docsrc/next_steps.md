@@ -50,6 +50,14 @@ At the moment, this code handles boundaries (0<=x<=1) but not constraints (x<=2*
 
 I hope that in the future we will be able to handle these cases in the problem set up, but for now, I recomend just returning a high number. Although this does contradict my earlier advice to try and ensure the objective function is smooth, it is less important to ensure this in 'bad' regions, since a good algorithm will not pay too much attention to these regions anyway.
 
+### Assess noise in the objective function
+
+You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
+
+
+
+
+
 ## Convergence criteria
 
 At the moment, this code is primarily set up to terminate based on number of iterations, e.g. if you figure you have 24 hours of computing time available, figure out how many iterations you can run for. It is of course possible in principle to use different convergence criteria - e.g.
@@ -133,18 +141,6 @@ If you have a noisy objective function, and the gaussian process model is tendin
 ### For the hard core nerds...
 
 The Bayesian optimisation is based on [this code](https://github.com/fmfn/BayesianOptimization). This code has a lot of options to tune that we don't give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique. 
-
-
-
-
-```
-
-
-
-## Assess noise in the objective function
-
-You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
-```
 
 ## NelderMeadOptimiser
 
