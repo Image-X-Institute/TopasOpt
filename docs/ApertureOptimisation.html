@@ -153,14 +153,14 @@ rm start_files.zip
 <section id="creating-runoptimisation-py">
 <h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline"></a></h2>
 <p>Create a new file called RunOptimisation_main.py (or whatever you want, the name isn’t important). Copy the below code into it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
 
-<span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/brendan/Documents/temp&#39;</span>  <span class="c1">#update with where you want results stored!</span>
-<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;ApertureOptimisationTutorial&#39;</span>  <span class="c1"># this folder will be created inside BaseDirectory</span>
+<span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/brendan/Documents/temp&#39;</span>
+<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;NMtest&#39;</span>
 <span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
 
 <span class="c1"># set up optimisation params:</span>
 <span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -168,22 +168,21 @@ rm start_files.zip
 <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
 <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="c1"># generate a random starting point between our bounds (it doesn&#39;t have to be random, this is just for demonstration purposes)</span>
-<span class="n">random_start_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">],</span> <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">])</span>
-<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_start_point</span>
-
+<span class="c1"># random_start_point = np.random.default_rng().uniform(optimisation_params[&#39;LowerBounds&#39;], optimisation_params[&#39;UpperBounds&#39;])</span>
+<span class="c1"># optimisation_params[&#39;start_point&#39;] = random_start_point</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.46</span><span class="p">,</span> <span class="mf">1.62</span><span class="p">,</span> <span class="mi">35</span><span class="p">])</span>
+<span class="c1"># Remember true values are  [1.82, 2.5, 27]</span>
 <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
-<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # for the bayesian optimiser you can suggest points to test if you want - we won&#39;t here.</span>
+<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # you can suggest points to test if you want - we won&#39;t here.</span>
 <span class="n">ReadMeText</span> <span class="o">=</span> <span class="s1">&#39;This is a public service announcement, this is only a test&#39;</span>
 
-<span class="c1"># Bayesian optimiser</span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>
-                                  <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># or switch to nelder mead:</span>
-<span class="c1"># Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, &#39;NM_OptimisationTest&#39;, OptimisationDirectory,</span>
-<span class="c1">#                                   TopasLocation=&#39;~/topas37&#39;, ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)</span>
-
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="o">=</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="o">=</span><span class="n">BaseDirectory</span><span class="p">,</span>
+                                 <span class="n">SimulationName</span><span class="o">=</span><span class="s1">&#39;GeometryOptimisationTest_Bayes&#39;</span><span class="p">,</span> 
+                                 <span class="n">OptimisationDirectory</span><span class="o">=</span><span class="n">OptimisationDirectory</span><span class="p">,</span> <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> 
+                                 <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bayes_length_scales</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 <span class="n">Optimiser</span><span class="o">.</span><span class="n">RunOptimisation</span><span class="p">()</span>
+
 
 </pre></div>
 </div>
@@ -407,7 +406,11 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 <span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> 	 <span class="n">OptimisationDirectory</span><span class="p">,</span> <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># to</span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NealderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="s1">&#39;ApertureOptimisationTutorial_NM&#39;</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>                                 <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">StartingSimplexRelativeVal</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NelderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="o">=</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="o">=</span><span class="n">BaseDirectory</span><span class="p">,</span>
+                                   <span class="n">SimulationName</span><span class="o">=</span><span class="s1">&#39;GeometryOptimisationTest_NM&#39;</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="o">=</span><span class="n">OptimisationDirectory</span><span class="p">,</span>
+                                   <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">NM_StartingSimplex</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
 <span class="c1"># note we changed SimulationName so we won&#39;t overwrite the previous results</span>
 </pre></div>
 </div>

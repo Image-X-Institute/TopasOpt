@@ -161,13 +161,13 @@ Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutof
 
 These values are copied into the below table along with the ground truth values and the range we allowed them to vary over:
 
-| Parameter          | Ground Truth | Allowed Range | Optimized    |
-| ------------------ | ------------ | ------------- | ------------ |
-| BeamEnergy         | 10           | 6-12          | 9.98 (0.2%%) |
-| BeamPositionCutoff | 2            | 1-3           | 1.88 (6%)    |
-| BeamPositionSpread | 0.3          | .1-1          | .1 (66%)     |
-| BeamAngularSpread  | .07          | .01-1         | .19 (171%)   |
-| BeamAngularCutoff  | 5            | 1-10          | 1.0 (80%)    |
+| Parameter          | Ground Truth | Start point (Bounds) | Bayesian Optimized |
+| ------------------ | ------------ | -------------------- | ------------------ |
+| BeamEnergy         | 10           | 7.9 (6-12)           | 9.98 (0.2%%)       |
+| BeamPositionCutoff | 2            | 2.7 (1-3)            | 1.88 (6%)          |
+| BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .1 (66%)           |
+| BeamAngularSpread  | .07          | .1 (.01-1)           | .19 (171%)         |
+| BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.0 (80%)          |
 
 We have obtained very close matches to BeamEnergy and BeamPositionCutoff. For the other parameters, we are quite a long way off in percentage terms - although, in absolute terms we are still often pretty close, it's just because many of these parameters have very small starting values that the percentages look so bad.
 
@@ -183,15 +183,15 @@ These plots show the predicted change in the objective function as each single p
 Below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:
 
 ![](_resources/phaseSpaceOpt/ConvergencePlotNM.png)
-| Parameter          | Ground Truth | Allowed Range | Optimized |
-| ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 7.8       |
-| BeamPositionCutoff | 2            | 1-3           | 2.7       |
-| BeamPositionSpread | 0.3          | .1-1          | 1.0       |
-| BeamAngularSpread  | .07          | .01-1         | 0.1       |
-| BeamAngularCutoff  | 5            | 1-10          | 2.7       |
+| Parameter          | Ground Truth | Start point (Bounds) | Nelder-Mead Optimized |
+| ------------------ | ------------ | -------------------- | --------------------- |
+| BeamEnergy         | 10           | 7.9 (6-12)           | 9.95 (0.2%)           |
+| BeamPositionCutoff | 2            | 2.7 (1-3)            | 2.4 (6%)              |
+| BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .3 (66%)              |
+| BeamAngularSpread  | .07          | .1 (.01-1)           | .1 (171%)             |
+| BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.8 (80%)             |
 
-Like we have seen in our [previous example](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html), the Nelder-Mead optimiser is completely outperformed by the Bayesian Optimiser. Nelder-Mead initially converges very quickly, but then is essentially 'stuck' in a set of parameters. 
+Again. the Nelder Mead algorithm has done a great job of recovering the starting parameters. In fact it technically outperformed the Bayesian approach, finding a minimum value in the objective function of -0.53 versus -0.49. However, looking at the convergence plot of both optimises suggests that at these lower values, there is a large amount of noise in the objective function. This is the trade off of using a log objective function - it will be more sensitive to the small values you are probably interested in, but also more sensitive to noise in the input data.
 
 ## Comparing the results:
 
@@ -214,6 +214,5 @@ compare_multiple_results(ResultsToCompare, custom_legend_names=custom_legend)
 Comparing our best result with the ground truth yields the below plot:
 
 ![](_resources/phaseSpaceOpt/compare.png)
-- although our Bayesian optimization didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
-- The NM did not do so well, getting stuck in a local minimum again.
+- although our  optimization didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
 - We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 

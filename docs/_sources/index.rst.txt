@@ -16,7 +16,7 @@ For help getting an appropriate environment set up, see `here <https://acrf-imag
 The quickest way to get started is to go through the `worked examples <https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html>`_.
 
 
-.. image:: _resources/BasicOptLoop.png
+.. image:: _resources/BasicOptLoop.svg
   :alt: Basic Optimisation Loop
 
 
