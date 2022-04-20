@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Inverse Optimisation for Topas
-===============================
+Optimisation for Topas
+======================
 
 `This repository <https://github.com/ACRF-Image-X-Institute/TopasOpt>`_ enables users to transform any radiation transport model in  `TopasMC <http://www.topasmc.org/>`_, into an optimisation problem, hence enabling users to apply the power of formal mathematical optimisation with the well established use cases for Monte Carlo modelling.
 
