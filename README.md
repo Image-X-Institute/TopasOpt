@@ -23,7 +23,7 @@ The source code for the [worked examples](https://acrf-image-x-institute.github.
 ## Directory Structure
 
 - **TopasOpt:** source code
-- **examples:** as the name implies!
+- **examples:** source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
 - **docs:** html documentation created from docsrc using sphinx
 - **docsrc:** markdown/rst documentation.
 - **tests:** tests which are run on push
