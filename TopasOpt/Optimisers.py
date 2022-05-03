@@ -343,7 +343,7 @@ class TopasOptBaseClass:
             file_loc = str(Path(self.BaseDirectory) / self.SimulationName / 'TopasScripts' / script_name)
             f.write('echo "Beginning analysis of: ' + script_name + '"')
             f.write('\n')
-            f.write('(time ' + str(self.TopasLocation) + '/bin/topas ' + script_name + ') &> ../logs/TopasLogs/' + script_name)
+            f.write('(time TOPAS_HEADLESS_MODE=1 ' + str(self.TopasLocation) + '/bin/topas ' + script_name + ') &> ../logs/TopasLogs/' + script_name)
             f.write('\n')
         # change file permissions:
         st = os.stat(ShellScriptLocation)
