@@ -87,7 +87,7 @@ class TopasOptBaseClass:
     """
 
     def __init__(self, optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                 ReadMeText=None,
+                 ReadMeText=None, G4dataLocation='~/G4Data',
                  TopasLocation='~/topas/',
                  ShellScriptHeader=None, Overwrite=False, KeepAllResults=True):
         """
@@ -100,6 +100,7 @@ class TopasOptBaseClass:
             sys.exit(1)
 
         optimisation_params = self._convert_optimisation_params_to_numpy(optimisation_params)
+        self.G4dataLocation = G4dataLocation
         self.ReadMeText = ReadMeText  # this gets written to base directory
         self.ShellScriptHeader = ShellScriptHeader
         self.KeepAllResults = KeepAllResults
@@ -333,7 +334,7 @@ class TopasOptBaseClass:
         if self.ShellScriptHeader is None:
             f.write('# !/bin/bash')
             f.write('\n\n# This script sets up the topas environment then runs all listed files\n\n')
-            f.write('\nexport TOPAS_G4_DATA_DIR=~/G4Data\n')
+            f.write(f'\nexport TOPAS_G4_DATA_DIR={self.G4dataLocation}\n')
         else:
             f.write(self.ShellScriptHeader)
 
