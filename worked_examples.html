@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worked Examples &mdash; TopasOpt  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Geometry Optimisation Example" href="ApertureOptimisation.html" />
+    <link rel="prev" title="Optimisation for Topas" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> TopasOpt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Worked Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html">Geometry Optimisation Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html">Phase space optmisation example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html">Development example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TopasOpt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Worked Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/worked_examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="worked-examples">
+<h1>Worked Examples<a class="headerlink" href="#worked-examples" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ApertureOptimisation.html">Geometry Optimisation Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#environmental-set-up-and-installation">Environmental set up and installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#base-model-and-problem-overview">Base model and problem overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#directory-set-up">directory set up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#copy-the-base-topas-files">Copy the base topas files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#creating-generatetopasscript-py">Creating GenerateTopasScript.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#creating-runoptimisation-py">Creating RunOptimisation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#editing-generatetopasscript-py">Editing GenerateTopasScript.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#creating-topasobjectivefunction-py">Creating TopasObjectiveFunction.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#running-the-example">Running the example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#interpreting-the-results">Interpreting the results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#comparison-with-nelder-mead-optimiser">Comparison with Nelder-Mead optimiser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#comparison-with-ground-truth-data">Comparison with ground truth data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ApertureOptimisation.html#improving-these-results">Improving these results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PhaseSpaceOptimisation.html">Phase space optmisation example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#directory-set-up">Directory set up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#creating-generatetopasscript-py">Creating GenerateTopasScript.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#creating-runoptimisation-py">Creating RunOptimisation.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#editing-generatetopasscript-py">Editing GenerateTopasScript.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#create-topasobjectivefunction-py">Create TopasObjectiveFunction.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#running-the-example">Running the example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#analyzing-the-results">Analyzing the results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#neldermead-optimiser">NelderMead Optimiser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html#comparing-the-results">Comparing the results:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="DevelopmentExample.html">Development example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html#set-up-base-directory">Set up base directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html#limitations">Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html#results">Results</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Optimisation for Topas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ApertureOptimisation.html" class="btn btn-neutral float-right" title="Geometry Optimisation Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
