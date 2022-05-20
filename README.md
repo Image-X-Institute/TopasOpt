@@ -1,6 +1,6 @@
 # TopasOpt
 
-![](docsrc/_resources/interrogate_badge.svg) ![](docsrc/_resources/coverage.svg)
+![](docsrc/_resources/interrogate_badge.svg) ![](docsrc/_resources/coverage.svg) ![test](https://github.com/ACRF-Image-X-Institute/TopasOpt/actions/workflows/run_tests.yml/badge.svg)
 
 
 This code provides a framework for performing optimisation on monte carlo radiation transport 
