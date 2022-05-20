@@ -347,7 +347,7 @@ class WaterTankData:
 
         return InterpolatedData
 
-    def Plot_DosePlanes(self, AddColorBar=False):
+    def Plot_DosePlanes(self, AddColorBar=False): # pragma: no cover
         """
         Use the DoseCube data to create a plot through each of the cardinal planes.
         """
@@ -407,7 +407,7 @@ class WaterTankData:
         plt.tight_layout()
         plt.show()
 
-    def Plot_DepthDose(self):
+    def Plot_DepthDose(self): # pragma: no cover
         """
         Plot integral depth dose curves of all beamlets
         """
@@ -435,7 +435,7 @@ class WaterTankData:
         self.integralPDD_axs.set_xlabel('Depth [mm]', fontsize=FigureSpecs.LabelFontSize)
         plt.show()
 
-    def Plot_Profiles(self, dir='X', Zpoints=None):
+    def Plot_Profiles(self, dir='X', Zpoints=None): # pragma: no cover
         """
         Plot profiles through integrated data. Can choose dir='X' or dir='Y'
         You can also optionally pass multiple Z points; otherwise Z is set to the middle of the phantom
@@ -474,7 +474,7 @@ class WaterTankData:
         plt.tight_layout()
         plt.show()
 
-    def Plot_XYsurface(self, Zpoints=None):
+    def Plot_XYsurface(self, Zpoints=None): # pragma: no cover
         """
         Plot XY plots for multiple Z
         if Z = None, a single plot through the middle of the water phantom is produced
@@ -524,7 +524,7 @@ class WaterTankData:
             plt.show()
 
 
-def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None):
+def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None): # pragma: no cover
     """
     this produces depth dose and profile plots for a list of topas .bin files.
 
@@ -624,7 +624,7 @@ def ReadInLogFile(LogFileLoc):
     return ResultsDict
 
 
-def PlotLogFile(LogFileLoc, save_loc=None):
+def PlotLogFile(LogFileLoc, save_loc=None): # pragma: no cover
     """
     This function can be used to plot an existing log file
 
