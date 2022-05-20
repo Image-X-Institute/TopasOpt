@@ -14,9 +14,10 @@ import numpy as np
 import topas2numpy as tp
 import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
-from scipy.stats import linregress
 from pathlib import Path
+# import seaborn as sns
 plt.interactive(False)
+
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
@@ -535,9 +536,22 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
     :type custom_legend_names: list, optional
     """
 
-    LineStyles = ['C0-', 'C2--', 'C3:', 'C4-.', 'C5-', 'C6--', 'C7:']
+    # sns.set_style("whitegrid")
+    # sns.set_palette("plasma")
+    # sns.set_palette("cubehelix")
+
+    plt.rc('font', family=FigureSpecs.Font)
+    plt.rc('xtick', labelsize=FigureSpecs.AxisFontSize)
+    plt.rc('ytick', labelsize=FigureSpecs.AxisFontSize)
+
+    LineStyles = ['C2-', 'C0--', 'C4-.', 'C9:',  'C3:', 'C5-', 'C6--']
+    # LineStyles = ['-', '--', ':', '-.', '-', '--', ':']
+    LineStyles = ['C0-', 'C7--', 'C3:', 'C9-.', 'C5-', 'C6--', 'C7:']
     fig, axs = plt.subplots(ncols=2, nrows=1, figsize=[10, 5])
     legend_names = []
+    ProfileDose = []
+    DepthDose = []
+    lw = 1
     for i, bin_file in enumerate(BinFiles):
         [path_name, file_name] = os.path.split(bin_file)
         legend_names.append(file_name)
@@ -545,20 +559,27 @@ def compare_multiple_results(BinFiles, abs_dose=False, custom_legend_names=None)
         # plot the differences:
 
         PlotStyle = i % np.shape(LineStyles)[0]
-        axs[0].plot(WTD.x, WTD.ProfileDose_X, LineStyles[PlotStyle], linewidth=2)
-        axs[1].plot(WTD.z, np.flip(WTD.DepthDose), LineStyles[PlotStyle], linewidth=2)
+        if custom_legend_names and 'original' in custom_legend_names[i].lower():
+            lw = 4
+        else:
+            lw = 2
+        axs[0].plot(WTD.x, WTD.ProfileDose_X, LineStyles[PlotStyle], linewidth=lw)
+        axs[1].plot(WTD.z, np.flip(WTD.DepthDose), LineStyles[PlotStyle], linewidth=lw)
 
-        # sns.lineplot(ax=axs[0], x=WTD.x, y=WTD.ProfileDose_X)
-        # sns.lineplot(ax=axs[1], x=WTD.z, y=np.flip(WTD.DepthDose))
+        # sns.lineplot(ax=axs[0], x=WTD.x, y=WTD.ProfileDose_X, linewidth=2, linestyle=LineStyles[PlotStyle])
+        # sns.lineplot(ax=axs[1], x=WTD.z, y=np.flip(WTD.DepthDose), linewidth=2, linestyle=LineStyles[PlotStyle])
 
-    axs[0].set_xlabel('X [mm]', fontsize=FigureSpecs.LabelFontSize)
-    axs[0].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize)
+
+    axs[0].set_xlabel('X [mm]', fontsize=FigureSpecs.LabelFontSize*1.2)
+    axs[0].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize*1.2)
     axs[0].set_title('a) Dose profiles', fontsize = FigureSpecs.TitleFontSize)
     axs[0].grid()
-    axs[1].set_xlabel('Z [mm]', fontsize=FigureSpecs.LabelFontSize)
-    axs[1].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize)
+    axs[1].set_xlabel('Z [mm]', fontsize=FigureSpecs.LabelFontSize*1.2)
+    axs[1].set_ylabel('Dose [%]', fontsize=FigureSpecs.LabelFontSize*1.2)
     axs[1].set_title('b) Depth Dose', fontsize=FigureSpecs.TitleFontSize)
     axs[1].grid()
+    plt.tight_layout()
+
 
     if not custom_legend_names:
         axs[1].legend(legend_names, fontsize=FigureSpecs.LabelFontSize)

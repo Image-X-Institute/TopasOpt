@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 from TopasOpt import Optimisers as to
 
-BaseDirectory =  '/home/brendan/Documents/temp'
+BaseDirectory = 'C:\\Users\\Brendan\\Documents\\temp'
 SimulationName = 'development_test'
 OptimisationDirectory = Path(__file__).parent
 
@@ -19,8 +19,8 @@ optimisation_params['Nitterations'] = 100
 ReadMeText = 'This is an example in which the rosen function is minimised, and demonstrates how this library' \
              'can be tested without actually calling topas'
 
-Optimiser = to.NelderMeadOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
-                                   SimulationName=SimulationName, OptimisationDirectory=OptimisationDirectory,
-                                   TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
-                                   NM_StartingSimplex=0.2)
+Optimiser = to.NelderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
+                                TopasLocation='testing_mode', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=False,
+                                   NM_StartingSimplexRelativeVal=.4)
+
 Optimiser.RunOptimisation()
