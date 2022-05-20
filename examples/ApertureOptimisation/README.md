@@ -1,4 +1,4 @@
-# Example 1: Geometry Optimisation
+# Geometry Optimisation Example
 
 The starting point for an optimisation is a working topas model. In this example we are going to optimise the geometry of a simple x-ray collimator. We are going to randomise the values shown in read, and see if we can recover the correct values using the Bayesian optimisation. To guide the optimisation, we will create an objective function which simply measures the difference between the original depth dose curves and profile data and those created by a given set of parameters.
 
@@ -74,14 +74,14 @@ You can delete temp_GenerateTopasScript.py now if you want to, it has done its j
 Create a new file called RunOptimisation_main.py (or whatever you want, the name isn't important). Copy the below code into it:
 
 ```python
-import sys
 import numpy as np
 from pathlib import Path
 from TopasOpt import Optimisers as to
 
-BaseDirectory =  '/home/brendan/Documents/temp'  #update with where you want results stored!
-SimulationName = 'ApertureOptimisationTutorial'  # this folder will be created inside BaseDirectory
+BaseDirectory =  '/home/brendan/Documents/temp'
+SimulationName = 'NMtest'
 OptimisationDirectory = Path(__file__).parent
+
 
 # set up optimisation params:
 optimisation_params = {}
@@ -89,22 +89,21 @@ optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApe
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
-random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
-optimisation_params['start_point'] = random_start_point
-
+# random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
+# optimisation_params['start_point'] = random_start_point
+optimisation_params['start_point'] = np.array([2.46, 1.62, 35])
+# Remember true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 40
-# optimisation_params['Suggestions'] # for the bayesian optimiser you can suggest points to test if you want - we won't here.
+# optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'This is a public service announcement, this is only a test'
 
-# Bayesian optimiser
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory,
-                                  TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True,  KeepAllResults=True)
 
-# or switch to nelder mead:
-# Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'NM_OptimisationTest', OptimisationDirectory,
-#                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
-
+Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                 SimulationName='GeometryOptimisationTest_Bayes', 
+                                 OptimisationDirectory=OptimisationDirectory, TopasLocation='~/topas37', 
+                                 ReadMeText=ReadMeText, Overwrite=True, bayes_length_scales=0.1)
 Optimiser.RunOptimisation()
+
 
 
 ```
@@ -323,7 +322,11 @@ Another optimisation algorithm commonly applied to these types of problems is th
 Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, 	 OptimisationDirectory, TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True)
 
 # to
-Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, 'ApertureOptimisationTutorial_NM', OptimisationDirectory,                                 TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)
+Optimiser = to.NelderMeadOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                   SimulationName='GeometryOptimisationTest_NM', OptimisationDirectory=OptimisationDirectory,
+                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
+                                   NM_StartingSimplex=0.2)
+
 # note we changed SimulationName so we won't overwrite the previous results
 ````
 
@@ -335,18 +338,11 @@ and the results:
 
 | Parameter                | Original Value | Random Starting Value | Recovered Value |
 | ------------------------ | -------------- | --------------------- | --------------- |
-| CollimatorThickness      | 27 mm          | 39.9 mm               | 39.4 mm (48%)   |
-| UpStreamApertureRadius   | 1.82 mm        | 1.14 mm               | 2.6 mm (37%)    |
-| DownStreamApertureRadius | 2.5 mm         | 1.73 mm               | 3.0 mm (31%)    |
+| CollimatorThickness      | 27 mm          | 39.9 mm               | 27.9 (3.3 %)    |
+| UpStreamApertureRadius   | 1.82 mm        | 1.14 mm               | 2.26 (24.2 %)   |
+| DownStreamApertureRadius | 2.5 mm         | 1.73 mm               | 2.51 (0.4 %)    |
 
-OK - this optimiser did terribly!! What gives?
-
-This is actually a very instructive and interesting result. Looking at the convergence plot above, the NelderMead algorithm has actually done a reasonable job of minmising the objective function from it's starting value. What has actually happened here is the result of two effects:
-
-1. Our objective function is based on the water tank results. This is only a **surrogate** for what we really care about, which is the geometric parameters. As we see below, and in the convergence plot, the NM approach actually did what we we asked it to reasonably well - it's just that what we asked it to do wasn't as well defined as it could be! 
-2. The NelderMead algorithm got stuck in a local minimum, in which it used a much larger collimator thickness  in conjunction with larger aperture openings to produce dose profiles that actually match the original  case pretty well. Getting stuck in local minima is in fact the major weakness of this algorithm. 
-
-We could almost certainly improve this result (which is a bit unfair to the NM algorithm at the moment), but we will leave it like this because it is a rather instructive example of how things can go wrong!
+In this case, the NelderMead Optimiser has also done a great job, almost as good as the Bayesian optimiser. For complex objective functions, the NelderMead approach has a tendency to get stuck in local minima. However for simple situations, it will often converge mode quickly than the Bayesian approach, since it doesn't have to learn the underlying objective function to be effective.
 
 ## Comparison with ground truth data
 
@@ -355,20 +351,19 @@ To compare multiple results we have included a function in utilities.compare_mul
 ```python
 from TopasOpt.utilities import compare_multiple_results
 
-# update paths to point to wherever your results are.
-ResultsToCompare = ['SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin',
-                    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/BayesianApertureOpt/Results/WaterTank_itt_29.bin',
-                    'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/NM_OptimisationTest/Results/WaterTank_itt_17.bin']
+ResultFiles = ['Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin',
+              'Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_31.bin',
+              'Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_0.bin',
+              'C:/Users/bwhe3635/Documents/temp/TopasOpt/docsrc/_resources/WaterTank.bin']
 
-custom_legend = ['Original','Bayesian','NelderMead']
-compare_multiple_results(ResultsToCompare,custom_legend_names=custom_legend)
+custom_legend = ['NelderMead','Bayesian','Random Start','Ground Truth']
+
+compare_multiple_results(ResultFiles, custom_legend_names=custom_legend)
 ```
 
 Using this code, we can generate the following figure:
 
 ![](../..//docsrc/_resources/ApertureOpt/compare.png)
-
-Again, it is very interseting to note that despite the fact that the NelderMead didn't do a great job of recovering our 'ground truth' parameters, it actually did a pretty good job of what we asked it to do: minimise the absolite difference betwee these plots.
 
 ## Improving these results
 

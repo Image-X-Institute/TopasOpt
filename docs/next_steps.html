@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Next steps (work in progress!) &mdash; TopasOpt  documentation</title>
+  <title>Next steps &mdash; TopasOpt  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Designing objective functions" href="designing_objective_functions.html" />
+    <link rel="next" title="Environment set up" href="EnvironmentSetup.html" />
     <link rel="prev" title="Development example" href="DevelopmentExample.html" /> 
 </head>
 
@@ -40,8 +40,17 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Next steps (work in progress!)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#all-optimisiers">All Optimisiers</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Next steps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#designing-objective-functions">Designing objective functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#competing-objectives">Competing objectives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hard-boundaries">Hard boundaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log-of-objective-function">Log of objective function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-constraints">Handling constraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#assess-noise-in-the-objective-function">Assess noise in the objective function</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#convergence-criteria">Convergence criteria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#all-optimisers">All Optimisers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#improving-accuracy">Improving accuracy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#read-in-and-plot-a-previous-log-file">read in and plot a previous log file</a></li>
 </ul>
@@ -50,11 +59,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#restart-an-optimisation">Restart an optimisation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load-and-interact-with-the-gaussian-process-model">Load and interact with the gaussian process model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#setting-length-scales-in-the-gaussian-process-model">Setting length scales in the gaussian process model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tuning-exploration-exploitation">Tuning exploration/ exploitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#handling-noisy-objective-functions">Handling noisy objective functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#for-the-hard-core-nerds">For the hard core nerds…</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#neldermeadoptimiser">NelderMeadOptimiser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#choose-the-starting-simplex">Choose the starting simplex</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
@@ -74,7 +89,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Next steps (work in progress!)</li>
+      <li>Next steps</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/next_steps.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,12 +99,62 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="next-steps-work-in-progress">
-<h1>Next steps (work in progress!)<a class="headerlink" href="#next-steps-work-in-progress" title="Permalink to this headline"></a></h1>
+  <section id="next-steps">
+<h1>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline"></a></h1>
 <p>These instructions assume you have already worked through at least one of the worked examples.
 If you have not, it is strongly recommended that you go back and do so before proceeding.</p>
-<section id="all-optimisiers">
-<h2>All Optimisiers<a class="headerlink" href="#all-optimisiers" title="Permalink to this headline"></a></h2>
+<section id="designing-objective-functions">
+<h2>Designing objective functions<a class="headerlink" href="#designing-objective-functions" title="Permalink to this headline"></a></h2>
+<p>The optimisers implemented in this library are so called ‘black box’ optimisers, which means they don’t know anything about the objective function or make any assumptions about it’s shape. This means that you can literally make your objective function anything you want, the only requirement is that it returns a number to the optimiser.</p>
+<p>Having said this, having a well crafted objective function can absolutely be the difference between success and failure. The below are some things you may want to consider when you are writing your objective function.</p>
+<section id="competing-objectives">
+<h3>Competing objectives<a class="headerlink" href="#competing-objectives" title="Permalink to this headline"></a></h3>
+<p>Let’s take a trivial example: say you are building a table; you want to minimise the mass, but maximise the strength. Clearly these objectives will ‘fight’ each other.</p>
+<p>In this library, we do ‘single criteria optimisation’, which means the objective function can only return one number. That means you have to encapsulate both priorities in the objective function. A simple way to do this is below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">objective_function</span> <span class="o">=</span> <span class="o">-</span><span class="n">weight_strength</span><span class="o">*</span><span class="n">strength</span> <span class="o">+</span> <span class="n">weight_mass</span><span class="o">*</span><span class="n">mass</span>
+</pre></div>
+</div>
+<p>(Note that we want strength to be high - since we are <strong>minimising</strong> this function, we use -strength).</p>
+<p>Clearly, the ‘best’ solution that will be found in this case depends on how you weight these objectives. This can take some trial and error and experience to get right.</p>
+<p>A more elegant, but more complicated way to handle these situations is via <a class="reference external" href="https://en.wikipedia.org/wiki/Multi-objective_optimization">multi-objective or pareto optimisation</a>. We do not currently have an implementation of this for this library although pull requests are welcome!</p>
+</section>
+<section id="hard-boundaries">
+<h3>Hard boundaries<a class="headerlink" href="#hard-boundaries" title="Permalink to this headline"></a></h3>
+<p>Let’s continue using our table from above. Although we have initially stated that we want maximum strength, this is probably not really true - we just want the strength to be above some threshold. This is another very common situation, and in code looks like below :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">strength_sufficient</span><span class="p">:</span>
+	<span class="n">objective_function</span> <span class="o">=</span> <span class="mi">0</span> 
+<span class="k">else</span><span class="p">:</span>
+	<span class="n">objective_function</span> <span class="o">=</span> <span class="n">large_number</span>  <span class="c1"># penalise the case where our condition is not met</span>
+</pre></div>
+</div>
+<p>The problem with this form is that it results in a discontinuity in the objective function. Although the optimisation will still run, it may not bconverge as fast as it could. In such cases it is better to “smooth” the discontinuity using a <a class="reference external" href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid function</a>. Having said this, in my experience with the Bayesian optimiser it didn’t actually make much difference - but at the very least a smooth objective function gives reviewers less to complain about ;-)</p>
+</section>
+<section id="log-of-objective-function">
+<h3>Log of objective function<a class="headerlink" href="#log-of-objective-function" title="Permalink to this headline"></a></h3>
+<p>It is pretty common that large swarthes of the objective space are ‘bad’ i.e. have a high objective function. In some cases, it is desirable to flatten out these bad regions so the optimisation algorithm doesn’t get ‘distracted’ by high gradient errors in ‘bad regions’. For instance, maybe your objective function ranges between 0 and 100, but you are really interested in the spaces between 0 and 1. The optimiser may find a very steep gradient that goes from 20 to 2, which to it may seem more interesting than a shallow gradient in a different region that may go from 2 to 1.2.</p>
+<p>In such situations, you may wish to take the log of the objective function. This has the effect of surpressing the differences in high value  (bad)regions and enhancing the differences in the low value (good) regions. Note however that this will also emphasise low level noise in your objective function!</p>
+</section>
+<section id="handling-constraints">
+<h3>Handling constraints<a class="headerlink" href="#handling-constraints" title="Permalink to this headline"></a></h3>
+<p>At the moment, this code handles boundaries (0&lt;=x&lt;=1) but not constraints (x&lt;=2*y). Nevertheless, it is very common that the allowed values for one variable are dependant on the values of another variable.</p>
+<p>I hope that in the future we will be able to handle these cases in the problem set up, but for now, I recomend just returning a high number. Although this does contradict my earlier advice to try and ensure the objective function is smooth, it is less important to ensure this in ‘bad’ regions, since a good algorithm will not pay too much attention to these regions anyway.</p>
+</section>
+<section id="assess-noise-in-the-objective-function">
+<h3>Assess noise in the objective function<a class="headerlink" href="#assess-noise-in-the-objective-function" title="Permalink to this headline"></a></h3>
+<p>You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.</p>
+</section>
+</section>
+<section id="convergence-criteria">
+<h2>Convergence criteria<a class="headerlink" href="#convergence-criteria" title="Permalink to this headline"></a></h2>
+<p>At the moment, this code is primarily set up to terminate based on number of iterations, e.g. if you figure you have 24 hours of computing time available, figure out how many iterations you can run for. It is of course possible in principle to use different convergence criteria - e.g.</p>
+<ul class="simple">
+<li><p>if the solution hasn’t been improved on for N iterations, stop</p></li>
+<li><p>if the solution is x times better than the starting solution, stop</p></li>
+</ul>
+<p>At the moment, these aren’t coded , but will be considered in future versions!</p>
+</section>
+<section id="all-optimisers">
+<h2>All Optimisers<a class="headerlink" href="#all-optimisers" title="Permalink to this headline"></a></h2>
 <section id="improving-accuracy">
 <h3>Improving accuracy<a class="headerlink" href="#improving-accuracy" title="Permalink to this headline"></a></h3>
 <p>If you think you require better accuracy than the first result you get, you have a few options:</p>
@@ -142,27 +207,31 @@ you want, but we do provide a default ploting function:</p>
 </div>
 <p>Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.</p>
-<p>Example of switching between different optimisers is below. For detailed documentation on what options are available for the different optimisers, see the code documentaiton. ADD HYPERLINKS!</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
-<span class="c1"># OR </span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NealderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
-<span class="c1"># OR </span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">PowelOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-<span class="n">The</span> <span class="n">Base</span> <span class="k">class</span> <span class="nc">contains</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">basic</span> <span class="n">functionality</span> <span class="n">an</span> <span class="n">optimser</span> <span class="n">will</span> <span class="n">need</span><span class="p">,</span> <span class="n">such</span> <span class="k">as</span> <span class="n">generating</span> <span class="n">models</span><span class="p">,</span> <span class="n">reading</span> <span class="n">results</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="n">This</span> <span class="n">inheritance</span> <span class="n">mechanism</span> <span class="n">makes</span> <span class="n">it</span> <span class="n">fairly</span> <span class="n">quick</span> <span class="n">to</span> <span class="nb">set</span> <span class="n">up</span> <span class="n">new</span> <span class="n">algorithms</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="n">the</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Nelder</span><span class="o">-</span><span class="n">Mead</span> <span class="n">algorithm</span> <span class="n">requires</span> <span class="n">only</span> <span class="mi">45</span> <span class="n">lines</span> <span class="n">of</span> <span class="n">code</span><span class="o">.</span> 
-
-<span class="n">You</span> <span class="n">can</span> <span class="n">look</span> <span class="n">through</span> <span class="n">the</span> <span class="n">source</span> <span class="n">code</span> <span class="n">to</span> <span class="n">see</span> <span class="n">how</span> <span class="n">the</span> <span class="n">different</span> <span class="n">optimisers</span> <span class="n">are</span> <span class="n">implemented</span><span class="o">.</span>
-
-<span class="c1">## Assess noise in the objective function</span>
-
-<span class="n">You</span> <span class="n">can</span> <span class="n">use</span> <span class="n">your</span> <span class="n">GenerateTopasScripts</span> <span class="n">function</span> <span class="n">to</span> <span class="n">create</span> <span class="mi">10</span> <span class="n">identical</span> <span class="n">scripts</span><span class="p">,</span> <span class="n">run</span> <span class="n">them</span> <span class="nb">all</span><span class="p">,</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">assess</span> <span class="n">the</span> <span class="n">reslts</span> <span class="k">with</span> <span class="n">TopasObjectiveFunction</span><span class="o">.</span> <span class="n">If</span> <span class="n">the</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span> <span class="n">function</span> <span class="ow">is</span> <span class="n">higher</span> <span class="n">than</span> <span class="n">the</span> <span class="n">precision</span> <span class="n">you</span> <span class="n">would</span> <span class="n">ultimately</span> <span class="n">like</span> <span class="n">to</span> <span class="n">converge</span> <span class="n">to</span> <span class="n">then</span> <span class="n">you</span> <span class="n">are</span> <span class="n">unlikely</span> <span class="n">to</span> <span class="n">get</span> <span class="n">a</span> <span class="n">great</span> <span class="n">result</span><span class="o">.</span> <span class="n">E</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="k">if</span> <span class="n">the</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">objective</span> <span class="n">function</span> <span class="ow">is</span> <span class="mi">20</span><span class="o">%</span> <span class="ow">and</span> <span class="n">you</span> <span class="n">hope</span> <span class="n">to</span> <span class="n">be</span> <span class="n">within</span> <span class="mi">10</span><span class="o">%</span> <span class="n">of</span> <span class="n">the</span> <span class="n">true</span> <span class="n">optimum</span> <span class="n">you</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">trouble</span><span class="o">.</span> <span class="n">For</span> <span class="n">the</span> <span class="n">Bayesian</span> <span class="n">optimiser</span><span class="p">,</span> <span class="n">you</span> <span class="n">may</span> <span class="n">be</span> <span class="n">able</span> <span class="n">to</span> <span class="n">handle</span> <span class="n">noise</span> <span class="n">by</span> <span class="n">increasing</span> <span class="n">bayes_GP_alpha</span><span class="o">.</span>
-
-
-
-</pre></div>
-</div>
+</section>
+<section id="tuning-exploration-exploitation">
+<h3>Tuning exploration/ exploitation<a class="headerlink" href="#tuning-exploration-exploitation" title="Permalink to this headline"></a></h3>
+<p>You can read more about this concept <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">here</a>. The exploration/exploitation tradeoff is controlled by the parameter <code class="docutils literal notranslate"><span class="pre">bayes_UCBkappa</span></code> by default it is set to 5, which is a fairly exploratory approach. You can make it higher for more exploration, or lower for more exploitation. By default, we also have a <code class="docutils literal notranslate"><span class="pre">bayes_KappaDecayIterations=10</span></code>. this means that over the last 10 iterations, the algorithm will begin to come more and more exploitive. So basically the default settings give you the best of both worlds!!</p>
+</section>
+<section id="handling-noisy-objective-functions">
+<h3>Handling noisy objective functions<a class="headerlink" href="#handling-noisy-objective-functions" title="Permalink to this headline"></a></h3>
+<p>If you have a noisy objective function, and the gaussian process model is tending to overfit to noisy data points (you can check logs/RetrospectiveModelFit.png to get an idea of this), you can increase the parameter <code class="docutils literal notranslate"><span class="pre">bayes_GP_alpha</span></code> which by default is set to .01. I haven’t figured out the exact meaning of this parameter, but basically you should make it larger if your model is being overfit!</p>
+</section>
+<section id="for-the-hard-core-nerds">
+<h3>For the hard core nerds…<a class="headerlink" href="#for-the-hard-core-nerds" title="Permalink to this headline"></a></h3>
+<p>The Bayesian optimisation is based on <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">this code</a>. This code has a lot of options to tune that we don’t give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique.</p>
+</section>
+</section>
+<section id="neldermeadoptimiser">
+<h2>NelderMeadOptimiser<a class="headerlink" href="#neldermeadoptimiser" title="Permalink to this headline"></a></h2>
+<section id="choose-the-starting-simplex">
+<h3>Choose the starting simplex<a class="headerlink" href="#choose-the-starting-simplex" title="Permalink to this headline"></a></h3>
+<p>The NelderMead method is based on the concept of a simplex, which is a shape with [n+1] vertices, where n is the number of parameters. For instance, in a one dimension, the simplex has two vertices. The algorithm works by changing the position of these vertices according to a set of rules - expand, contract, reflect, or shrink.</p>
+<p>Clearly, the position of the starting simplex will be of crucial importance in the convergence of this algorithm. Like a lot of things in optimisation, sometimes there can be more art than science in choosing the starting simplex well! In general, choosing it to span a larger space will result in more exploraratory behavior, while a smaller space will be quicker to converge but more likely to get stuck in a local minima (these are only rules of thumb!!). We provide three ways to choose the starting simplex, using the parameter <code class="docutils literal notranslate"><span class="pre">NM_StartingSimplex</span></code>:</p>
+<ul class="simple">
+<li><p>None: this will follow the default scipy, which will construct the starting simplex by expanding your starting position by 5%. So for example, in 1D, if your starting point is 1, your starting simplex would be [1, 1.05]</p></li>
+<li><p>Float: this just replaces the 5% with another number, e.g. NM_StartingSimplex=.1, you will get [1, 1.1] in the example above.</p></li>
+<li><p>List/array of size [n, n+1]: This allows you complete control over the starting simplex, e.g. for a two dimensional problem: NM_StartingSimplex = [[0.9, 0.9], [0.72, 0.9], [0.9, 0.72]]</p></li>
+</ul>
 </section>
 </section>
 </section>
@@ -172,7 +241,7 @@ length scales used were, and what the fitted length scales at the end of the run
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="DevelopmentExample.html" class="btn btn-neutral float-left" title="Development example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="designing_objective_functions.html" class="btn btn-neutral float-right" title="Designing objective functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="EnvironmentSetup.html" class="btn btn-neutral float-right" title="Environment set up" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

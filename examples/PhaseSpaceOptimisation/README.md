@@ -1,8 +1,8 @@
-# Example 2: Phase space optimisation
+# Phase space optmisation example
 
-> **Note:** in this example it is assumed you have already completed the [first example on Geometry optimisation](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html).
+> **Note:** in this example it is assumed you have already completed the [example on Geometry optimisation](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html).
 
-In this example, we are going to optimise the same model as in example 1, but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
+In this example, we are going to optimise the same model as in the [ApertureOptimisation example](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html), but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
 
 ![](../../docsrc/_resources/ApertureOpt/Sketch.png)
 
@@ -17,7 +17,7 @@ Since we are now running a new optimisation, you have to create a new base direc
 
 ## Creating GenerateTopasScript.py
 
-This step is the same as in example 1; you should create your base line topas script as described in that example
+This step is the same as in the geometry example; you should create your base line topas script as described in that example
 
 ## Creating RunOptimisation.py
 
@@ -88,7 +88,7 @@ SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 200000') # note we 
 
 ## Create TopasObjectiveFunction.py
 
-We need to create an objective function. Since our basic problem is the same in example 1, we are using a very similar objective function. However, because we expect the results aren't especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see [here](https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html).
+We need to create an objective function. Since our basic problem is the same in the Aperture Optimisation example, we are using a very similar objective function. However, because we expect the results aren't especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see [here](https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html).
 
 Note that there's a lot of things we could do to make this objective function better  - especially in light of the NelderMead results from the first example! But for now I am just keeping these examples very simple. 
 
@@ -164,13 +164,14 @@ Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutof
 
 These values are copied into the below table along with the ground truth values and the range we allowed them to vary over:
 
-| Parameter          | Ground Truth | Allowed Range | Optimized    |
-| ------------------ | ------------ | ------------- | ------------ |
-| BeamEnergy         | 10           | 6-12          | 9.98 (0.2%%) |
-| BeamPositionCutoff | 2            | 1-3           | 1.88 (6%)    |
-| BeamPositionSpread | 0.3          | .1-1          | .1 (66%)     |
-| BeamAngularSpread  | .07          | .01-1         | .19 (171%)   |
-| BeamAngularCutoff  | 5            | 1-10          | 1.0 (80%)    |
+
+| Parameter          | Ground Truth | Start point (Bounds) | Bayesian Optimized |
+| ------------------ | ------------ | -------------------- | ------------------ |
+| BeamEnergy         | 10           | 7.9 (6-12)           | 9.98 (0.5%%)       |
+| BeamPositionCutoff | 2            | 2.7 (1-3)            | 1.88 (20%)          |
+| BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .1 (66%)           |
+| BeamAngularSpread  | .07          | .1 (.01-1)           | .19 (171%)         |
+| BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.0 (80%)          |
 
 We have obtained very close matches to BeamEnergy and BeamPositionCutoff. For the other parameters, we are quite a long way off in percentage terms - although, in absolute terms we are still often pretty close, it's just because many of these parameters have very small starting values that the percentages look so bad.
 
@@ -188,15 +189,15 @@ Below is the convergence plot and results for the same problem solved with the N
 
 ![](../../docsrc/_resources/phaseSpaceOpt/ConvergencePlotNM.png)
 
-| Parameter          | Ground Truth | Allowed Range | Optimized |
-| ------------------ | ------------ | ------------- | --------- |
-| BeamEnergy         | 10           | 6-12          | 7.8       |
-| BeamPositionCutoff | 2            | 1-3           | 2.7       |
-| BeamPositionSpread | 0.3          | .1-1          | 1.0       |
-| BeamAngularSpread  | .07          | .01-1         | 0.1       |
-| BeamAngularCutoff  | 5            | 1-10          | 2.7       |
+| Parameter          | Ground Truth | Start point (Bounds) | Nelder-Mead Optimized |
+| ------------------ | ------------ | -------------------- | --------------------- |
+| BeamEnergy         | 10           | 7.9 (6-12)           | 9.95 (0.2%)           |
+| BeamPositionCutoff | 2            | 2.7 (1-3)            | 2.4 (20%)              |
+| BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .3 (0%)              |
+| BeamAngularSpread  | .07          | .1 (.01-1)           | .1 (43%)             |
+| BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.8 (64%)             |
 
-Like we have seen in our [previous example](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html), the Nelder-Mead optimiser is completely outperformed by the Bayesian Optimiser. Nelder-Mead initially converges very quickly, but then is essentially 'stuck' in a set of parameters. 
+Again. the Nelder Mead algorithm has done a great job of recovering the starting parameters. In fact it technically outperformed the Bayesian approach, finding a minimum value in the objective function of -0.53 versus -0.49. However, looking at the convergence plot of both optimises suggests that at these lower values, there is a large amount of noise in the objective function. This is the trade off of using a log objective function - it will be more sensitive to the small values you are probably interested in, but also more sensitive to noise in the input data.
 
 ## Comparing the results:
 
@@ -220,6 +221,5 @@ Comparing our best result with the ground truth yields the below plot:
 
 ![](../../docsrc/_resources/phaseSpaceOpt/compare.png)
 
-- although our Bayesian optimization didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
-- The NM did not do so well, getting stuck in a local minimum again.
+- although our  optimization didn't recover the exact parameters, the parameters it did select give a very good match to the ground truth
 - We are in the realm where the noise in the data probably prevents us from finding a better match. If we really wanted to get a better estimate of these parameters, we probably have to run  a lot more particles. 

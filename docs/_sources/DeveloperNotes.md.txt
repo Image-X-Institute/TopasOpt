@@ -38,7 +38,7 @@ The tests are automatically run one someone does ```git push```, but if you ever
 
 - To run the tests, just run ```pytest``` from the command line at the repository root
 - To assess coverage of tests ```coverage run -m pytest``` then ```coverage report```
-- We require <99% of docstrings are present. To get details stats on what doc strings are missing, run ```interrogate ../TopasOpt -vv```
+- We require >99% of docstrings are present. To get details stats on what doc strings are missing, run ```interrogate ../TopasOpt -vv```
 
 ## Building documentation
 
@@ -58,14 +58,14 @@ If you want to include a new example in the documents, follow these instructions
 This library has been designed to make it easy to add new optimisation algorithms. The basic approach for a new optimiser is below
 
 ```python
-from TopasOpt.Optimisers import TopasOptBaseClassnn   # only necesary if you are not adding directly to TopasOpt.Optimisers.py
+from TopasOpt.Optimisers import TopasOptBaseClass   # only necesary if you are not adding directly to TopasOpt.Optimisers.py
 
 class NewOptimiser(TopasOptBaseClass):
     # note all __init__ is handled in TopasOptBaseClass. You can see the source code for an example. You don't have to do it
     # exactly like this if you don't want - feel free to add your own __init__ and then use super().__init__ if you want.
 
-	def _some_supporting_method(self):
-        # all methods should be private except for RunOptimisation and RestartOptimisation. I prefer soft-private formalism, e.g. 		  # prefix your methods with a single underscore.
+    def _some_supporting_method(self):
+	# all methods should be private except for RunOptimisation and RestartOptimisation. I prefer soft-private formalism, e.g. 		  # prefix your methods with a single underscore.
         pass
     
     def RunOptimisation(self):  # public method
@@ -74,7 +74,7 @@ class NewOptimiser(TopasOptBaseClass):
         # the function you want to minimise is self.BlackBoxFunction, which your optimiser has inherited from TOpasOptBaseClass
         self.minimise(self.BlackBoxFunction)  # for example
         
-    def RestartOptimisation(self):  # this can be another handy public method but is not possible for all optimisers or required.
+    def RestartOptimisation(self):  # this can be another handy public method but is not required or even possible for all optimisers.
         pass
 
 ```

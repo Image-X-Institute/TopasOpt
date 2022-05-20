@@ -6,14 +6,20 @@
 Inverse Optimisation for Topas
 ===============================
 
-This repository integrates the open source bayesian optimisation code `Bayesian Optimisation <https://github.com/fmfn/BayesianOptimization>`_ with the monte carlo radiation transport code `TopasMC <http://www.topasmc.org/>`_, hence enabling users to apply the power of formal mathematical optimisation with the well established use cases for monte carlo modelling.
+`This repository <https://github.com/ACRF-Image-X-Institute/TopasOpt>`_ enables users to transform any radiation transport model in  `TopasMC <http://www.topasmc.org/>`_, into an optimisation problem, hence enabling users to apply the power of formal mathematical optimisation with the well established use cases for Monte Carlo modelling.
 
 To install::
 
    pip install TopasOpt
+   
 For help getting an appropriate environment set up, see `here <https://acrf-image-x-institute.github.io/TopasOpt/EnvironmentSetup.html>`_
+The quickest way to get started is to go through the `worked examples <https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html>`_.
 
-The quickest way to get started is to go through the worked examples.
+
+.. image:: _resources/BasicOptLoop.svg
+  :alt: Basic Optimisation Loop
+
+
 
 .. toctree::
    :maxdepth: 2
@@ -21,7 +27,6 @@ The quickest way to get started is to go through the worked examples.
 
    /worked_examples
    /next_steps.md
-   /designing_objective_functions.md
    /EnvironmentSetup.md
    /DeveloperNotes.md
    /code_docs

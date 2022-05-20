@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Example 1: Geometry Optimisation &mdash; TopasOpt  documentation</title>
+  <title>Geometry Optimisation Example &mdash; TopasOpt  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Example 2: Phase space optimisation" href="PhaseSpaceOptimisation.html" />
+    <link rel="next" title="Phase space optmisation example" href="PhaseSpaceOptimisation.html" />
     <link rel="prev" title="Worked Examples" href="worked_examples.html" /> 
 </head>
 
@@ -40,7 +40,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="worked_examples.html">Worked Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Example 1: Geometry Optimisation</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Geometry Optimisation Example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#environmental-set-up-and-installation">Environmental set up and installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#base-model-and-problem-overview">Base model and problem overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#directory-set-up">directory set up</a></li>
@@ -56,12 +56,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#improving-these-results">Improving these results</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html">Example 2: Phase space optimisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhaseSpaceOptimisation.html">Phase space optmisation example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html">Development example</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps (work in progress!)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="designing_objective_functions.html">Designing objective functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
@@ -82,7 +81,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="worked_examples.html">Worked Examples</a> &raquo;</li>
-      <li>Example 1: Geometry Optimisation</li>
+      <li>Geometry Optimisation Example</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/ApertureOptimisation.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,8 +91,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="example-1-geometry-optimisation">
-<h1>Example 1: Geometry Optimisation<a class="headerlink" href="#example-1-geometry-optimisation" title="Permalink to this headline"></a></h1>
+  <section id="geometry-optimisation-example">
+<h1>Geometry Optimisation Example<a class="headerlink" href="#geometry-optimisation-example" title="Permalink to this headline"></a></h1>
 <p>The starting point for an optimisation is a working topas model. In this example we are going to optimise the geometry of a simple x-ray collimator. We are going to randomise the values shown in read, and see if we can recover the correct values using the Bayesian optimisation. To guide the optimisation, we will create an objective function which simply measures the difference between the original depth dose curves and profile data and those created by a given set of parameters.</p>
 <p>If you are an experienced python and topas user, you should allow 1-2 hours to set up this example (this will get much quicker once you get the hang of it; it takes me about 15 minutes).</p>
 <p>Actually running this example will take ~4 hours on a decent computer.</p>
@@ -154,14 +153,14 @@ rm start_files.zip
 <section id="creating-runoptimisation-py">
 <h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this headline"></a></h2>
 <p>Create a new file called RunOptimisation_main.py (or whatever you want, the name isn’t important). Copy the below code into it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
 
-<span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/brendan/Documents/temp&#39;</span>  <span class="c1">#update with where you want results stored!</span>
-<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;ApertureOptimisationTutorial&#39;</span>  <span class="c1"># this folder will be created inside BaseDirectory</span>
+<span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/brendan/Documents/temp&#39;</span>
+<span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;NMtest&#39;</span>
 <span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
 
 <span class="c1"># set up optimisation params:</span>
 <span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -169,22 +168,21 @@ rm start_files.zip
 <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
 <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="c1"># generate a random starting point between our bounds (it doesn&#39;t have to be random, this is just for demonstration purposes)</span>
-<span class="n">random_start_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">],</span> <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">])</span>
-<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_start_point</span>
-
+<span class="c1"># random_start_point = np.random.default_rng().uniform(optimisation_params[&#39;LowerBounds&#39;], optimisation_params[&#39;UpperBounds&#39;])</span>
+<span class="c1"># optimisation_params[&#39;start_point&#39;] = random_start_point</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.46</span><span class="p">,</span> <span class="mf">1.62</span><span class="p">,</span> <span class="mi">35</span><span class="p">])</span>
+<span class="c1"># Remember true values are  [1.82, 2.5, 27]</span>
 <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
-<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # for the bayesian optimiser you can suggest points to test if you want - we won&#39;t here.</span>
+<span class="c1"># optimisation_params[&#39;Suggestions&#39;] # you can suggest points to test if you want - we won&#39;t here.</span>
 <span class="n">ReadMeText</span> <span class="o">=</span> <span class="s1">&#39;This is a public service announcement, this is only a test&#39;</span>
 
-<span class="c1"># Bayesian optimiser</span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>
-                                  <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1"># or switch to nelder mead:</span>
-<span class="c1"># Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, &#39;NM_OptimisationTest&#39;, OptimisationDirectory,</span>
-<span class="c1">#                                   TopasLocation=&#39;~/topas37&#39;, ReadMeText=ReadMeText, Overwrite=True, StartingSimplexRelativeVal=.2)</span>
-
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="o">=</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="o">=</span><span class="n">BaseDirectory</span><span class="p">,</span>
+                                 <span class="n">SimulationName</span><span class="o">=</span><span class="s1">&#39;GeometryOptimisationTest_Bayes&#39;</span><span class="p">,</span> 
+                                 <span class="n">OptimisationDirectory</span><span class="o">=</span><span class="n">OptimisationDirectory</span><span class="p">,</span> <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> 
+                                 <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bayes_length_scales</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 <span class="n">Optimiser</span><span class="o">.</span><span class="n">RunOptimisation</span><span class="p">()</span>
+
 
 </pre></div>
 </div>
@@ -358,7 +356,7 @@ Next, open logs/CorrelationPlot.png. This shows a scatter plot of the predicted 
 <blockquote>
 <div><p><strong>Note:</strong> the gaussian process model doesn’t have to be particularly accurate to be useful; it just has to correlate reasonably well with the true objective function</p>
 </div></blockquote>
-<p><img alt="_images/CorrelationPlot1.png" src="_images/CorrelationPlot1.png" />
+<p><img alt="_images/CorrelationPlot.png" src="_images/CorrelationPlot.png" />
 If the correlation isn’t great, you could have a look at logs/RetrospectiveModelFit.png. This plots what the model predicts <strong>after</strong> it has seen each point. If this also isn’t working, you have a serious problem with the model, since predicting something that has already happened isn’t very difficult!! In this case, if your model didn’t show great correlation, it’s most likey simply due to the low number of iterations we have run.</p>
 <p>Take a look at the plots in logs/SingleParameterPlots. These plots show the gaussian process predicted objective function value as a function of each parameter, while the other parameters are held at their optimal value.</p>
 <blockquote>
@@ -408,7 +406,11 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 <span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> 	 <span class="n">OptimisationDirectory</span><span class="p">,</span> <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># to</span>
-<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NealderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="s1">&#39;ApertureOptimisationTutorial_NM&#39;</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="p">,</span>                                 <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">StartingSimplexRelativeVal</span><span class="o">=</span><span class="mf">.2</span><span class="p">)</span>
+<span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">NelderMeadOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="o">=</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="o">=</span><span class="n">BaseDirectory</span><span class="p">,</span>
+                                   <span class="n">SimulationName</span><span class="o">=</span><span class="s1">&#39;GeometryOptimisationTest_NM&#39;</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="o">=</span><span class="n">OptimisationDirectory</span><span class="p">,</span>
+                                   <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">NM_StartingSimplex</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
 <span class="c1"># note we changed SimulationName so we won&#39;t overwrite the previous results</span>
 </pre></div>
 </div>
@@ -429,46 +431,40 @@ and the results:</p>
 <td>CollimatorThickness</td>
 <td>27 mm</td>
 <td>39.9 mm</td>
-<td>39.4 mm (48%)</td>
+<td>27.9 (3.3 %)</td>
 </tr>
 <tr>
 <td>UpStreamApertureRadius</td>
 <td>1.82 mm</td>
 <td>1.14 mm</td>
-<td>2.6 mm (37%)</td>
+<td>2.26 (24.2 %)</td>
 </tr>
 <tr>
 <td>DownStreamApertureRadius</td>
 <td>2.5 mm</td>
 <td>1.73 mm</td>
-<td>3.0 mm (31%)</td>
+<td>2.51 (0.4 %)</td>
 </tr>
 </tbody>
-</table><p>OK - this optimiser did terribly!! What gives?</p>
-<p>This is actually a very instructive and interesting result. Looking at the convergence plot above, the NelderMead algorithm has actually done a reasonable job of minmising the objective function from it’s starting value. What has actually happened here is the result of two effects:</p>
-<ol class="simple">
-<li><p>Our objective function is based on the water tank results. This is only a <strong>surrogate</strong> for what we really care about, which is the geometric parameters. As we see below, and in the convergence plot, the NM approach actually did what we we asked it to reasonably well - it’s just that what we asked it to do wasn’t as well defined as it could be!</p></li>
-<li><p>The NelderMead algorithm got stuck in a local minimum, in which it used a much larger collimator thickness  in conjunction with larger aperture openings to produce dose profiles that actually match the original  case pretty well. Getting stuck in local minima is in fact the major weakness of this algorithm.</p></li>
-</ol>
-<p>We could almost certainly improve this result (which is a bit unfair to the NM algorithm at the moment), but we will leave it like this because it is a rather instructive example of how things can go wrong!</p>
+</table><p>In this case, the NelderMead Optimiser has also done a great job, almost as good as the Bayesian optimiser. For complex objective functions, the NelderMead approach has a tendency to get stuck in local minima. However for simple situations, it will often converge mode quickly than the Bayesian approach, since it doesn’t have to learn the underlying objective function to be effective.</p>
 </section>
 <section id="comparison-with-ground-truth-data">
 <h2>Comparison with ground truth data<a class="headerlink" href="#comparison-with-ground-truth-data" title="Permalink to this headline"></a></h2>
 <p>To compare multiple results we have included a function in utilities.compare_multiple_results, which is used like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
 
-<span class="c1"># update paths to point to wherever your results are.</span>
-<span class="n">ResultsToCompare</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/BayesianApertureOpt/Results/WaterTank_itt_29.bin&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/NM_OptimisationTest/Results/WaterTank_itt_17.bin&#39;</span><span class="p">]</span>
+<span class="n">ResultFiles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Z:/Documents/temp/NM_OptAperture/Results/WaterTank_itt_39.bin&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_31.bin&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Z:/Documents/temp/BayesOptAperture/Results/WaterTank_itt_0.bin&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;C:/Users/bwhe3635/Documents/temp/TopasOpt/docsrc/_resources/WaterTank.bin&#39;</span><span class="p">]</span>
 
-<span class="n">custom_legend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span><span class="s1">&#39;Bayesian&#39;</span><span class="p">,</span><span class="s1">&#39;NelderMead&#39;</span><span class="p">]</span>
-<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">ResultsToCompare</span><span class="p">,</span><span class="n">custom_legend_names</span><span class="o">=</span><span class="n">custom_legend</span><span class="p">)</span>
+<span class="n">custom_legend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NelderMead&#39;</span><span class="p">,</span><span class="s1">&#39;Bayesian&#39;</span><span class="p">,</span><span class="s1">&#39;Random Start&#39;</span><span class="p">,</span><span class="s1">&#39;Ground Truth&#39;</span><span class="p">]</span>
+
+<span class="n">compare_multiple_results</span><span class="p">(</span><span class="n">ResultFiles</span><span class="p">,</span> <span class="n">custom_legend_names</span><span class="o">=</span><span class="n">custom_legend</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Using this code, we can generate the following figure:</p>
-<p><img alt="_images/compare1.png" src="_images/compare1.png" />
-Again, it is very interseting to note that despite the fact that the NelderMead didn’t do a great job of recovering our ‘ground truth’ parameters, it actually did a pretty good job of what we asked it to do: minimise the absolite difference betwee these plots.</p>
+<p><img alt="_images/compare.png" src="_images/compare.png" /></p>
 </section>
 <section id="improving-these-results">
 <h2>Improving these results<a class="headerlink" href="#improving-these-results" title="Permalink to this headline"></a></h2>
@@ -487,7 +483,7 @@ Again, it is very interseting to note that despite the fact that the NelderMead 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="worked_examples.html" class="btn btn-neutral float-left" title="Worked Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="PhaseSpaceOptimisation.html" class="btn btn-neutral float-right" title="Example 2: Phase space optimisation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PhaseSpaceOptimisation.html" class="btn btn-neutral float-right" title="Phase space optmisation example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

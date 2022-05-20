@@ -1,9 +1,73 @@
-# Next steps (work in progress!)
+# Next steps
 
 These instructions assume you have already worked through at least one of the worked examples.
  If you have not, it is strongly recommended that you go back and do so before proceeding. 
 
-## All Optimisiers
+## Designing objective functions
+
+The optimisers implemented in this library are so called 'black box' optimisers, which means they don't know anything about the objective function or make any assumptions about it's shape. This means that you can literally make your objective function anything you want, the only requirement is that it returns a number to the optimiser.
+
+Having said this, having a well crafted objective function can absolutely be the difference between success and failure. The below are some things you may want to consider when you are writing your objective function.
+
+### Competing objectives
+
+Let's take a trivial example: say you are building a table; you want to minimise the mass, but maximise the strength. Clearly these objectives will 'fight' each other.
+
+In this library, we do 'single criteria optimisation', which means the objective function can only return one number. That means you have to encapsulate both priorities in the objective function. A simple way to do this is below:
+
+```python
+objective_function = -weight_strength*strength + weight_mass*mass
+```
+
+(Note that we want strength to be high - since we are **minimising** this function, we use -strength).
+
+Clearly, the 'best' solution that will be found in this case depends on how you weight these objectives. This can take some trial and error and experience to get right.
+
+A more elegant, but more complicated way to handle these situations is via [multi-objective or pareto optimisation](https://en.wikipedia.org/wiki/Multi-objective_optimization). We do not currently have an implementation of this for this library although pull requests are welcome!
+
+### Hard boundaries
+
+Let's continue using our table from above. Although we have initially stated that we want maximum strength, this is probably not really true - we just want the strength to be above some threshold. This is another very common situation, and in code looks like below :
+
+```python
+if strength_sufficient:
+	objective_function = 0 
+else:
+	objective_function = large_number  # penalise the case where our condition is not met
+```
+
+The problem with this form is that it results in a discontinuity in the objective function. Although the optimisation will still run, it may not bconverge as fast as it could. In such cases it is better to "smooth" the discontinuity using a [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function). Having said this, in my experience with the Bayesian optimiser it didn't actually make much difference - but at the very least a smooth objective function gives reviewers less to complain about ;-)
+
+### Log of objective function
+
+It is pretty common that large swarthes of the objective space are 'bad' i.e. have a high objective function. In some cases, it is desirable to flatten out these bad regions so the optimisation algorithm doesn't get 'distracted' by high gradient errors in 'bad regions'. For instance, maybe your objective function ranges between 0 and 100, but you are really interested in the spaces between 0 and 1. The optimiser may find a very steep gradient that goes from 20 to 2, which to it may seem more interesting than a shallow gradient in a different region that may go from 2 to 1.2. 
+
+In such situations, you may wish to take the log of the objective function. This has the effect of surpressing the differences in high value  (bad)regions and enhancing the differences in the low value (good) regions. Note however that this will also emphasise low level noise in your objective function!
+
+### Handling constraints
+
+At the moment, this code handles boundaries (0<=x<=1) but not constraints (x<=2*y). Nevertheless, it is very common that the allowed values for one variable are dependant on the values of another variable. 
+
+I hope that in the future we will be able to handle these cases in the problem set up, but for now, I recomend just returning a high number. Although this does contradict my earlier advice to try and ensure the objective function is smooth, it is less important to ensure this in 'bad' regions, since a good algorithm will not pay too much attention to these regions anyway.
+
+### Assess noise in the objective function
+
+You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
+
+
+
+
+
+## Convergence criteria
+
+At the moment, this code is primarily set up to terminate based on number of iterations, e.g. if you figure you have 24 hours of computing time available, figure out how many iterations you can run for. It is of course possible in principle to use different convergence criteria - e.g.
+
+- if the solution hasn't been improved on for N iterations, stop
+- if the solution is x times better than the starting solution, stop
+
+At the moment, these aren't coded , but will be considered in future versions!
+
+## All Optimisers
 
 ### Improving accuracy
 
@@ -66,27 +130,26 @@ Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationN
 Note that no matter what you pass in as the initial length scales, they will be optimised behind the scenes. If you look at the log file of a completed run, it will tell you at the end what the initial
 length scales used were, and what the fitted length scales at the end of the run (e.g. the data driven answer) were. If you plan to run the optimiser again, you will likely get faster convergence if you use the fitted length scales to start off with.
 
+### Tuning exploration/ exploitation
 
-Example of switching between different optimisers is below. For detailed documentation on what options are available for the different optimisers, see the code documentaiton. ADD HYPERLINKS!
+You can read more about this concept [here](https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb). The exploration/exploitation tradeoff is controlled by the parameter ```bayes_UCBkappa``` by default it is set to 5, which is a fairly exploratory approach. You can make it higher for more exploration, or lower for more exploitation. By default, we also have a ```bayes_KappaDecayIterations=10```. this means that over the last 10 iterations, the algorithm will begin to come more and more exploitive. So basically the default settings give you the best of both worlds!!
 
-```python
-Optimiser = to.BayesianOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
-# OR 
-Optimiser = to.NealderMeadOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
-# OR 
-Optimiser = to.PowelOptimiser(optimisation_params, BaseDirectory, SimulationName, OptimisationDirectory)
-```
+### Handling noisy objective functions
 
+If you have a noisy objective function, and the gaussian process model is tending to overfit to noisy data points (you can check logs/RetrospectiveModelFit.png to get an idea of this), you can increase the parameter ```bayes_GP_alpha``` which by default is set to .01. I haven't figured out the exact meaning of this parameter, but basically you should make it larger if your model is being overfit! 
 
-```
+### For the hard core nerds...
 
-The Base class contains all the basic functionality an optimser will need, such as generating models, reading results, etc. This inheritance mechanism makes it fairly quick to set up new algorithms, e.g. the implementation of the Nelder-Mead algorithm requires only 45 lines of code. 
+The Bayesian optimisation is based on [this code](https://github.com/fmfn/BayesianOptimization). This code has a lot of options to tune that we don't give you access to by default. But, if you really want to nerd out further, you can head to the Bayesian Optimisation site to learn more about this technique. 
 
-You can look through the source code to see how the different optimisers are implemented.
+## NelderMeadOptimiser
 
-## Assess noise in the objective function
+### Choose the starting simplex
 
-You can use your GenerateTopasScripts function to create 10 identical scripts, run them all, and then assess the reslts with TopasObjectiveFunction. If the noise in the objective function is higher than the precision you would ultimately like to converge to then you are unlikely to get a great result. E.g. if the noise in the objective function is 20% and you hope to be within 10% of the true optimum you are in trouble. For the Bayesian optimiser, you may be able to handle noise by increasing bayes_GP_alpha.
+The NelderMead method is based on the concept of a simplex, which is a shape with [n+1] vertices, where n is the number of parameters. For instance, in a one dimension, the simplex has two vertices. The algorithm works by changing the position of these vertices according to a set of rules - expand, contract, reflect, or shrink.
 
+Clearly, the position of the starting simplex will be of crucial importance in the convergence of this algorithm. Like a lot of things in optimisation, sometimes there can be more art than science in choosing the starting simplex well! In general, choosing it to span a larger space will result in more exploraratory behavior, while a smaller space will be quicker to converge but more likely to get stuck in a local minima (these are only rules of thumb!!). We provide three ways to choose the starting simplex, using the parameter ```NM_StartingSimplex```:
 
-
+- None: this will follow the default scipy, which will construct the starting simplex by expanding your starting position by 5%. So for example, in 1D, if your starting point is 1, your starting simplex would be [1, 1.05]
+- Float: this just replaces the 5% with another number, e.g. NM_StartingSimplex=.1, you will get [1, 1.1] in the example above.
+- List/array of size [n, n+1]: This allows you complete control over the starting simplex, e.g. for a two dimensional problem: NM_StartingSimplex = [[0.9, 0.9], [0.72, 0.9], [0.9, 0.72]]
