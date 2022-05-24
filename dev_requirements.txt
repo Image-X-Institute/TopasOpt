@@ -12,3 +12,4 @@ pytest
 coverage
 sphinx_rtd_theme
 interrogate
+darglint

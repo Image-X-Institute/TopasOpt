@@ -4,9 +4,9 @@ This is some 'behind the scenes' how to's. Although I grandiosly called it devel
 
 ## Additional requirements
 
-You will need to install some additional libraries to perform the below tasks, and a currently incomplete list of these is below....
+You will need to install some additional libraries to perform the below tasks
 
-```sphinx recommonmark sphinx_rtd_theme sphinx_markdown_tables```
+```pip install -r dev_requirements.txt```
 
 In the meantime, why don't you do what I do: try to run something and install requirements based on the errors you get :-P
 
@@ -39,6 +39,16 @@ The tests are automatically run one someone does ```git push```, but if you ever
 - To run the tests, just run ```pytest``` from the command line at the repository root
 - To assess coverage of tests ```coverage run -m pytest``` then ```coverage report```
 - We require >99% of docstrings are present. To get details stats on what doc strings are missing, run ```interrogate ../TopasOpt -vv```
+
+## check for docstring format
+
+There are no hard tests on this, but it's helpful to run
+
+```bash
+darglint -s sphinx TopasOpt
+```
+
+which will highlight areas where parameters aren't appropriately described within the docstrings.
 
 ## Building documentation
 

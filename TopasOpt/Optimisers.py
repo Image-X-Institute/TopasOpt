@@ -492,6 +492,11 @@ class TopasOptBaseClass:
         """
         Called Black Box function in the spirit of bayesian optimisation, this function simply takes the most recent
         parameter guesses, and solves the model.
+
+        :param x_new: the new parameters to simulate
+        :type x_new: list
+        :return OF: the value of the objective function
+        :type OF: float
         """
 
         if self._testing_mode:
