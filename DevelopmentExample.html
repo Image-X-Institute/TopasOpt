@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -82,7 +83,7 @@
            <div itemprop="articleBody">
              
   <section id="development-example">
-<h1>Development example<a class="headerlink" href="#development-example" title="Permalink to this headline"></a></h1>
+<h1>Development example<a class="headerlink" href="#development-example" title="Permalink to this heading"></a></h1>
 <p>This example is aimed at people who want to help develop this library, either by adding new optimisers
 or extending existing optimisers! This is also demonstrates how the intergration tests are implemented in this
 repository.</p>
@@ -92,7 +93,7 @@ is just a function that does nothing, allowing you to test your optimisation alg
 which is a very commonly used function to test optimisers, and has a known global minimum.</p>
 <p>This example demonstrates this process.</p>
 <section id="set-up-base-directory">
-<h2>Set up base directory<a class="headerlink" href="#set-up-base-directory" title="Permalink to this headline"></a></h2>
+<h2>Set up base directory<a class="headerlink" href="#set-up-base-directory" title="Permalink to this heading"></a></h2>
 <p>You will want to set up your base directory in a same way that you did in the other examples. The key difference is:</p>
 <ul class="simple">
 <li><p>GenerateTopasScripts code do nothing, and can be almost empty</p></li>
@@ -139,11 +140,11 @@ which is a very commonly used function to test optimisers, and has a known globa
 </div>
 </section>
 <section id="limitations">
-<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline"></a></h2>
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading"></a></h2>
 <p>This approach tests a lot of the code, but it doesn’t test the users own code (GenerateTopasScripts and TopasObjectiveFunction).</p>
 </section>
 <section id="results">
-<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h2>
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this heading"></a></h2>
 <p>Just for fun, here are the results of the currently implemented optimisers at optimising the rosebrock function:</p>
 <p><img alt="_images/ConvergencePlot_nm.png" src="_images/ConvergencePlot_nm.png" /></p>
 <p><img alt="_images/ConvergencePlot_bayes.png" src="_images/ConvergencePlot_bayes.png" /></p>

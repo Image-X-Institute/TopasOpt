@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -75,18 +76,18 @@
            <div itemprop="articleBody">
              
   <section id="code-documentation">
-<h1>Code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline"></a></h1>
+<h1>Code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this heading"></a></h1>
 <p>The following documentation is generated directly from the source code.
 It should enable an overview of the different options which are available for
 different optimisers.</p>
 <section id="module-TopasOpt.Optimisers">
-<span id="optimisers"></span><h2>Optimisers<a class="headerlink" href="#module-TopasOpt.Optimisers" title="Permalink to this headline"></a></h2>
+<span id="optimisers"></span><h2>Optimisers<a class="headerlink" href="#module-TopasOpt.Optimisers" title="Permalink to this heading"></a></h2>
 <p>This module contains the specific optimisation algorithms for TopasOpt. Most functionality is defined in TopasOptBaseClass,
 which other optimisers inherit from.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.BayesianOptimiser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">BayesianOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bayes_length_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_UCBkappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_KappaDecayIterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_GP_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOpt.Optimisers.TopasOptBaseClass</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a></p>
 <p>Class to perform optimisation using the <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">Bayesian Optimisation code</a>
 Specific options are described below, the rest are described in TopasOptBaseClass</p>
 <dl class="field-list simple">
@@ -130,7 +131,7 @@ For explanation of the various parameters and commands, start with the</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.NelderMeadOptimiser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">NelderMeadOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NM_StartingSimplex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.NelderMeadOptimiser" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOpt.Optimisers.TopasOptBaseClass</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a></p>
 <p>Implementation of Nelder-Mead based on scipy. Other options are defined in TopasOptBaseClass</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -195,7 +196,7 @@ Also writes the readme text if that exists, and copies all attributes of self to
 
 </section>
 <section id="module-TopasOpt.TopasScriptGenerator">
-<span id="topasscriptgenerator"></span><h2>TopasScriptGenerator<a class="headerlink" href="#module-TopasOpt.TopasScriptGenerator" title="Permalink to this headline"></a></h2>
+<span id="topasscriptgenerator"></span><h2>TopasScriptGenerator<a class="headerlink" href="#module-TopasOpt.TopasScriptGenerator" title="Permalink to this heading"></a></h2>
 <p>Convert topas parameter files into a python function that recreates the input files.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.TopasScriptGenerator.generate_topas_script_generator">
@@ -223,7 +224,7 @@ scripts are portable. If no path is entered then they will be written to OutputD
 
 </section>
 <section id="module-TopasOpt.utilities">
-<span id="utilities"></span><h2>utilities<a class="headerlink" href="#module-TopasOpt.utilities" title="Permalink to this headline"></a></h2>
+<span id="utilities"></span><h2>utilities<a class="headerlink" href="#module-TopasOpt.utilities" title="Permalink to this heading"></a></h2>
 <p>Supporting classes and functions that don’t belong anywhere else in particular</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.FigureSpecs">
@@ -410,7 +411,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.newJSONLogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">newJSONLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.newJSONLogger" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">bayes_opt.logger.JSONLogger</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONLogger</span></code></p>
 <p>To avoid the annoying behaviour where the bayesian logs get deleted on restart.
 Thanks to: <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/issues/159">https://github.com/fmfn/BayesianOptimization/issues/159</a></p>
 </dd></dl>
