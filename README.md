@@ -9,10 +9,9 @@ simulations using [TOPAS](https://www.google.com/search?channel=fs&client=ubuntu
 ## Install and Requirements
 
 To install: ```pip install TopasOpt```
-If you need help setting up a python environment see [here](https://acrf-image-x-institute.github.io/TopasOpt/EnvironmentSetup.html)
 
-- This code will only run on linux (as will topas) (I don't have a mac to check it on but I think it will work)
 - You require a working installation of [topas](https://topas.readthedocs.io/en/latest/getting-started/intro.html) to run the code.
+- This code will only run on linux or mac (as will topas
 - python3.8 or greater is required.
 
 ## Usage and Documentation
