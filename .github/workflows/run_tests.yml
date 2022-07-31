@@ -29,4 +29,10 @@ jobs:
         pip install -r dev_requirements.txt
     - name: Test with pytest
       run: |
-        pytest
+         coverage run -m pytest
+         coverage xml
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: coverage.xml
