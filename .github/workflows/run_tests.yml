@@ -30,9 +30,6 @@ jobs:
     - name: Test with pytest
       run: |
           pytest --cov-report xml --cov=TopasOpt/
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov
-
-
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
 
