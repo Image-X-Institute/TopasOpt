@@ -24,7 +24,7 @@ The source code for the [worked examples](https://acrf-image-x-institute.github.
 - **TopasOpt:** source code
 - **examples:** source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
 - **docsrc:** markdown/rst documentation.
-- **tests:** tests which are run on push
+- **tests:** tests which are run through github actions
 
 
 
