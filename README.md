@@ -1,6 +1,6 @@
 # TopasOpt
 
-![](docsrc/_resources/interrogate_badge.svg) ![](docsrc/_resources/coverage.svg) ![test](https://github.com/ACRF-Image-X-Institute/TopasOpt/actions/workflows/run_tests.yml/badge.svg) ![docs](https://github.com/ACRF-Image-X-Institute/TopasOpt/actions/workflows/build-docs.yml/badge.svg)
+![](docsrc/_resources/interrogate_badge.svg) [![codecov](https://codecov.io/gh/ACRF-Image-X-Institute/TopasOpt/branch/master/graph/badge.svg?token=0FSEO19LCD)](https://codecov.io/gh/ACRF-Image-X-Institute/TopasOpt)![test](https://github.com/ACRF-Image-X-Institute/TopasOpt/actions/workflows/run_tests.yml/badge.svg) ![docs](https://github.com/ACRF-Image-X-Institute/TopasOpt/actions/workflows/build-docs.yml/badge.svg)
 
 
 This code provides a framework for performing optimisation on monte carlo radiation transport 
@@ -24,7 +24,7 @@ The source code for the [worked examples](https://acrf-image-x-institute.github.
 - **TopasOpt:** source code
 - **examples:** source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
 - **docsrc:** markdown/rst documentation.
-- **tests:** tests which are run on push
+- **tests:** tests which are run through github actions
 
 
 
