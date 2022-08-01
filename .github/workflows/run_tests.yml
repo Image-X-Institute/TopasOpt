@@ -29,4 +29,9 @@ jobs:
         pip install -r dev_requirements.txt
     - name: Test with pytest
       run: |
-         pytest --cov=TopasOpt/
+          pytest --cov-report xml --cov=TopasOpt/
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
