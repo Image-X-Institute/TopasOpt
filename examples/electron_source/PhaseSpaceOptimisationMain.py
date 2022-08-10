@@ -5,8 +5,8 @@ from pathlib import Path
 sys.path.append('../../../TopasOpt')
 from TopasOpt import Optimisers as to
 
-BaseDirectory = os.path.expanduser("~") + '/Dropbox (Sydney Uni)/Projects/PhaserSims/topas'
-SimulationName = 'PhaseSpaceOptimisationTest_NM'
+BaseDirectory = os.path.expanduser("~") + '/PhaserSims/topas/'
+SimulationName = 'electron_beam_test'
 OptimisationDirectory = Path(__file__).parent  # this points to whatever directory this file is in, don't change it.
 
 # set up optimisation params:
@@ -24,7 +24,7 @@ optimisation_params['Nitterations'] = 100
 ReadMeText = 'This is a public service announcement, this is only a test'
 
 Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
-                                 SimulationName='PhaseSpaceOptimisationTest', OptimisationDirectory=OptimisationDirectory,
+                                 SimulationName=SimulationName, OptimisationDirectory=OptimisationDirectory,
                                   TopasLocation='~/topas37', ReadMeText=ReadMeText, Overwrite=True, bayes_length_scales=0.1)
 
 
