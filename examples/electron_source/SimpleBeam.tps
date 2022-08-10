@@ -155,7 +155,7 @@ s:Sc/PhantomScorer/OutputFile                  = "WaterTank"
 
 # Graphics View and trajectory filters:
 ------------------------------------------------------------
-b:Gr/Enable = "True"  # Enable/Disable graphics
+b:Gr/Enable = "False"  # Enable/Disable graphics
 s:Gr/ViewA/Type              = "OpenGL"
 d:Gr/ViewA/Theta            = 90 deg
 d:Gr/ViewA/Phi              = 0 deg
