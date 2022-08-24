@@ -96,14 +96,14 @@ sc:So/Beam/BeamPositionDistribution = "Gaussian" # None, Flat or Gaussian
 sc:So/Beam/BeamAngularDistribution  = "Gaussian" # None, Flat or Gaussian
 sc:So/Beam/BeamPositionCutoffShape = "Ellipse"
 dc:So/Beam/BeamPositionCutoffX = 2 mm
-dc:So/Beam/BeamPositionCutoffY = 2 mm
+dc:So/Beam/BeamPositionCutoffY = 1 mm
 dc:So/Beam/BeamPositionSpreadX = 0.3 mm
-dc:So/Beam/BeamPositionSpreadY = 0.3 mm
+dc:So/Beam/BeamPositionSpreadY = 0.6 mm
 dc:So/Beam/BeamAngularCutoffX = 5 deg
-dc:So/Beam/BeamAngularCutoffY = 5 deg
-dc:So/Beam/BeamAngularSpreadX = 0.07 deg
+dc:So/Beam/BeamAngularCutoffY = 2 deg
+dc:So/Beam/BeamAngularSpreadX = 1 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 5000000
+ic:So/Beam/NumberOfHistoriesInRun = 20000000
 # ic:So/Beam/NumberOfHistoriesInRun = 500
 
 # # Electron source position

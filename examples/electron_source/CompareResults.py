@@ -1,17 +1,19 @@
 import sys
 from pathlib import Path
 sys.path.append(str(Path('../../TopasOpt').resolve()))
-from TopasOpt.xxx_WaterTankAnalyser import compare_multiple_results
+from TopasOpt.utilities import compare_multiple_results
+from TopasOpt.utilities import WaterTankData
+import numpy as np
+from matplotlib
 
-FilesToCompare = ['C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/PhaserSims/topas/PhaseSpaceOptimisationTest/Results/WaterTank_itt_95.bin',
-                  'C:/Users/bwhe3635/Dropbox (Sydney Uni)/Projects/TopasOpt/examples/SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin']
+FilesToCompare = [r'WaterTank.bin',
+                  r'Z:\PhaserSims\topas\electron_beam_test\Results\WaterTank_itt_164']
 
+for file in FilesToCompare:
+    WT = WaterTankData(file)
+    Xpts = np.linspace(WT.x.min(), WT.x.max(), 100)  # profile over entire X range
+    Ypts = np.zeros(Xpts.shape)
+    Zpts = 25 * np.ones(Xpts.shape)  # at the middle of the water tank
 
-compare_multiple_results(FilesToCompare, abs_dose=False)
-
-
-
-
-
-
+    Profile = WT.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
 
