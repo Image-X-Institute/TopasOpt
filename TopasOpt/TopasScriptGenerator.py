@@ -154,7 +154,7 @@ class generate_topas_script_generator:
 
         """
         line1, line2 = line.split("=", 1)  # delete everything after the first =
-                if '/' in line2:
+        if '/' in line2:
             dum, OriginalFileName = line2.split("/", 1)
         else:
             OriginalFileName = line2

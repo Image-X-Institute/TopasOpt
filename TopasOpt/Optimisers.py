@@ -384,8 +384,8 @@ class TopasOptBaseClass:
                     Entry = Entry + f', {Parameter}: {x[i]: 1.2f}'
 
             try:
-                Entry = Entry + f', _target_prediction_mean: {self._target_prediction_mean[-1]: 1.2f}'
-                Entry = Entry + f', _target_prediction_std: {self._target_prediction_std[-1]: 1.2f}'
+                Entry = Entry + f', target_prediction_mean: {self._target_prediction_mean[-1]: 1.2f}'
+                Entry = Entry + f', target_prediction_std: {self._target_prediction_std[-1]: 1.2f}'
             except AttributeError:
                 # these parameters are only available for bayes optimisation
                 pass
