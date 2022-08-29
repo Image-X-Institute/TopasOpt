@@ -92,14 +92,25 @@ which other optimisers inherit from.</p>
 Specific options are described below, the rest are described in TopasOptBaseClass</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bayes_length_scales</strong> – Bayes-specific parameter to defined the length scales used in the gaussian process  model.  This can be supplied as one of three things:</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>None</strong>: in this case, the default is used: length_scale=1.0</p></li>
+<li><dl class="simple">
+<dt><strong>Number between 0 and 1</strong>: in this case, the length scales for each parameter are derived as a percentage of range.</dt><dd><p>For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Array-like</strong>: Finally, the user is free to simply specify what length scales to use for each parameter.</dt><dd><p>Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bayes_length_scales</strong> (<em>None</em><em>, </em><em>float</em><em>, or </em><em>array</em><em> (</em><em>optional</em><em>)</em>) – Bayes-specific parameter to defined the length scales used in the gaussian process
-model. If supplied to non-Bayes optimisers it does nothing (and hopefully you will be warned accordingly).
-This can be supplied as one of three things: <strong>None</strong>: in this case, the default is used: length_scale=1.0
-<strong>Number &gt; 0 and &lt;1</strong>: in this case, the length scales for each parameter are derived as a percentage of range.
-For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable -
-this is the default behavior. <strong>Array</strong>: Finally, the user is free to simply specify what length scales to use for each parameter. Make sure
-you enter them in alphabetical order as this is the order used internally by the optimiser.</p></li>
 <li><p><strong>bayes_UCBkappa</strong> (<em>float</em><em>, </em><em>optional</em>) – Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
 <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">this notebook</a>
 for explanation</p></li>
