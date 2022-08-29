@@ -384,8 +384,8 @@ class TopasOptBaseClass:
                     Entry = Entry + f', {Parameter}: {x[i]: 1.2f}'
 
             try:
-                Entry = Entry + f', _target_prediction_mean: {self._target_prediction_mean[-1]: 1.2f}'
-                Entry = Entry + f', _target_prediction_std: {self._target_prediction_std[-1]: 1.2f}'
+                Entry = Entry + f', target_prediction_mean: {self._target_prediction_mean[-1]: 1.2f}'
+                Entry = Entry + f', target_prediction_std: {self._target_prediction_std[-1]: 1.2f}'
             except AttributeError:
                 # these parameters are only available for bayes optimisation
                 pass
@@ -651,13 +651,13 @@ class BayesianOptimiser(TopasOptBaseClass):
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
     Specific options are described below, the rest are described in TopasOptBaseClass
 
-    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process
-        model. If supplied to non-Bayes optimisers it does nothing (and hopefully you will be warned accordingly).
-        This can be supplied as one of three things: **None**: in this case, the default is used: length_scale=1.0
-        **Number > 0 and <1**: in this case, the length scales for each parameter are derived as a percentage of range.
-        For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable -
-        this is the default behavior. **Array**: Finally, the user is free to simply specify what length scales to use for each parameter. Make sure
-        you enter them in alphabetical order as this is the order used internally by the optimiser.
+    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process  model.  This can be supplied as one of three things:
+
+    - **None**: in this case, the default is used: length_scale=1.0
+    - **Number between 0 and 1**: in this case, the length scales for each parameter are derived as a percentage of range.
+        For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable
+    - **Array-like**: Finally, the user is free to simply specify what length scales to use for each parameter.
+        Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.
     :type bayes_length_scales: None, float, or array (optional)
     :param bayes_UCBkappa: Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
         `this notebook <https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb>`_

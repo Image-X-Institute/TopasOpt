@@ -154,9 +154,13 @@ class generate_topas_script_generator:
 
         """
         line1, line2 = line.split("=", 1)  # delete everything after the first =
-        dum, OriginalFileName = line2.split("/", 1)
+        if '/' in line2:
+            dum, OriginalFileName = line2.split("/", 1)
+        else:
+            OriginalFileName = line2
         OriginalFileName = OriginalFileName.replace('"', '')
         OriginalFileName = OriginalFileName.replace("'", '')
+        OriginalFileName = OriginalFileName.replace(' ','')
         line1 = line1.replace('"', '')
         line1 = line1.replace("'", '')
         new_line = line1 + ' =  "../Results/' + OriginalFileName + "_itt_\' + " + 'str(iteration)' + ' + \'"\')'
