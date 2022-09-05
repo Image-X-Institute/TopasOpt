@@ -4,7 +4,7 @@ from pathlib import Path
 import stat
 
 
-def generate_run_all_scripts_shell_script(script_location, sims_to_run, topas_location='~/topas38', G4_DATA='~/G4Data'):
+def generate_run_all_scripts_shell_script(script_location, sims_to_run, topas_location='~/topas37', G4_DATA='~/G4Data'):
     FileName = script_location / 'RunAllFiles.sh'
     f = open(FileName, 'w+')
     f.write('# !/bin/bash\n\n')
@@ -46,7 +46,7 @@ for n_particles in n_particles_to_investigate:
     if not (sim_directory / 'logs').is_dir():
         (sim_directory / 'logs').mkdir()
     sim_num = 0
-    variable_dict['n_primaries'] = 10
+    variable_dict['n_primaries'] = n_particles
     ScriptsToRun = []
     for n_sim in n_sims_to_generate:
         [SimpleCollimator, WaterTank], [sim1_name, sim2_name] = GenerateTopasScripts('gah', n_sim, **variable_dict)
