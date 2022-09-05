@@ -67,6 +67,6 @@ for n_particles in n_particles_to_investigate:
             f.write(line)
             f.write('\n')
     # once all sims are generated, write a 'RunAllFiles.sh' script:
-    generate_run_all_scripts_shell_script(sim_directory, ScriptsToRun)
+    generate_run_all_scripts_shell_script((sim_directory / 'scripts'), ScriptsToRun)
 
 
