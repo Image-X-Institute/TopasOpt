@@ -16,7 +16,7 @@ def generate_run_all_scripts_shell_script(script_location, sims_to_run, topas_lo
     for sim in sims_to_run:
         f.write('echo "Beginning analysis of: ' + sim.name + '"')
         f.write('\n')
-        f.write(f'(time {topas_location}/bin/topas {sim.name}) &> logs/{sim.name}')
+        f.write(f'(time {topas_location}/bin/topas {sim.name}) &> ../logs/{sim.name}')
         f.write('\n')
     f.write('\necho "All done!"\n')
     # change file modifications:
