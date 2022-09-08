@@ -42,7 +42,7 @@ def TopasObjectiveFunction(ResultsLocation, iteration):
     path, file = os.path.split(ResultsFile)
     CurrentResults = WaterTankData(path, file)
     
-    GroundTruthDataPath = str(Path(__file__).parent / 'SimpleCollimatorExample_TopasFiles' / 'Results')
+    GroundTruthDataPath = str(Path('/home/brendan/Documents/temp/SimpleCollimatorExample_TopasFiles/Results'))
     # this assumes that you stored the base files in the same directory as this file, updated if needed
     GroundTruthDataFile = 'WaterTank.bin'
     GroundTruthResults = WaterTankData(GroundTruthDataPath, GroundTruthDataFile)

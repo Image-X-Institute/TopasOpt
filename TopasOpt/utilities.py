@@ -15,6 +15,7 @@ import topas2numpy as tp
 import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 from pathlib import Path
+import glob
 # import seaborn as sns
 plt.interactive(False)
 
