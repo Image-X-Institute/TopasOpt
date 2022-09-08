@@ -673,5 +673,37 @@ def PlotLogFile(LogFileLoc, save_loc=None): # pragma: no cover
         plt.show()
 
 
+def get_all_files(PathToData, file_extension):
+    """
+    quick script to just collect all the files in the Analysis path
+    :param PathToData: folder where the files are
+    :type PathToData: pathlib.Path or string
+    :param file_extension: extension of files to return, e.g. 'dcm'
+    :type file_extension: str
+    :returns Files: list of all found files
+    """
 
+    if not file_extension[0] == '.':
+        # handles the case where the user entered 'dcm' instead of '.dcm'
+        file_extension = '.' + file_extension
+    file_extension = '*' + file_extension
+    # check that this is now in the format we require
+    if not file_extension[0:2] == '*.':
+        logger.error('please enter the file_extension parameter like this : file_extension = "jpg"')
+        sys.exit(1)
+
+    if not isinstance(PathToData,Path):
+        PathToData = Path(PathToData)
+
+    if not os.path.isdir(PathToData):
+        raise FileNotFoundError(f'invalid path supplied; {PathToData} does not exist')
+    AllFiles = glob.glob(str(PathToData / file_extension))
+    Files = []
+    for file in AllFiles:
+        head, tail = os.path.split(file)
+        Files.append(tail)
+    if not Files:
+        logging.error(f'no {file_extension} files in {PathToData}')
+
+    return Files
 

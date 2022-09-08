@@ -100,15 +100,12 @@ SimpleBeam.append(f'dc:So/Beam/BeamEnergy               = {variable_dict["BeamEn
 SimpleBeam.append('uc:So/Beam/BeamEnergySpread         = 10')
 #to
 SimpleBeam.append(f'uc:So/Beam/BeamEnergySpread         = {variable_dict["BeamEnergySpread"]}')
-SimpleBeam.append('sc:So/Beam/BeamPositionDistribution = "Gaussian" ')
-SimpleBeam.append('sc:So/Beam/BeamAngularDistribution  = "Gaussian" ')
-SimpleBeam.append('sc:So/Beam/BeamPositionCutoffShape = "Ellipse"')
 # change
 SimpleBeam.append('dc:So/Beam/BeamPositionCutoffX = 2 mm')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamPositionCutoffX = {variable_dict["BeamPositionCutoffX"]} mm')
 # change
-SimpleBeam.append('dc:So/Beam/BeamPositionCutoffY = 2 mm')
+SimpleBeam.append('dc:So/Beam/BeamPositionCutoffY = 1 mm')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamPositionCutoffY = {variable_dict["BeamPositionCutoffY"]} mm')
 # change
@@ -116,7 +113,7 @@ SimpleBeam.append('dc:So/Beam/BeamPositionSpreadX = 0.3 mm')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamPositionSpreadX = {variable_dict["BeamPositionSpreadX"]} mm')
 # change
-SimpleBeam.append('dc:So/Beam/BeamPositionSpreadY = 0.3 mm')
+SimpleBeam.append('dc:So/Beam/BeamPositionSpreadY = 0.6 mm')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamPositionSpreadY = {variable_dict["BeamPositionSpreadY"]} mm')
 # change
@@ -124,11 +121,11 @@ SimpleBeam.append('dc:So/Beam/BeamAngularCutoffX = 5 deg')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamAngularCutoffX = {variable_dict["BeamAngularCutoffX"]} deg')
 # change
-SimpleBeam.append('dc:So/Beam/BeamAngularCutoffY = 5 deg')
+SimpleBeam.append('dc:So/Beam/BeamAngularCutoffY = 2 deg')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamAngularCutoffY = {variable_dict["BeamAngularCutoffY"]} deg')
 # change
-SimpleBeam.append('dc:So/Beam/BeamAngularSpreadX = 0.07 deg')
+SimpleBeam.append('dc:So/Beam/BeamAngularSpreadX = 1. deg')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamAngularSpreadX = {variable_dict["BeamAngularSpreadX"]} deg')
 # change
@@ -136,6 +133,17 @@ SimpleBeam.append('dc:So/Beam/BeamAngularSpreadY = 0.07 deg')
 #to
 SimpleBeam.append(f'dc:So/Beam/BeamAngularSpreadY = {variable_dict["BeamAngularSpreadY"]} deg')
 ```
+
+As previously, we will also reduce the number of particles run during the optimization:
+
+```bash
+# change
+SimpleBeam.append('ic:So/Beam/NumberOfHistoriesInRun = 4000000')
+# to
+SimpleBeam.append('ic:So/Beam/NumberOfHistoriesInRun = 400000')
+```
+
+
 
 ## Create TopasObjectiveFunction.py
 
@@ -202,16 +210,16 @@ def TopasObjectiveFunction(ResultsLocation, iteration):
 
 | Parameter           | Ground truth | Optimizer |
 | ------------------- | ------------ | --------- |
-| BeamEnergy          | 15           | 15.02     |
-| BeamEnergySpread    | 10           | 7.52      |
-| BeamPositionSpreadX | 0.3          | 0.74      |
-| BeamPositionSpreadY | 0.6          | 0.3       |
-| BeamPositionCutoffX | 2            | **2.5**   |
-| BeamPositionCutoffY | 1            | 3         |
-| BeamAngularSpreadX  | 1            | 1         |
-| BeamAngularSpreadY  | .07          | 0.28      |
-| BeamAngularCutoffX  | 5            | 4.11      |
-| BeamAngularCutoffY  | 2            | **2.43**  |
+| BeamEnergy          | 15           | 15.06     |
+| BeamEnergySpread    | 10           | 8.61      |
+| BeamPositionSpreadX | 0.3          | 0.10      |
+| BeamPositionSpreadY | 0.6          | 0.80      |
+| BeamPositionCutoffX | 2            | 1.62      |
+| BeamPositionCutoffY | 1            | 1.06      |
+| BeamAngularSpreadX  | 1            | 0.55      |
+| BeamAngularSpreadY  | .07          | 0.52      |
+| BeamAngularCutoffX  | 5            | 10        |
+| BeamAngularCutoffY  | 2            | 1         |
 
 ![](../../docsrc/_resources/electron_source/compare_results.png)
 

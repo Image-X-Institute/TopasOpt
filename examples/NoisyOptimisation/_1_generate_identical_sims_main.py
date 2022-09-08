@@ -63,7 +63,7 @@ for n_particles in n_particles_to_investigate:
             f.write('\n')
         # write the second simulation
         f = open(sim2, 'w')
-        for line in SimpleCollimator:
+        for line in WaterTank:
             f.write(line)
             f.write('\n')
     # once all sims are generated, write a 'RunAllFiles.sh' script:
