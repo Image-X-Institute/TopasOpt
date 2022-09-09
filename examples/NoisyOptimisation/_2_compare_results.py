@@ -7,20 +7,25 @@ from matplotlib import pyplot as plt
 def plot_objective_function_variability(BoxPlotData):
     
     figure, axs = plt.subplots()
-    
-    axs.boxplot(BoxPlotData, labels=['n=2e4', 'n=4e4', 'n=5e4'],
-                               medianprops={'color': 'k'})
-    axs.scatter(np.ones(BoxPlotData.shape[0]), BoxPlotData[:, 0])
-    axs.scatter(np.ones(BoxPlotData.shape[0])*2, BoxPlotData[:, 1])
-    axs.scatter(np.ones(BoxPlotData.shape[0])*3, BoxPlotData[:, 2])
+
+    try:
+        axs.boxplot(BoxPlotData, labels=['n=2e4', 'n=4e4', 'n=5e4', 'n=5e5'],
+                                   medianprops={'color': 'k'})
+    except ValueError:
+        print(f'couldnt label boxplots, label length didnt match data')
+        axs.boxplot(BoxPlotData, medianprops={'color': 'k'})
+
+    for i, data in enumerate(BoxPlotData.T):
+        axs.scatter(np.ones(BoxPlotData.shape[0])*i+1, data)
     axs.set_ylabel('OF')
     axs.set_title('Objective function values')
     axs.grid()
+    plt.show()
 
 # update this to wherever your data from part 1 is stored:
-data_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
-sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000']
-of_results = [[], [], []]
+data_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
+sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
+of_results = [[], [], [], []]
 j = 0
 for sim in sims_to_investigate:
     data_loc = data_dir / sim / 'Results'

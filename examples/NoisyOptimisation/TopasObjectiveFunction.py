@@ -32,7 +32,11 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
-    ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
+    take_abs = True
+    if take_abs:
+        ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
+    else:
+        ObjectiveFunction = np.mean((ProfileDifference)) + np.mean((DepthDoseDifference))
     return ObjectiveFunction
 
 
@@ -41,8 +45,8 @@ def TopasObjectiveFunction(ResultsLocation, iteration):
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     path, file = os.path.split(ResultsFile)
     CurrentResults = WaterTankData(path, file)
-    
-    GroundTruthDataPath = str(Path('/home/brendan/Documents/temp/SimpleCollimatorExample_TopasFiles/Results'))
+
+    GroundTruthDataPath = str(Path(r'C:\Users\Brendan\Documents\temp\SimpleCollimatorExample_TopasFiles\SimpleCollimatorExample_TopasFiles\Results'))
     # this assumes that you stored the base files in the same directory as this file, updated if needed
     GroundTruthDataFile = 'WaterTank.bin'
     GroundTruthResults = WaterTankData(GroundTruthDataPath, GroundTruthDataFile)

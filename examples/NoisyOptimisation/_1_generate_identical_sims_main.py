@@ -31,7 +31,7 @@ if not basedirectory.is_dir():
 n_sims_to_generate = range(10)
 n_particles_to_investigate = [50000, 40000, 20000, 500000]
 
-variable_dict = {'UpStreamApertureRadius': 1.8,
+variable_dict = {'UpStreamApertureRadius': 1.82,
                  'DownStreamApertureRadius': 2.5,
                  'CollimatorThickness': 27,
                  'n_primaries': 50000}
