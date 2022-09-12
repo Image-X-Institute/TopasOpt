@@ -94,7 +94,7 @@ class WaterTankData:
 
     """
 
-    def __init__(self, AnalysisPath, FileToAnalyse, AbsDepthDose=False):
+    def __init__(self, AnalysisPath, FileToAnalyse, AbsDepthDose=False, verbose=False):
         """
         :param AnalysisPath: Path where files are located
         :type AnalysisPath: string
@@ -106,6 +106,7 @@ class WaterTankData:
 
         self.AnalysisPath = AnalysisPath
         self.FileToAnalyse = FileToAnalyse
+        self.verbose = verbose
         # the below lists all get appended to as data is read in
         self.Xangles = []
         self.Yangles = []
@@ -176,7 +177,7 @@ class WaterTankData:
             if self.dose.unit == 'Gy':
                 DoseConverter = 1e6
                 self.dose.unit = '\u03BCGy'
-                if not self.DoseUnitsWarning:
+                if not self.DoseUnitsWarning and self.verbose:
                     print(f'converting Gy to {self.dose.unit}')
                     self.DoseUnitsWarning = True
             elif self.dose.unit == 'mGy':
@@ -206,7 +207,7 @@ class WaterTankData:
         # what unit is the file in?
         if self.dose.dimensions[0].unit == 'cm':
             UnitConverter = 10
-            if not self.DistanceUnitMessage:
+            if not self.DistanceUnitMessage and self.verbose:
                 print('converting cm to mm')
                 self.DistanceUnitMessage = True
         elif self.dose.dimensions[0].unit == 'mm':

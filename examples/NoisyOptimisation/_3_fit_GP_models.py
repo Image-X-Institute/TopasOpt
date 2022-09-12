@@ -5,6 +5,7 @@ from TopasOpt.utilities import get_all_files
 from bayes_opt import BayesianOptimization
 from bayes_opt import UtilityFunction
 from matplotlib import pyplot as plt
+from sklearn.gaussian_process.kernels import Matern, WhiteKernel
 
 def plot_retrospective_fit(of_results, optimizer, title=None):
     """
@@ -17,6 +18,8 @@ def plot_retrospective_fit(of_results, optimizer, title=None):
     point_array = np.repeat(point, of_results.__len__(), axis=0)
     # generate the optimizer predictions:
     target_prediction, target_prediction_std = optimizer._gp.predict(point_array, return_std=True)
+    print(f'{title} std: {np.mean(target_prediction_std)}')
+    print(f'Noise level: {optimizer._gp.kernel_.k2.noise_level: 1.5f}')
 
     # plot the results
     run_number = np.linspace(0, of_results.__len__() - 1, of_results.__len__())
@@ -33,7 +36,9 @@ def plot_retrospective_fit(of_results, optimizer, title=None):
     axs.set_ylabel('Objective function')
     axs.grid(True)
     if title:
-        axs.set_title(title)
+        axs.set_title(f'{title}: std {np.mean(target_prediction_std)}')
+
+    plt.show()
 
 BaseDirectory = '/home/brendan/Documents/temp'
 SimulationName = 'NMtest'
@@ -67,12 +72,14 @@ for sim in sims_to_investigate:
     results = get_all_files(data_loc, 'bin')
     iteration = 0
     utility = UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
-    optimizer = BayesianOptimization(
-        f=None,
-        pbounds=pbounds,
-        verbose=2,
+    optimizer = BayesianOptimization(f=None,pbounds=pbounds,  verbose=2,
         random_state=1,
     )
+
+    k1 = Matern(length_scale=[3, 0.2, 0.2])
+    k2 = WhiteKernel(noise_level=0.2304, noise_level_bounds='fixed')
+    kernel = k1 + k2
+    optimizer.set_gp_params(kernel=kernel)
 
     parameter_values = {'UpStreamApertureRadius': 1.82,
                      'DownStreamApertureRadius': 2.5,
@@ -80,18 +87,14 @@ for sim in sims_to_investigate:
 
     for result in results:
         objective_value = TopasObjectiveFunction(data_loc, iteration, take_abs=True)
-        next_point = optimizer.suggest(utility)
-        optimizer.register(params=parameter_values, target=objective_value)
         # note we added a new parameter so we aren't automatically taking absolute values
         of_results[j].append(objective_value)
         iteration += 1
-    plot_retrospective_fit(of_results[j], optimizer,title=sim)
+    optimizer.register(params=parameter_values, target=objective_value)
+    # because we are running this in a pretty weird way we have to manually fit the model:
+    optimizer._gp.fit(optimizer._space.params, optimizer._space.target)
+    plot_retrospective_fit(of_results[j], optimizer, title=sim)
 
-
-
-
-
-
-
-
-
+    j = j+1
+    del optimizer
+    break
