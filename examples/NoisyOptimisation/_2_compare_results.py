@@ -33,7 +33,8 @@ for sim in sims_to_investigate:
     iteration = 0
 
     for result in results:
-        objective_value = TopasObjectiveFunction(data_loc, iteration)
+        objective_value = TopasObjectiveFunction(data_loc, iteration, take_abs=False)
+        # note we added a new parameter so we aren't automatically taking absolute values
         of_results[j].append(objective_value)
         iteration += 1
     j += 1

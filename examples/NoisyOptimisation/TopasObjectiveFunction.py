@@ -3,7 +3,7 @@ from TopasOpt.utilities import WaterTankData
 import numpy as np
 from pathlib import Path
 
-def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
+def CalculateObjectiveFunction(TopasResults, GroundTruthResults, take_abs):
     """
     In this example, for metrics I am going to calculate the RMS error between the desired and actual
     profile and PDD. I will use normalised values to account for the fact that there may be different numbers of
@@ -32,7 +32,7 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
-    take_abs = True
+
     if take_abs:
         ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
     else:
@@ -40,7 +40,7 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     return ObjectiveFunction
 
 
-def TopasObjectiveFunction(ResultsLocation, iteration):
+def TopasObjectiveFunction(ResultsLocation, iteration, take_abs=True):
 
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     path, file = os.path.split(ResultsFile)
@@ -51,5 +51,5 @@ def TopasObjectiveFunction(ResultsLocation, iteration):
     GroundTruthDataFile = 'WaterTank.bin'
     GroundTruthResults = WaterTankData(GroundTruthDataPath, GroundTruthDataFile)
     
-    OF = CalculateObjectiveFunction(CurrentResults, GroundTruthResults)
+    OF = CalculateObjectiveFunction(CurrentResults, GroundTruthResults, take_abs)
     return OF

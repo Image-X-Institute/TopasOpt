@@ -23,6 +23,7 @@ import logging
 from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile, PlotLogFile
 import stat
 from scipy.optimize import rosen
+from abc import abstractmethod
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
@@ -139,7 +140,8 @@ class TopasOptBaseClass:
             TopasLocation = os.path.expanduser(TopasLocation)
         self.TopasLocation = Path(TopasLocation)
         self._testing_mode = False  # overwrite if True
-        if 'testing_mode' in str(self.TopasLocation):
+        self._retrospective_mode = False  # overwrite if True
+        if self.TopasLocation == 'testing_mode':
             self._testing_mode = True
             logger.warning(f'Entering test mode because topas location = {self.TopasLocation}')
 
@@ -487,6 +489,13 @@ class TopasOptBaseClass:
                 logger.warning(f'Failed to delete {file_path} from results folder. Reason: {e}. continuing...')
 
     # public methods
+
+    @abstractmethod
+    def RunOptimisation(self):
+        """
+        each inheriting optimizer must supply its own RunOptimisation method
+        """
+        pass
     
     def BlackBoxFunction(self, x_new):
         """
@@ -707,7 +716,6 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.kappa_decay = (self.UCBKappa_final / self.UCBkappa) ** (
                         1 / (self.MaxItterations - self.kappa_decay_delay))
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
-
 
     def _derive_bayes_length_scales(self, bayes_length_scales):
         """
