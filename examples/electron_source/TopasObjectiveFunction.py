@@ -10,16 +10,27 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     particles used between the different simulations
     """
 
-    # define the points we want to collect our profile at:
+    # define the points we want to collect our X profile at:
     Xpts = np.linspace(GroundTruthResults.x.min(), GroundTruthResults.x.max(), 100)  # profile over entire X range
-    Ypts = np.zeros(Xpts.shape)
+    Ypts = np.zeros(Xpts.shape)	
     Zpts = 25 * np.ones(Xpts.shape)  # at the middle of the water tank
 
-    OriginalProfile = GroundTruthResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
-    OriginalProfileNorm = OriginalProfile * 100 / OriginalProfile.max()
-    CurrentProfile = TopasResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
-    CurrentProfileNorm = CurrentProfile * 100 / CurrentProfile.max()
-    ProfileDifference = OriginalProfileNorm - CurrentProfileNorm
+    OriginalProfileX = GroundTruthResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
+    OriginalProfileNormX = OriginalProfileX * 100 / OriginalProfileX.max()
+    CurrentProfileX = TopasResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
+    CurrentProfileNormX = CurrentProfileX * 100 / CurrentProfileX.max()
+    ProfileDifferenceX = OriginalProfileNormX - CurrentProfileNormX
+
+    # define the points we want to collect our Y profile at:
+    Ypts = np.linspace(GroundTruthResults.x.min(), GroundTruthResults.x.max(), 100)  # profile over entire Y range
+    Xpts = np.zeros(Xpts.shape)
+    Zpts = 25 * np.ones(Xpts.shape)  # at the middle of the water tank
+
+    OriginalProfileY = GroundTruthResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
+    OriginalProfileNormY = OriginalProfileY * 100 / OriginalProfileY.max()
+    CurrentProfileY = TopasResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
+    CurrentProfileNormY = CurrentProfileY * 100 / CurrentProfileY.max()
+    ProfileDifferenceY = OriginalProfileNormY - CurrentProfileNormY
 
     # define the points we want to collect our DD at:
     Zpts = GroundTruthResults.z
@@ -32,8 +43,8 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
-    ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
-    return np.log(ObjectiveFunction)
+    ObjectiveFunction = np.mean(abs(ProfileDifferenceX)) + np.mean(abs(ProfileDifferenceY)) + np.mean(abs(DepthDoseDifference))
+    return ObjectiveFunction
 
 
 def TopasObjectiveFunction(ResultsLocation, iteration):

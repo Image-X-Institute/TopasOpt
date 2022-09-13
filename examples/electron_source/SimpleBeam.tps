@@ -19,7 +19,7 @@ d:Ge/SID = 1000 mm
 d:Ge/SecondaryCollimatorOffset = 20 mm
 
 # Ta scattering foil
-# ------------------------------------------------------------
+------------------------------------------------------------
 s:Ge/TaFoil/Type               = "TsCylinder"
 s:Ge/TaFoil/Parent             = "World"
 s:Ge/TaFoil/Material           = "G4_Ta"
@@ -27,14 +27,14 @@ d:Ge/TaFoil/TransX             = 0 cm
 d:Ge/TaFoil/TransY             = 0 cm
 d:Ge/TaFoil/TransZ             = Ge/SID mm
 d:Ge/TaFoil/RotX               = 0 deg
-d:Ge/TaFoil/RotY               = 0 deg
+#d:Ge/TaFoil/RotY               = 0 deg
 d:Ge/TaFoil/RotZ               = 0 deg
 d:Ge/TaFoil/RMax               = 10 mm
 d:Ge/TaFoil/HL                 = 0.1 mm
 s:Ge/TaFoil/Color              = "lightblue"
 
 # Al scattering foil
-# ------------------------------------------------------------
+------------------------------------------------------------
 s:Ge/AlFoil/Type               = "TsCylinder"
 s:Ge/AlFoil/Parent             = "World"
 s:Ge/AlFoil/Material           = "G4_Al"
@@ -51,20 +51,20 @@ s:Ge/AlFoil/Color              = "red"
 
 # Add phase space scorer below foils:
 ------------------------------------------------------------
-# s:Ge/Magic/Type     = "TsBox"
-# s:Ge/Magic/Parent   = "World"
-# s:Ge/Magic/Material = "Vacuum"
-# d:Ge/Magic/HLX      = 100 mm
-# d:Ge/Magic/HLY      = 100 mm
-# d:Ge/Magic/HLZ      = 1 mm
-# d:Ge/Magic/TransX   = 0. cm
-# d:Ge/Magic/TransY   = 0. cm
-# d:Ge/Magic/TransZ   = Ge/AlFoil/TransZ - 3 mm
-# d:Ge/Magic/RotX     = 0. deg
-# d:Ge/Magic/RotY     = 0. deg
-# d:Ge/Magic/RotZ     = 0. deg
-# s:Ge/Magic/Color    = "skyblue"
-# s:Ge/Magic/DrawingStyle = "wireframe"
+#s:Ge/Magic/Type     = "TsBox"
+#s:Ge/Magic/Parent   = "World"
+#s:Ge/Magic/Material = "Vacuum"
+#d:Ge/Magic/HLX      = 100 mm
+#d:Ge/Magic/HLY      = 100 mm
+#d:Ge/Magic/HLZ      = 1 mm
+#d:Ge/Magic/TransX   = 0. cm
+#d:Ge/Magic/TransY   = 0. cm
+#d:Ge/Magic/TransZ   = Ge/AlFoil/TransZ - 3 mm
+#d:Ge/Magic/RotX     = 0. deg
+#d:Ge/Magic/RotY     = 0. deg
+#d:Ge/Magic/RotZ     = 0. deg
+#s:Ge/Magic/Color    = "skyblue"
+#s:Ge/Magic/DrawingStyle = "wireframe"
 
 
 # s:Sc/PhaseSpaceFromColl/Quantity                    = "PhaseSpace"
@@ -103,8 +103,8 @@ dc:So/Beam/BeamAngularCutoffX = 5 deg
 dc:So/Beam/BeamAngularCutoffY = 2 deg
 dc:So/Beam/BeamAngularSpreadX = 1 deg
 dc:So/Beam/BeamAngularSpreadY = 0.07 deg
-ic:So/Beam/NumberOfHistoriesInRun = 20000000
-# ic:So/Beam/NumberOfHistoriesInRun = 500
+ic:So/Beam/NumberOfHistoriesInRun = 4000000
+#ic:So/Beam/NumberOfHistoriesInRun = 5000000
 
 # # Electron source position
 # ------------------------------------------------------------
@@ -141,7 +141,6 @@ ic:Ge/Phantom/ZBins = 30
 sc:Ge/Phantom/Color    = "green"
 sc:Ge/Phantom/DrawingStyle = "Solid"
 
-
 # Add Volume scorer to phantom:
 ------------------------------------------------------------
 s:Sc/PhantomScorer/Component = "Phantom"
@@ -150,7 +149,7 @@ s:Sc/PhantomScorer/Quantity                  = "DoseToMedium"
 b:Sc/PhantomScorer/OutputToConsole           = "FALSE"
 s:Sc/PhantomScorer/IfOutputFileAlreadyExists = "Overwrite"
 s:Sc/PhantomScorer/OutputType = "Binary" # "csv", "binary", "Root", "Xml" or "DICOM"
-s:Sc/PhantomScorer/OutputFile                  = "WaterTank"
+s:Sc/PhantomScorer/OutputFile                  = "WaterTank_fixed_VRT_range_cut"
 
 
 # Graphics View and trajectory filters:
@@ -170,7 +169,38 @@ b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
 # Physics
 ------------------------------------------------------------
 sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
+#d:Ph/Default/EMRangeMin = 10000. eV # minimum for EM tables
+#d:Ph/Default/CutForElectron = 10 mm # overrides CutForAllParticles for Electron
 b:Ph/ListProcesses = "False"
+s:Ge/Phantom/AssignToRegionNamed = "Phantom"
+d:Ph/Default/ForRegion/Phantom/CutForElectron = 2.5 mm
+
+# Variance reduction
+------------------------------------------------------------
+s:Ge/VrtParallelWorld/Parent = "World"
+s:Ge/VrtParallelWorld/Type = "TsBox"
+b:Ge/VrtParallelWorld/IsParallel = "True"
+d:Ge/VrtParallelWorld/HLX = Ge/World/HLX cm
+d:Ge/VrtParallelWorld/HLY = Ge/World/HLY cm
+d:Ge/VrtParallelWorld/HLZ = Ge/World/HLZ cm
+
+b:Vr/UseVarianceReduction = "True"
+
+s:Ge/impCell1/Parent = "VrtParallelWorld"
+s:Ge/impCell1/Type = "TsBox"
+b:Ge/impCell1/IsParallel = "True"
+d:Ge/impCell1/HLX = Ge/Phantom/HLX cm
+d:Ge/impCell1/HLY = Ge/Phantom/HLY cm
+d:Ge/impCell1/HLZ = Ge/Phantom/HLZ cm
+d:Ge/impCell1/TransZ = Ge/Phantom/TransZ cm
+
+# Importance sampling
+b:Vr/ImportanceSampling/Active         = "true"
+sv:Vr/ImportanceSampling/ParticleName  = 2 "gamma" "e-"
+s:Vr/ImportanceSampling/Component      = "VrtParallelWorld"
+sv:Vr/ImportanceSampling/SubComponents = 1 "impCell1"
+s:Vr/ImportanceSampling/Type = "ImportanceSampling"
+uvc:Vr/ImportanceSampling/ImportanceValues = 1 10
 
 ------------------------------------------------------------
 # QT
