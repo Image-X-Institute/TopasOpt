@@ -6,6 +6,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 FilesToCompare = [r'WaterTank.bin',
-                  r'/home/brendan/GoliathHome/PhaserSims/topas/electron_beam_test/Results/WaterTank_itt_67']
+                  r'/home/brendan/GoliathHome/PhaserSims/topas/electron_beam_test/Results/WaterTank_itt_245']
 
 compare_multiple_results(FilesToCompare)

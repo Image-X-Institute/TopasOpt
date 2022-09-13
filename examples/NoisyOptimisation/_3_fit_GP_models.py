@@ -19,7 +19,10 @@ def plot_retrospective_fit(of_results, optimizer, title=None):
     # generate the optimizer predictions:
     target_prediction, target_prediction_std = optimizer._gp.predict(point_array, return_std=True)
     print(f'{title} std: {np.mean(target_prediction_std)}')
-    print(f'Noise level: {optimizer._gp.kernel_.k2.noise_level: 1.5f}')
+    try:
+        print(f'Noise level: {optimizer._gp.kernel_.k2.noise_level: 1.5f}')
+    except AttributeError:
+        pass
 
     # plot the results
     run_number = np.linspace(0, of_results.__len__() - 1, of_results.__len__())
@@ -63,7 +66,7 @@ pbounds = {}
 for i, ParamName in enumerate(optimisation_params['ParameterNames']):
     pbounds[ParamName] = (optimisation_params['LowerBounds'][i], optimisation_params['UpperBounds'][i])
 
-data_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
+data_dir = Path(r'/home/brendan/Documents/temp/noise_sims')
 sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
 of_results = [[], [], [], []]
 j = 0
@@ -77,7 +80,7 @@ for sim in sims_to_investigate:
     )
 
     k1 = Matern(length_scale=[3, 0.2, 0.2])
-    k2 = WhiteKernel(noise_level=0.2304, noise_level_bounds='fixed')
+    k2 = WhiteKernel(noise_level=1, noise_level_bounds='fixed')
     kernel = k1 + k2
     optimizer.set_gp_params(kernel=kernel)
 

@@ -678,10 +678,14 @@ class BayesianOptimiser(TopasOptBaseClass):
     :param bayes_GP_alpha: Bayes-specific parameter. This parameter handles the smoothness of the gaussian process model.
         for a noisy objective function, increasing this value can minimise overfitting errors.
     :type bayes_GP_alpha: float, optional
+    :param custom_kernel: You can optionally [construct your own kernel](https://scikit-learn.org/stable/modules/gaussian_process.html)
+        to use in the gaussian process model
+    :type custom_kernel: instance of scikit-learn.gaussian_process.kernels.Kernel or derived classes
     """
 
     def __init__(self, bayes_length_scales=None, bayes_UCBkappa=5,
-                 bayes_KappaDecayIterations=10, bayes_GP_alpha=0.01, **kwds):
+                 bayes_KappaDecayIterations=10, bayes_GP_alpha=0.01,
+                 custom_kernel=None,**kwds):
         """
         init function for Bayesian optimiser
         """
@@ -697,6 +701,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         self._create_suggested_points_to_probe(self._optimisation_params)
         self._derive_bayes_length_scales(bayes_length_scales)
 
+
         # Bayesian optimisation settings:
         self._target_prediction_mean = []  # keep track of what the optimiser expects to get
         self._target_prediction_std = []  # keep track of what the optimiser expects to get
@@ -707,6 +712,11 @@ class BayesianOptimiser(TopasOptBaseClass):
         self.bayes_KappaDecayIterations = bayes_KappaDecayIterations
         self.UCBKappa_final = 0.1
         self.kappa_decay_delay = self.MaxItterations - self.bayes_KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
+        if custom_kernel is None:
+            self._kernel = Matern(length_scale=self.bayes_length_scales, nu=self.Matern_Nu)
+        else:
+            self._kernel = custom_kernel
+
 
         if self.kappa_decay_delay >= self.MaxItterations:
             logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
@@ -933,7 +943,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         # instantiate optimizer:
 
         self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        self.optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.bayes_length_scales, nu=self.Matern_Nu),
+        self.optimizer.set_gp_params(normalize_y=True, kernel=self._kernel,
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
         utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
                                   kappa_decay=self.kappa_decay)

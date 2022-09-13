@@ -208,18 +208,22 @@ def TopasObjectiveFunction(ResultsLocation, iteration):
 
 ## Results
 
+`Best parameter set: Itteration: 245., BeamAngularCutoffX:  8.54, BeamAngularCutoffY:  6.68, BeamAngularSpreadX:  1.00, BeamAngularSpreadY:  0.46, BeamEnergy:  14.82, BeamEnergySpread:  8.97, BeamPositiositionCutoffX:  3.00, BeamPositionCutoffY:  2.49, BeamPositionSpreadX:  0.10, BeamPositionSpreadY:  1.00, ObjectiveFunction:  3.31`
+
+
+
 | Parameter           | Ground truth | Optimizer |
 | ------------------- | ------------ | --------- |
-| BeamEnergy          | 15           | 15.06     |
-| BeamEnergySpread    | 10           | 8.61      |
+| BeamEnergy          | 15           | 14.82     |
+| BeamEnergySpread    | 10           | 8.97      |
 | BeamPositionSpreadX | 0.3          | 0.10      |
-| BeamPositionSpreadY | 0.6          | 0.80      |
-| BeamPositionCutoffX | 2            | 1.62      |
-| BeamPositionCutoffY | 1            | 1.06      |
-| BeamAngularSpreadX  | 1            | 0.55      |
-| BeamAngularSpreadY  | .07          | 0.52      |
-| BeamAngularCutoffX  | 5            | 10        |
-| BeamAngularCutoffY  | 2            | 1         |
+| BeamPositionSpreadY | 0.6          | 1         |
+| BeamPositionCutoffX | 2            | 3         |
+| BeamPositionCutoffY | 1            | 2.49      |
+| BeamAngularSpreadX  | 1            | 1.00      |
+| BeamAngularSpreadY  | .07          | 0.46      |
+| BeamAngularCutoffX  | 5            | 8.54      |
+| BeamAngularCutoffY  | 2            | 6.68      |
 
 ![](../../docsrc/_resources/electron_source/compare_results.png)
 
