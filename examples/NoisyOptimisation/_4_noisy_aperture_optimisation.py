@@ -23,7 +23,7 @@ optimisation_params['Nitterations'] = 100
 ReadMeText = 'This is a public service announcement, this is only a test'
 
 k1 = Matern(length_scale=[3, 0.2, 0.2])
-k2 = WhiteKernel(noise_level=1, noise_level_bounds='fixed')
+k2 = WhiteKernel(noise_level=0.25, noise_level_bounds='fixed')
 custom_kernel = k1 + k2
 
 
