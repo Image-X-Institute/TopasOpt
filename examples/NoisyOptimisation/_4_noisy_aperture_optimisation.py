@@ -7,7 +7,6 @@ BaseDirectory =  '/home/brendan/Documents/temp'
 SimulationName = 'NMtest'
 OptimisationDirectory = Path(__file__).parent
 
-
 # set up optimisation params:
 optimisation_params = {}
 optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
