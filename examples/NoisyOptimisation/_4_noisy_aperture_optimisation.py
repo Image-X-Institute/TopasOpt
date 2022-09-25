@@ -1,10 +1,13 @@
+import sys
+sys.path.insert(0,'../../TopasOpt')
 import numpy as np
 from pathlib import Path
 from TopasOpt import Optimisers as to
 from sklearn.gaussian_process.kernels import Matern, WhiteKernel
 
-BaseDirectory =  '/home/brendan/Documents/temp'
-SimulationName = 'NMtest'
+
+BaseDirectory =  '/home/bwhelan/PhaserSims/topas/'
+SimulationName = 'noisy_test_even_less_particles_no_k2'
 OptimisationDirectory = Path(__file__).parent
 
 
@@ -20,15 +23,15 @@ optimisation_params['start_point'] = np.array([1.14, 1.73, 39.9])
 # Remember true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 100
 # optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
-ReadMeText = 'This is a public service announcement, this is only a test'
+ReadMeText = 'reducing the number of primary particles even further, no noise kernel'
 
 k1 = Matern(length_scale=[3, 0.2, 0.2])
-k2 = WhiteKernel(noise_level=1, noise_level_bounds='fixed')
-custom_kernel = k1 + k2
+k2 = WhiteKernel()
+custom_kernel = k1
 
 
 Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
-                                 SimulationName='GeometryOptimisationTest_NM', OptimisationDirectory=OptimisationDirectory,
+                                 SimulationName=SimulationName, OptimisationDirectory=OptimisationDirectory,
                                  TopasLocation='~/topas38', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
                                  custom_kernel=custom_kernel)
 
