@@ -660,13 +660,13 @@ class BayesianOptimiser(TopasOptBaseClass):
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
     Specific options are described below, the rest are described in TopasOptBaseClass
 
-    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process  model.  This can be supplied as one of three things:
-
-    - **None**: in this case, the default is used: length_scale=1.0
-    - **Number between 0 and 1**: in this case, the length scales for each parameter are derived as a percentage of range.
-        For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable
-    - **Array-like**: Finally, the user is free to simply specify what length scales to use for each parameter.
-        Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.
+    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process  model.
+      This can be supplied as one of three things:
+      - **None**: in this case, the default is used: length_scale=1.0
+      - **Number between 0 and 1**: in this case, the length scales for each parameter are derived as a percentage of range.
+         For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable
+      - **Array-like**: Finally, the user is free to simply specify what length scales to use for each parameter.
+         Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.
     :type bayes_length_scales: None, float, or array (optional)
     :param bayes_UCBkappa: Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
         `this notebook <https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb>`_

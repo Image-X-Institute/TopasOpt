@@ -19,24 +19,17 @@ optimisation_params['LowerBounds'] = np.array([1, 1, 10])
 # random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
 # optimisation_params['start_point'] = random_start_point
 optimisation_params['start_point'] = np.array([1.14, 1.73, 39.9])
-# Remember true values are  [1.82, 2.5, 27]
+# true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 100
-# optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
 ReadMeText = 'reducing the number of primary particles even further, no noise kernel'
 
 k1 = Matern(length_scale=[3, 0.2, 0.2])
-<<<<<<< HEAD
 k2 = WhiteKernel()
-custom_kernel = k1
-=======
-k2 = WhiteKernel(noise_level=0.25, noise_level_bounds='fixed')
 custom_kernel = k1 + k2
->>>>>>> fbbddf37fe66341e06ed3c445fcadb1524a64707
-
-
-Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
-                                 SimulationName=SimulationName, OptimisationDirectory=OptimisationDirectory,
-                                 TopasLocation='~/topas38', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
-                                 custom_kernel=custom_kernel)
-
+for n_particles in [10e3, 20e3, 30e3]:
+    # write the number of particles to a json file:
+    Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
+                                     SimulationName=SimulationName, OptimisationDirectory=OptimisationDirectory,
+                                     TopasLocation='~/topas38', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
+                                     custom_kernel=custom_kernel)
 Optimiser.RunOptimisation()
