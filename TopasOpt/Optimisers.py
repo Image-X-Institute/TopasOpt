@@ -947,8 +947,6 @@ class BayesianOptimiser(TopasOptBaseClass):
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
         utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
                                   kappa_decay=self.kappa_decay)
-        logger.warning('setting numpy to ignore underflow errors.')
-        np.seterr(under='ignore')
 
         if self.__RestartMode:
             # then load the previous log files:

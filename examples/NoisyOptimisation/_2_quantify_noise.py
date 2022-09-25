@@ -23,7 +23,7 @@ def plot_objective_function_variability(BoxPlotData):
     plt.show()
 
 # update this to wherever your data from part 1 is stored:
-data_dir = Path(r'/home/brendan/Documents/temp/noise_sims')
+data_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
 sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
 of_results = [[], [], [], []]
 j = 0

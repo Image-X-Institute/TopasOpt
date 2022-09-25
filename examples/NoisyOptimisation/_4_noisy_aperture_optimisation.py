@@ -10,7 +10,6 @@ BaseDirectory =  '/home/bwhelan/PhaserSims/topas/'
 SimulationName = 'noisy_test_even_less_particles_no_k2'
 OptimisationDirectory = Path(__file__).parent
 
-
 # set up optimisation params:
 optimisation_params = {}
 optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
@@ -26,8 +25,13 @@ optimisation_params['Nitterations'] = 100
 ReadMeText = 'reducing the number of primary particles even further, no noise kernel'
 
 k1 = Matern(length_scale=[3, 0.2, 0.2])
+<<<<<<< HEAD
 k2 = WhiteKernel()
 custom_kernel = k1
+=======
+k2 = WhiteKernel(noise_level=0.25, noise_level_bounds='fixed')
+custom_kernel = k1 + k2
+>>>>>>> fbbddf37fe66341e06ed3c445fcadb1524a64707
 
 
 Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
