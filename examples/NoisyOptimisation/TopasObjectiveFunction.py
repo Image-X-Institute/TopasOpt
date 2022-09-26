@@ -46,8 +46,8 @@ def TopasObjectiveFunction(ResultsLocation, iteration, take_abs=True):
     path, file = os.path.split(ResultsFile)
     CurrentResults = WaterTankData(path, file)
     GroundTruthDataPath = str(Path(r'/home/bwhelan/python/TopasOpt/examples/NoisyOptimisation/SimpleCollimatorExample_TopasFiles/Results'))
-    GroundTruthDataPath = str(
-        Path(r'Z:\python\TopasOpt\examples\NoisyOptimisation\SimpleCollimatorExample_TopasFiles\Results'))
+    # GroundTruthDataPath = str(
+    #     Path(r'Z:\python\TopasOpt\examples\NoisyOptimisation\SimpleCollimatorExample_TopasFiles\Results'))
 
     # this assumes that you stored the base files in the same directory as this file, updated if needed
     GroundTruthDataFile = 'WaterTank.bin'
