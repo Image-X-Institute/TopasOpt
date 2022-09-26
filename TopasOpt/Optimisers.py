@@ -917,16 +917,19 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
         writes the original and optimised length scales to the end of a log file
         """
-        start_length = self.optimizer._gp.kernel.length_scale
-        final_length = self.optimizer._gp.kernel_.length_scale
-        keys = sorted(self.pbounds)
-        start_length = dict(zip(keys, start_length))
-        final_length = dict(zip(keys, final_length))
-        Entry = f'\nStarting length scales were {start_length}'
-        Entry = Entry + f'\nOptimised length scales were {final_length}'
+        try:
+            start_length = self.optimizer._gp.kernel.length_scale
+            final_length = self.optimizer._gp.kernel_.length_scale
+            keys = sorted(self.pbounds)
+            start_length = dict(zip(keys, start_length))
+            final_length = dict(zip(keys, final_length))
+            Entry = f'\nStarting length scales were {start_length}'
+            Entry = Entry + f'\nOptimised length scales were {final_length}'
 
-        with open(self._LogFileLoc , 'a') as f:
-            f.write(Entry)
+            with open(self._LogFileLoc , 'a') as f:
+                f.write(Entry)
+        except AttributeError:
+            pass
 
     def RunOptimisation(self):
         """
