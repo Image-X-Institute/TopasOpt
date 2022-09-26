@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     """
@@ -93,7 +94,15 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     SimpleCollimator.append('dc:So/Beam/BeamAngularCutoffY = 5 deg')
     SimpleCollimator.append('dc:So/Beam/BeamAngularSpreadX = 0.07 deg')
     SimpleCollimator.append('dc:So/Beam/BeamAngularSpreadY = 0.07 deg')
-    SimpleCollimator.append(f'ic:So/Beam/NumberOfHistoriesInRun = 10000')
+    # read in n_particles:
+    try:
+        with open('particle_data.json', 'r') as fp:
+            particle_data = json.load(fp)
+            n_particles = particle_data['n_particles']
+    except FileNotFoundError:
+        raise FileNotFoundError('could not locate particle_data.json. Please create this file and place e.g. the following in it:'
+                                '\n`{"n_particles": 50000}`')
+    SimpleCollimator.append(f'ic:So/Beam/NumberOfHistoriesInRun = {n_particles}')
     SimpleCollimator.append('')
     SimpleCollimator.append('# # Electron source position')
     SimpleCollimator.append('# ------------------------------------------------------------')
