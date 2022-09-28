@@ -102,7 +102,7 @@ def GenerateTopasScripts(BaseDirectory, iteration, **variable_dict):
     except FileNotFoundError:
         raise FileNotFoundError('could not locate particle_data.json. Please create this file and place e.g. the following in it:'
                                 '\n`{"n_particles": 50000}`')
-    SimpleCollimator.append(f'ic:So/Beam/NumberOfHistoriesInRun = {n_particles}')
+    SimpleCollimator.append(f'ic:So/Beam/NumberOfHistoriesInRun = {int(n_particles)}')
     SimpleCollimator.append('')
     SimpleCollimator.append('# # Electron source position')
     SimpleCollimator.append('# ------------------------------------------------------------')
