@@ -12,7 +12,7 @@ from pathlib import Path
 from TopasOpt import Optimisers as to
 from bayes_opt.util import load_logs
 
-def plot_objective_function_variability(BoxPlotData, target_predictions, std_predictions):
+def plot_objective_function_variability(BoxPlotData):
     figure, axs = plt.subplots()
 
     try:
@@ -29,6 +29,23 @@ def plot_objective_function_variability(BoxPlotData, target_predictions, std_pre
     axs.grid()
     plt.show()
 
+def plot_predictions(target_predictions, std_predictions):
+
+    x_vals = np.arange(0, std_predictions.shape[0])
+    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+    axs.plot(x_vals, target_predictions, 'C6')
+    axs.set_xlabel('Iteration number', fontsize=12)
+    axs.set_ylabel('Objective function', fontsize=12)
+    axs.grid(True)
+    axs.fill_between(x_vals, target_predictions + std_predictions,
+                     target_predictions - std_predictions, alpha=0.15, color='C0')
+    axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'], fontsize=12)
+    plt.show()
+
+
+
+
+
 BaseDirectory =  Path(r'Z:\PhaserSims\topas')
 optimisation_params = {}
 optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
@@ -43,21 +60,22 @@ target_predictions = []
 std_predictions = []
 
 sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
+sims_to_investigate_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
+of_results = [[], [], [], []]
 j = 0
 for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
     # first, attempt to get the noise estimatation data:
     test_sim_name = f'n_particles_{int(n_particles)}'
     if test_sim_name in sims_to_investigate:
-        data_loc = data_dir / sim / 'Results'
+        data_loc = sims_to_investigate_dir / test_sim_name / 'Results'
         results = get_all_files(data_loc, 'bin')
         iteration = 0
-
         for result in results:
             objective_value = TopasObjectiveFunction(data_loc, iteration, take_abs=True)
             # note we added a new parameter so we aren't automatically taking absolute values
             of_results[j].append(objective_value)
             iteration += 1
-
+        j += 1
 
     # update simulation name:
     SimulationName = f'noisy_opt_n_particles_{int(n_particles)}'
@@ -79,5 +97,7 @@ for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
     target_predictions.append(predicted_target)
     std_predictions.append(predicted_std)
 
-
-
+plot_predictions(np.array(target_predictions).squeeze(), np.array(std_predictions).squeeze())
+of_results = np.array(of_results)
+of_results = of_results.T
+# plot_objective_function_variability(of_results)

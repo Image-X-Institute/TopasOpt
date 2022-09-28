@@ -30,7 +30,7 @@ if not basedirectory.is_dir():
     basedirectory.mkdir()
 
 n_sims_to_generate = range(10)
-n_particles_to_investigate = [50000, 40000, 20000, 500000]
+n_particles_to_investigate = [10000, 20000, 30000, 40000, 50000]
 
 variable_dict = {'UpStreamApertureRadius': 1.82,
                  'DownStreamApertureRadius': 2.5,
