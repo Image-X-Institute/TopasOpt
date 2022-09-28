@@ -39,3 +39,5 @@ for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
                                      TopasLocation='~/topas38', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
                                      custom_kernel=custom_kernel)
     # Optimiser.RunOptimisation()
+    optimal_params = {'CollimatorThickness': 28.376220039850576, 'DownStreamApertureRadius': 2.3325676639542126,
+     'UpStreamApertureRadius': 2.49221883915182}
