@@ -717,7 +717,6 @@ class BayesianOptimiser(TopasOptBaseClass):
         else:
             self._kernel = custom_kernel
 
-
         if self.kappa_decay_delay >= self.MaxItterations:
             logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
                            f'than MaxItterations ({self.MaxItterations}), decay will never occur...')
@@ -726,6 +725,14 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.kappa_decay = (self.UCBKappa_final / self.UCBkappa) ** (
                         1 / (self.MaxItterations - self.kappa_decay_delay))
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
+
+        # instantiate optimizer:
+        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
+        self.optimizer.set_gp_params(normalize_y=True, kernel=self._kernel,
+                                n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
+        self.utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
+                                  kappa_decay=self.kappa_decay)
+
 
     def _derive_bayes_length_scales(self, bayes_length_scales):
         """
@@ -926,7 +933,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             Entry = f'\nStarting length scales were {start_length}'
             Entry = Entry + f'\nOptimised length scales were {final_length}'
 
-            with open(self._LogFileLoc , 'a') as f:
+            with open(self._LogFileLoc, 'a') as f:
                 f.write(Entry)
         except AttributeError:
             pass
@@ -943,13 +950,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         else:
             self._setup_topas_emulator()
 
-        # instantiate optimizer:
 
-        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        self.optimizer.set_gp_params(normalize_y=True, kernel=self._kernel,
-                                n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
-        utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
-                                  kappa_decay=self.kappa_decay)
 
         if self.__RestartMode:
             # then load the previous log files:
@@ -959,7 +960,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
             self.Itteration = len(self.optimizer.space.target)
             self.ItterationStart = len(self.optimizer.space.target)
-            utility._iters_counter = self.ItterationStart
+            self.utility._iters_counter = self.ItterationStart
             if self.Itteration >= self.MaxItterations-1:
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
@@ -973,13 +974,13 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.optimizer.register(self.VariableDict, target=target)
 
         for point in range(self.Itteration, self.MaxItterations):
-            utility.update_params()
+            self.utility.update_params()
             if (self.Nsuggestions is not None) and (self.SuggestionsProbed < self.Nsuggestions):
                 # evaluate any suggested solutions first
                 next_point_to_probe = self.Suggestions[self.SuggestionsProbed]
                 self.SuggestionsProbed += 1
             else:
-                next_point_to_probe = self.optimizer.suggest(utility)
+                next_point_to_probe = self.optimizer.suggest(self.utility)
 
             NextPointValues = np.array(list(next_point_to_probe.values()))
             mean, std = self.optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)

@@ -2,8 +2,9 @@ from GenerateTopasScripts import GenerateTopasScripts
 import os
 from pathlib import Path
 import stat
+import json
 
-def generate_run_all_scripts_shell_script(script_location, sims_to_run, topas_location='~/topas37', G4_DATA='~/G4Data'):
+def generate_run_all_scripts_shell_script(script_location, sims_to_run, topas_location='~/topas38', G4_DATA='~/G4Data'):
     FileName = script_location / 'RunAllFiles.sh'
     f = open(FileName, 'w+')
     f.write('# !/bin/bash\n\n')
@@ -29,14 +30,17 @@ if not basedirectory.is_dir():
     basedirectory.mkdir()
 
 n_sims_to_generate = range(10)
-n_particles_to_investigate = [50000, 40000, 20000, 500000]
+n_particles_to_investigate = [10000, 30000]
 
 variable_dict = {'UpStreamApertureRadius': 1.82,
                  'DownStreamApertureRadius': 2.5,
-                 'CollimatorThickness': 27,
-                 'n_primaries': 50000}
+                 'CollimatorThickness': 27}
 
 for n_particles in n_particles_to_investigate:
+    particle_data = {}
+    particle_data['n_particles'] = n_particles
+    with open('particle_data.json', 'w') as fp:
+        json.dump(particle_data, fp)  # GenerateTopasScripts will read this
     sim_directory = basedirectory / f'n_particles_{n_particles}'
     if not sim_directory.is_dir():
         sim_directory.mkdir()

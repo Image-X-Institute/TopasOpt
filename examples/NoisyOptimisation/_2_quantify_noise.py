@@ -31,10 +31,8 @@ for sim in sims_to_investigate:
     data_loc = data_dir / sim / 'Results'
     results = get_all_files(data_loc, 'bin')
     iteration = 0
-
     for result in results:
-        objective_value = TopasObjectiveFunction(data_loc, iteration, take_abs=True)
-        # note we added a new parameter so we aren't automatically taking absolute values
+        objective_value = TopasObjectiveFunction(data_loc, iteration)
         of_results[j].append(objective_value)
         iteration += 1
     print(f'mean for {sim}: {np.mean(of_results[j]): 1.10f} ')

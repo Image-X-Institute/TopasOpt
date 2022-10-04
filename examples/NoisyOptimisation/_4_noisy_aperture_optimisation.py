@@ -39,3 +39,4 @@ for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
                                      TopasLocation='~/topas38', ReadMeText=ReadMeText, Overwrite=True, KeepAllResults=True,
                                      custom_kernel=custom_kernel)
     Optimiser.RunOptimisation()
+
