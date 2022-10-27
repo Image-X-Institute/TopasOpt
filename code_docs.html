@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -44,9 +45,61 @@
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.Optimisers">Optimisers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.TopasScriptGenerator">TopasScriptGenerator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.utilities">utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.Optimisers">Optimisers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.Optimisers.BayesianOptimiser"><code class="docutils literal notranslate"><span class="pre">BayesianOptimiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.BayesianOptimiser.RestartOptimisation"><code class="docutils literal notranslate"><span class="pre">BayesianOptimiser.RestartOptimisation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.BayesianOptimiser.RunOptimisation"><code class="docutils literal notranslate"><span class="pre">BayesianOptimiser.RunOptimisation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.Optimisers.NelderMeadOptimiser"><code class="docutils literal notranslate"><span class="pre">NelderMeadOptimiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.NelderMeadOptimiser.RunOptimisation"><code class="docutils literal notranslate"><span class="pre">NelderMeadOptimiser.RunOptimisation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass.BlackBoxFunction"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass.BlackBoxFunction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass.SetUpDirectoryStructure"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass.SetUpDirectoryStructure()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.TopasScriptGenerator">TopasScriptGenerator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.TopasScriptGenerator.generate_topas_script_generator"><code class="docutils literal notranslate"><span class="pre">generate_topas_script_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-TopasOpt.utilities">utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.FigureSpecs"><code class="docutils literal notranslate"><span class="pre">FigureSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.FigureSpecs.AxisFontSize"><code class="docutils literal notranslate"><span class="pre">FigureSpecs.AxisFontSize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.FigureSpecs.Font"><code class="docutils literal notranslate"><span class="pre">FigureSpecs.Font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.FigureSpecs.LabelFontSize"><code class="docutils literal notranslate"><span class="pre">FigureSpecs.LabelFontSize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.FigureSpecs.TitleFontSize"><code class="docutils literal notranslate"><span class="pre">FigureSpecs.TitleFontSize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.PlotLogFile"><code class="docutils literal notranslate"><span class="pre">PlotLogFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.ReadInLogFile"><code class="docutils literal notranslate"><span class="pre">ReadInLogFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.WaterTankData"><code class="docutils literal notranslate"><span class="pre">WaterTankData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.WaterTankData.ExtractDataFromDoseCube"><code class="docutils literal notranslate"><span class="pre">WaterTankData.ExtractDataFromDoseCube()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.WaterTankData.Plot_DepthDose"><code class="docutils literal notranslate"><span class="pre">WaterTankData.Plot_DepthDose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.WaterTankData.Plot_DosePlanes"><code class="docutils literal notranslate"><span class="pre">WaterTankData.Plot_DosePlanes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.WaterTankData.Plot_Profiles"><code class="docutils literal notranslate"><span class="pre">WaterTankData.Plot_Profiles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.WaterTankData.Plot_XYsurface"><code class="docutils literal notranslate"><span class="pre">WaterTankData.Plot_XYsurface()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.bcolors"><code class="docutils literal notranslate"><span class="pre">bcolors</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.BOLD"><code class="docutils literal notranslate"><span class="pre">bcolors.BOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.ENDC"><code class="docutils literal notranslate"><span class="pre">bcolors.ENDC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.FAIL"><code class="docutils literal notranslate"><span class="pre">bcolors.FAIL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.HEADER"><code class="docutils literal notranslate"><span class="pre">bcolors.HEADER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.OKBLUE"><code class="docutils literal notranslate"><span class="pre">bcolors.OKBLUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.OKCYAN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKCYAN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.OKGREEN"><code class="docutils literal notranslate"><span class="pre">bcolors.OKGREEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.UNDERLINE"><code class="docutils literal notranslate"><span class="pre">bcolors.UNDERLINE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.utilities.bcolors.WARNING"><code class="docutils literal notranslate"><span class="pre">bcolors.WARNING</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.compare_multiple_results"><code class="docutils literal notranslate"><span class="pre">compare_multiple_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.newJSONLogger"><code class="docutils literal notranslate"><span class="pre">newJSONLogger</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
