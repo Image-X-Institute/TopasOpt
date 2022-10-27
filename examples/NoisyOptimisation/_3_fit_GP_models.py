@@ -66,9 +66,13 @@ pbounds = {}
 for i, ParamName in enumerate(optimisation_params['ParameterNames']):
     pbounds[ParamName] = (optimisation_params['LowerBounds'][i], optimisation_params['UpperBounds'][i])
 
-data_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
-sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
-of_results = [[], [], [], []]
+data_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
+sims_to_investigate = ['n_particles_10000',
+                       'n_particles_20000',
+                       'n_particles_30000',
+                       'n_particles_40000',
+                       'n_particles_50000']
+of_results = [[] for _ in range(len(sims_to_investigate))]
 j = 0
 for sim in sims_to_investigate:
     data_loc = data_dir / sim / 'Results'
@@ -80,7 +84,7 @@ for sim in sims_to_investigate:
     )
 
     k1 = Matern(length_scale=[3, 0.2, 0.2])
-    k2 = WhiteKernel(noise_level=1, noise_level_bounds='fixed')
+    k2 = WhiteKernel()
     kernel = k1 + k2
     optimizer.set_gp_params(kernel=kernel)
 
@@ -93,11 +97,11 @@ for sim in sims_to_investigate:
         # note we added a new parameter so we aren't automatically taking absolute values
         of_results[j].append(objective_value)
         iteration += 1
-    optimizer.register(params=parameter_values, target=objective_value)
+        optimizer.register(params=parameter_values, target=objective_value)
     # because we are running this in a pretty weird way we have to manually fit the model:
     optimizer._gp.fit(optimizer._space.params, optimizer._space.target)
     plot_retrospective_fit(of_results[j], optimizer, title=sim)
 
     j = j+1
     del optimizer
-    break
+    # break

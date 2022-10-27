@@ -4,15 +4,15 @@ import numpy as np
 from TopasObjectiveFunction import TopasObjectiveFunction
 from matplotlib import pyplot as plt
 
-def plot_objective_function_variability(BoxPlotData):
+def plot_objective_function_variability(BoxPlotData, labels=None):
     
     figure, axs = plt.subplots()
 
     try:
-        axs.boxplot(BoxPlotData, labels=['n=2e4', 'n=4e4', 'n=5e4', 'n=5e5'],
+        axs.boxplot(BoxPlotData, labels=labels,
                                    medianprops={'color': 'k'})
-    except ValueError:
-        print(f'couldnt label boxplots, label length didnt match data')
+    except:
+        print(f'couldnt label boxplots, label length probably didnt match data')
         axs.boxplot(BoxPlotData, medianprops={'color': 'k'})
 
     for i, data in enumerate(BoxPlotData.T):
@@ -23,9 +23,14 @@ def plot_objective_function_variability(BoxPlotData):
     plt.show()
 
 # update this to wherever your data from part 1 is stored:
-data_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
-sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
-of_results = [[], [], [], []]
+data_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
+sims_to_investigate = ['n_particles_10000',
+                       'n_particles_20000',
+                       'n_particles_30000',
+                       'n_particles_40000',
+                       'n_particles_50000']
+plot_labels = [sim.split('_')[0] + '_' + sim.split('_')[2] for sim in sims_to_investigate]
+of_results = [[] for _ in range(len(sims_to_investigate))]
 j = 0
 for sim in sims_to_investigate:
     data_loc = data_dir / sim / 'Results'
@@ -41,4 +46,4 @@ for sim in sims_to_investigate:
 
 of_results = np.array(of_results)
 of_results = of_results.T
-plot_objective_function_variability(of_results)
+plot_objective_function_variability(of_results, labels=plot_labels)

@@ -1,29 +1,9 @@
 from GenerateTopasScripts import GenerateTopasScripts
 import os
 from pathlib import Path
-import stat
+from TopasOpt.utilities import generate_run_all_scripts_shell_script
 import json
 
-def generate_run_all_scripts_shell_script(script_location, sims_to_run, topas_location='~/topas38', G4_DATA='~/G4Data'):
-    FileName = script_location / 'RunAllFiles.sh'
-    f = open(FileName, 'w+')
-    f.write('# !/bin/bash\n\n')
-    f.write('# This script sets up the topas environment then runs all listed files\n\n')
-    f.write('# ensure that any errors cause the script to stop executing:\n')
-    f.write('set - e\n\n')
-    f.write(f'export TOPAS_G4_DATA_DIR={G4_DATA}\n')
-
-    # add in all topas scripts which need to be run:
-    for sim in sims_to_run:
-        f.write('echo "Beginning analysis of: ' + sim.name + '"')
-        f.write('\n')
-        f.write(f'(time {topas_location}/bin/topas {sim.name}) &> ../logs/{sim.name}')
-        f.write('\n')
-    f.write('\necho "All done!"\n')
-    # change file modifications:
-    st = os.stat(FileName)
-    os.chmod(FileName, st.st_mode | stat.S_IEXEC)
-    f.close()
 
 basedirectory = Path(os.path.expanduser('~')) / 'Documents' / 'temp' / 'noise_sims'
 if not basedirectory.is_dir():

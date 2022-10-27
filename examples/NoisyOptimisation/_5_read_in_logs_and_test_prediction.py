@@ -43,10 +43,11 @@ def plot_predictions(target_predictions, std_predictions):
     plt.show()
 
 
+BaseDirectory =  Path(r'/home/brendan/Documents/temp')
+sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
+sims_to_investigate_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
+of_results = [[] for _ in range(len(sims_to_investigate))]
 
-
-
-BaseDirectory =  Path(r'Z:\PhaserSims\topas')
 optimisation_params = {}
 optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
@@ -59,9 +60,7 @@ custom_kernel = k1 + k2
 target_predictions = []
 std_predictions = []
 
-sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
-sims_to_investigate_dir = Path(r'X:\PRJ-Phaser\PhaserSims\topas\noise_sims')
-of_results = [[], [], [], []]
+
 j = 0
 for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
     # first, attempt to get the noise estimatation data:
