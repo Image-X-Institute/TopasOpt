@@ -12,20 +12,30 @@ from pathlib import Path
 from TopasOpt import Optimisers as to
 from bayes_opt.util import load_logs
 
-def plot_objective_function_variability(BoxPlotData):
+def plot_objective_function_variability(BoxPlotData, target_predictions, std_predictions):
     figure, axs = plt.subplots()
 
     try:
-        axs.boxplot(BoxPlotData, labels=['n=2e4', 'n=4e4', 'n=5e4', 'n=5e5'],
+        axs.boxplot(BoxPlotData, labels=['n=1e4', 'n=2e4', 'n=3e4',
+                                         'n=4e4', 'n=5e4'],
                     medianprops={'color': 'k'})
     except ValueError:
         print(f'couldnt label boxplots, label length didnt match data')
         axs.boxplot(BoxPlotData, medianprops={'color': 'k'})
 
     for i, data in enumerate(BoxPlotData.T):
-        axs.scatter(np.ones(BoxPlotData.shape[0]) * i + 1, data)
+        axs.scatter(np.ones(np.shape(data)[0]) * i + 1, data)
     axs.set_ylabel('OF')
     axs.set_title('Objective function values')
+
+    # now add the predictions
+    x_vals = np.arange(1, std_predictions.shape[0]+1)
+    line1 = axs.plot(x_vals, -1*target_predictions, 'C6')
+    axs.set_xlabel('Iteration number', fontsize=12)
+    axs.set_ylabel('Objective function', fontsize=12)
+    line2 = axs.fill_between(x_vals, -1*target_predictions + std_predictions,
+                     -1*target_predictions - std_predictions, alpha=0.15, color='C0')
+    axs.legend([line1[0], line2], ['Gaussian Process predictions', r'$\sigma$'], fontsize=12)
     axs.grid()
     plt.show()
 
@@ -33,7 +43,7 @@ def plot_predictions(target_predictions, std_predictions):
 
     x_vals = np.arange(0, std_predictions.shape[0])
     fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-    axs.plot(x_vals, target_predictions, 'C6')
+    axs.plot(x_vals, -1*target_predictions, 'C6')
     axs.set_xlabel('Iteration number', fontsize=12)
     axs.set_ylabel('Objective function', fontsize=12)
     axs.grid(True)
@@ -43,8 +53,8 @@ def plot_predictions(target_predictions, std_predictions):
     plt.show()
 
 
-BaseDirectory =  Path(r'/home/brendan/Documents/temp')
-sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
+BaseDirectory =  Path(r'/home/brendan/GoliathHome/PhaserSims/topas')
+sims_to_investigate = ['n_particles_10000', 'n_particles_20000', 'n_particles_30000',  'n_particles_40000', 'n_particles_50000']
 sims_to_investigate_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
 of_results = [[] for _ in range(len(sims_to_investigate))]
 
@@ -96,7 +106,7 @@ for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
     target_predictions.append(predicted_target)
     std_predictions.append(predicted_std)
 
-plot_predictions(np.array(target_predictions).squeeze(), np.array(std_predictions).squeeze())
+
 of_results = np.array(of_results)
 of_results = of_results.T
-# plot_objective_function_variability(of_results)
+plot_objective_function_variability(of_results, np.array(target_predictions).squeeze(), np.array(std_predictions).squeeze())

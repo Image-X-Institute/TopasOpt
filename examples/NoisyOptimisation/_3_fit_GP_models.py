@@ -43,8 +43,7 @@ def plot_retrospective_fit(of_results, optimizer, title=None):
 
     plt.show()
 
-BaseDirectory = '/home/brendan/Documents/temp'
-SimulationName = 'NMtest'
+BaseDirectory =  Path(r'/home/brendan/GoliathHome/PhaserSims/topas')
 OptimisationDirectory = Path(__file__).parent
 
 # set up optimisation params:
