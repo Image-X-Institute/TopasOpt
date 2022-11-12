@@ -29,6 +29,7 @@ def plot_objective_function_variability(BoxPlotData):
     axs.grid()
     plt.show()
 
+
 def plot_predictions(target_predictions, std_predictions):
 
     x_vals = np.arange(0, std_predictions.shape[0])
@@ -43,9 +44,9 @@ def plot_predictions(target_predictions, std_predictions):
     plt.show()
 
 
-BaseDirectory =  Path(r'/home/brendan/Documents/temp')
-sims_to_investigate = ['n_particles_20000', 'n_particles_40000',  'n_particles_50000', 'n_particles_500000']
-sims_to_investigate_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
+BaseDirectory =  Path(r'C:\Users\bwhe3635\Documents\temp')
+sims_to_investigate = ['n_particles_10000', 'n_particles_20000', 'n_particles_20000',  'n_particles_40000', 'n_particles_50000']
+sims_to_investigate_dir = Path(r'P:\PRJ-Phaser\PhaserSims\topas\noise_sims')
 of_results = [[] for _ in range(len(sims_to_investigate))]
 
 optimisation_params = {}
