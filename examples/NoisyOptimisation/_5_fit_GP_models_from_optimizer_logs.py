@@ -1,10 +1,7 @@
 import numpy as np
-from pathlib import Path
 from TopasObjectiveFunction import TopasObjectiveFunction
 from TopasOpt.utilities import get_all_files
-from bayes_opt import BayesianOptimization
-from bayes_opt import UtilityFunction
-from matplotlib import pyplot as plt
+from noise_box_plots import plot_gp_model_versus_data
 from sklearn.gaussian_process.kernels import Matern, WhiteKernel
 import sys
 sys.path.insert(0,'../../TopasOpt')
@@ -12,60 +9,12 @@ from pathlib import Path
 from TopasOpt import Optimisers as to
 from bayes_opt.util import load_logs
 
-def plot_objective_function_variability(BoxPlotData, target_predictions, std_predictions):
-    figure, axs = plt.subplots()
-
-    try:
-        axs.boxplot(BoxPlotData, labels=['n=1e4', 'n=2e4', 'n=3e4',
-                                         'n=4e4', 'n=5e4'],
-                    medianprops={'color': 'k'})
-    except ValueError:
-        print(f'couldnt label boxplots, label length didnt match data')
-        axs.boxplot(BoxPlotData, medianprops={'color': 'k'})
-
-    for i, data in enumerate(BoxPlotData.T):
-        axs.scatter(np.ones(np.shape(data)[0]) * i + 1, data)
-    axs.set_ylabel('OF')
-    axs.set_title('Objective function values')
-
-    # now add the predictions
-    x_vals = np.arange(1, std_predictions.shape[0]+1)
-    line1 = axs.plot(x_vals, -1*target_predictions, 'C6')
-    axs.set_xlabel('Iteration number', fontsize=12)
-    axs.set_ylabel('Objective function', fontsize=12)
-    line2 = axs.fill_between(x_vals, -1*target_predictions + std_predictions,
-                     -1*target_predictions - std_predictions, alpha=0.15, color='C0')
-    axs.legend([line1[0], line2], ['Gaussian Process predictions', r'$\sigma$'], fontsize=12)
-    axs.grid()
-    plt.show()
-
-
-def plot_predictions(target_predictions, std_predictions):
-
-    x_vals = np.arange(0, std_predictions.shape[0])
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-    axs.plot(x_vals, -1*target_predictions, 'C6')
-    axs.set_xlabel('Iteration number', fontsize=12)
-    axs.set_ylabel('Objective function', fontsize=12)
-    axs.grid(True)
-    axs.fill_between(x_vals, target_predictions + std_predictions,
-                     target_predictions - std_predictions, alpha=0.15, color='C0')
-    axs.legend(['Best', 'Actual', 'Predicted', r'$\sigma$'], fontsize=12)
-    plt.show()
-
-
-<<<<<<< HEAD
-BaseDirectory =  Path(r'C:\Users\bwhe3635\Documents\temp')
-sims_to_investigate = ['n_particles_10000', 'n_particles_20000', 'n_particles_20000',  'n_particles_40000', 'n_particles_50000']
-sims_to_investigate_dir = Path(r'P:\PRJ-Phaser\PhaserSims\topas\noise_sims')
-=======
-BaseDirectory =  Path(r'/home/brendan/GoliathHome/PhaserSims/topas')
+BaseDirectory =  Path(r'/home/brendan/GoliathHome/PhaserSims/topas')  # directory where the opimization sims are stored
 sims_to_investigate = ['n_particles_10000', 'n_particles_20000', 'n_particles_30000',  'n_particles_40000', 'n_particles_50000']
-sims_to_investigate_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
->>>>>>> 638d94f3d415251e2c8dd72a770a62005be82a43
+data_dir = Path(r'/home/brendan/Downloads/noise_sims') # where is the previously generated (or downloaded) data
 of_results = [[] for _ in range(len(sims_to_investigate))]
 
-optimisation_params = {}
+optimisation_params = {}  # these are just to enable us to instatntiate optimizer objects
 optimisation_params['ParameterNames'] = ['UpStreamApertureRadius','DownStreamApertureRadius', 'CollimatorThickness']
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
@@ -77,13 +26,12 @@ custom_kernel = k1 + k2
 target_predictions = []
 std_predictions = []
 
-
 j = 0
 for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
     # first, attempt to get the noise estimatation data:
     test_sim_name = f'n_particles_{int(n_particles)}'
     if test_sim_name in sims_to_investigate:
-        data_loc = sims_to_investigate_dir / test_sim_name / 'Results'
+        data_loc = data_dir / test_sim_name / 'Results'
         results = get_all_files(data_loc, 'bin')
         iteration = 0
         for result in results:
@@ -116,4 +64,4 @@ for n_particles in [10e3, 20e3, 30e3, 40e3, 50e3]:
 
 of_results = np.array(of_results)
 of_results = of_results.T
-plot_objective_function_variability(of_results, np.array(target_predictions).squeeze(), np.array(std_predictions).squeeze())
+plot_gp_model_versus_data(of_results, np.array(target_predictions).squeeze(), np.array(std_predictions).squeeze())

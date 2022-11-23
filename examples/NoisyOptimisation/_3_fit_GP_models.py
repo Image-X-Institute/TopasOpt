@@ -4,73 +4,34 @@ from TopasObjectiveFunction import TopasObjectiveFunction
 from TopasOpt.utilities import get_all_files
 from bayes_opt import BayesianOptimization
 from bayes_opt import UtilityFunction
-from matplotlib import pyplot as plt
+from noise_box_plots import plot_gp_model_versus_data
 from sklearn.gaussian_process.kernels import Matern, WhiteKernel
 
-def plot_retrospective_fit(of_results, optimizer, title=None):
-    """
-    plot a list of results versus GP fit
-    """
-    # generate array of (identical) points to predict:
-    sorted_values = {key: value for key, value in sorted(parameter_values.items())}
-    # note bayesian optimisation code sorts alphabetically for some reason
-    point = [list(sorted_values.values())]
-    point_array = np.repeat(point, of_results.__len__(), axis=0)
-    # generate the optimizer predictions:
-    target_prediction, target_prediction_std = optimizer._gp.predict(point_array, return_std=True)
-    print(f'{title} std: {np.mean(target_prediction_std)}')
-    try:
-        print(f'Noise level: {optimizer._gp.kernel_.k2.noise_level: 1.5f}')
-    except AttributeError:
-        pass
+data_dir = Path(r'/home/brendan/Downloads/noise_sims') # where is the previously generated (or downloaded) data
+OptimisationDirectory = Path(__file__).parent  # dont change
 
-    # plot the results
-    run_number = np.linspace(0, of_results.__len__() - 1, of_results.__len__())
-
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
-    axs.plot(run_number, of_results, 'C6')
-    axs.plot(run_number, target_prediction, 'C0')
-    axs.fill_between(run_number,
-                     target_prediction + target_prediction_std,
-                     target_prediction - target_prediction_std, alpha=0.15, color='C0')
-
-    axs.legend(['Actual', 'Predicted', r'$\sigma$'])
-    axs.set_xlabel('Run number')
-    axs.set_ylabel('Objective function')
-    axs.grid(True)
-    if title:
-        axs.set_title(f'{title}: std {np.mean(target_prediction_std)}')
-
-    plt.show()
-
-BaseDirectory =  Path(r'/home/brendan/GoliathHome/PhaserSims/topas')
-OptimisationDirectory = Path(__file__).parent
-
-# set up optimisation params:
+# set up optimisation params (this is necessary to instantiate the optimizer, we don't actually use them):
 optimisation_params = {}
 optimisation_params['ParameterNames'] = ['UpStreamApertureRadius', 'DownStreamApertureRadius', 'CollimatorThickness']
 optimisation_params['UpperBounds'] = np.array([3, 3, 40])
 optimisation_params['LowerBounds'] = np.array([1, 1, 10])
-# generate a random starting point between our bounds (it doesn't have to be random, this is just for demonstration purposes)
-# random_start_point = np.random.default_rng().uniform(optimisation_params['LowerBounds'], optimisation_params['UpperBounds'])
-# optimisation_params['start_point'] = random_start_point
 optimisation_params['start_point'] = np.array([1.14, 1.73, 39.9])
-# Remember true values are  [1.82, 2.5, 27]
 optimisation_params['Nitterations'] = 40
-# optimisation_params['Suggestions'] # you can suggest points to test if you want - we won't here.
-ReadMeText = 'This is a public service announcement, this is only a test'
+k1 = Matern(length_scale=[3, 0.2, 0.2])
+k2 = WhiteKernel()
+custom_kernel = k1
+target_predictions = []
+std_predictions = []
 
 # generate pbounds
 pbounds = {}
+parameter_values = {}
 for i, ParamName in enumerate(optimisation_params['ParameterNames']):
     pbounds[ParamName] = (optimisation_params['LowerBounds'][i], optimisation_params['UpperBounds'][i])
+    parameter_values[ParamName] = optimisation_params['start_point'][i]
 
-data_dir = Path(r'/home/brendan/RDS/PRJ-Phaser/PhaserSims/topas/noise_sims')
-sims_to_investigate = ['n_particles_10000',
-                       'n_particles_20000',
-                       'n_particles_30000',
-                       'n_particles_40000',
-                       'n_particles_50000']
+
+sims_to_investigate = ['n_particles_10000', 'n_particles_20000', 'n_particles_30000', 'n_particles_40000', 'n_particles_50000']
 of_results = [[] for _ in range(len(sims_to_investigate))]
 j = 0
 for sim in sims_to_investigate:
@@ -78,19 +39,8 @@ for sim in sims_to_investigate:
     results = get_all_files(data_loc, 'bin')
     iteration = 0
     utility = UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
-    optimizer = BayesianOptimization(f=None,pbounds=pbounds,  verbose=2,
-        random_state=1,
-    )
-
-    k1 = Matern(length_scale=[3, 0.2, 0.2])
-    k2 = WhiteKernel()
-    kernel = k1 + k2
-    optimizer.set_gp_params(kernel=kernel)
-
-    parameter_values = {'UpStreamApertureRadius': 1.82,
-                     'DownStreamApertureRadius': 2.5,
-                     'CollimatorThickness': 27}
-
+    optimizer = BayesianOptimization(f=None,pbounds=pbounds,  verbose=2, random_state=1)
+    optimizer.set_gp_params(kernel=custom_kernel)
     for result in results:
         objective_value = TopasObjectiveFunction(data_loc, iteration, take_abs=True)
         # note we added a new parameter so we aren't automatically taking absolute values
@@ -99,8 +49,15 @@ for sim in sims_to_investigate:
         optimizer.register(params=parameter_values, target=objective_value)
     # because we are running this in a pretty weird way we have to manually fit the model:
     optimizer._gp.fit(optimizer._space.params, optimizer._space.target)
-    plot_retrospective_fit(of_results[j], optimizer, title=sim)
-
+    # predict objective at this values
+    optimal_params = dict(sorted(parameter_values.items()))  # make sure they are in alphabetical order
+    param_array = np.fromiter(optimal_params.values(), dtype=float)
+    predicted_target, predicted_std = optimizer._gp.predict(param_array.reshape(1, -1), return_std=True)
+    target_predictions.append(-1*predicted_target)
+    std_predictions.append(predicted_std)
     j = j+1
     del optimizer
-    # break
+
+of_results = np.array(of_results)
+of_results = of_results.T
+plot_gp_model_versus_data(of_results,  np.array(target_predictions).squeeze(), np.array(std_predictions).squeeze())

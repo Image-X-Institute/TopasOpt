@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(0,'../../TopasOpt')
 import numpy as np
 from pathlib import Path
 from TopasOpt import Optimisers as to

@@ -6,11 +6,11 @@ import json
 
 
 basedirectory = Path(os.path.expanduser('~')) / 'Documents' / 'temp' / 'noise_sims'
+n_sims_to_generate = range(10)
+n_particles_to_investigate = [10000, 20000, 30000, 40000, 50000]
+
 if not basedirectory.is_dir():
     basedirectory.mkdir()
-
-n_sims_to_generate = range(10)
-n_particles_to_investigate = [10000, 30000]
 
 variable_dict = {'UpStreamApertureRadius': 1.82,
                  'DownStreamApertureRadius': 2.5,
