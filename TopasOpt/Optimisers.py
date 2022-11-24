@@ -141,7 +141,7 @@ class TopasOptBaseClass:
         self.TopasLocation = Path(TopasLocation)
         self._testing_mode = False  # overwrite if True
         self._retrospective_mode = False  # overwrite if True
-        if self.TopasLocation == 'testing_mode':
+        if str(self.TopasLocation) == 'testing_mode':
             self._testing_mode = True
             logger.warning(f'Entering test mode because topas location = {self.TopasLocation}')
 
@@ -275,10 +275,10 @@ class TopasOptBaseClass:
         # make sure topas binary exists
         if not self._testing_mode:
             if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
-                logger.error(f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation}'
-                             f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
-                             f'\nQuitting{bcolors.ENDC}')
-                sys.exit(1)
+                error = f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation} ' \
+                        f'\nPlease initialise with TopasLocation pointing to the topas installation location.' \
+                        f'\nQuitting{bcolors.ENDC}'
+                raise FileNotFoundError(error)
 
     def _GenerateTopasModel(self, x):
         """
