@@ -57,6 +57,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass.BlackBoxFunction"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass.BlackBoxFunction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass.RunOptimisation"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass.RunOptimisation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass.SetUpDirectoryStructure"><code class="docutils literal notranslate"><span class="pre">TopasOptBaseClass.SetUpDirectoryStructure()</span></code></a></li>
 </ul>
 </li>
@@ -97,6 +98,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.compare_multiple_results"><code class="docutils literal notranslate"><span class="pre">compare_multiple_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.generate_run_all_scripts_shell_script"><code class="docutils literal notranslate"><span class="pre">generate_run_all_scripts_shell_script()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.get_all_files"><code class="docutils literal notranslate"><span class="pre">get_all_files()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#TopasOpt.utilities.newJSONLogger"><code class="docutils literal notranslate"><span class="pre">newJSONLogger</span></code></a></li>
 </ul>
 </li>
@@ -117,8 +120,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Code documentation</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Code documentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/code_docs.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -139,31 +142,28 @@ different optimisers.</p>
 which other optimisers inherit from.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.BayesianOptimiser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">BayesianOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bayes_length_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_UCBkappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_KappaDecayIterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_GP_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">BayesianOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bayes_length_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_UCBkappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_KappaDecayIterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_GP_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a></p>
 <p>Class to perform optimisation using the <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">Bayesian Optimisation code</a>
 Specific options are described below, the rest are described in TopasOptBaseClass</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>bayes_length_scales</strong> – Bayes-specific parameter to defined the length scales used in the gaussian process  model.  This can be supplied as one of three things:</p>
-</dd>
-</dl>
-<ul class="simple">
-<li><p><strong>None</strong>: in this case, the default is used: length_scale=1.0</p></li>
-<li><dl class="simple">
-<dt><strong>Number between 0 and 1</strong>: in this case, the length scales for each parameter are derived as a percentage of range.</dt><dd><p>For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable</p>
-</dd>
-</dl>
-</li>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bayes_length_scales</strong> (<em>None</em><em>, </em><em>float</em><em>, or </em><em>array</em><em> (</em><em>optional</em><em>)</em>) – <p>Bayes-specific parameter to defined the length scales used in the gaussian process  model.
+This can be supplied as one of three things:
+- <strong>None</strong>: in this case, the default is used: length_scale=1.0
+- <strong>Number between 0 and 1</strong>: in this case, the length scales for each parameter are derived as a percentage of range.</p>
+<blockquote>
+<div><p>For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable</p>
+</div></blockquote>
+<ul>
 <li><dl class="simple">
 <dt><strong>Array-like</strong>: Finally, the user is free to simply specify what length scales to use for each parameter.</dt><dd><p>Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.</p>
 </dd>
 </dl>
 </li>
 </ul>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
+</p></li>
 <li><p><strong>bayes_UCBkappa</strong> (<em>float</em><em>, </em><em>optional</em>) – Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
 <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb">this notebook</a>
 for explanation</p></li>
@@ -171,6 +171,8 @@ for explanation</p></li>
 almost 0 (highly exploitive). For explantion of kappa decay see <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/pull/221">here</a></p></li>
 <li><p><strong>bayes_GP_alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Bayes-specific parameter. This parameter handles the smoothness of the gaussian process model.
 for a noisy objective function, increasing this value can minimise overfitting errors.</p></li>
+<li><p><strong>custom_kernel</strong> (<em>instance</em><em> of </em><em>scikit-learn.gaussian_process.kernels.Kernel</em><em> or </em><em>derived classes</em>) – You can optionally [construct your own kernel](<a class="reference external" href="https://scikit-learn.org/stable/modules/gaussian_process.html">https://scikit-learn.org/stable/modules/gaussian_process.html</a>)
+to use in the gaussian process model</p></li>
 </ul>
 </dd>
 </dl>
@@ -246,6 +248,12 @@ which can take a lot of space</p></li>
 <span class="sig-name descname"><span class="pre">BlackBoxFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.BlackBoxFunction" title="Permalink to this definition"></a></dt>
 <dd><p>Called Black Box function in the spirit of bayesian optimisation, this function simply takes the most recent
 parameter guesses, and solves the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="TopasOpt.Optimisers.TopasOptBaseClass.RunOptimisation">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.RunOptimisation" title="Permalink to this definition"></a></dt>
+<dd><p>each inheriting optimizer must supply its own RunOptimisation method</p>
 </dd></dl>
 
 <dl class="py method">
@@ -345,7 +353,7 @@ No error checking included! If not supplied, behaviour is instead to show the pl
 
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">WaterTankData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AnalysisPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileToAnalyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AbsDepthDose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">WaterTankData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AnalysisPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileToAnalyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AbsDepthDose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Read in and analyse a series of topas scoring files in a rectangular phantom (the water tank).
 There are two ways you might want to use this:</p>
@@ -470,6 +478,36 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="TopasOpt.utilities.generate_run_all_scripts_shell_script">
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">generate_run_all_scripts_shell_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scripts_to_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topas_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/topas38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G4_DATA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/G4Data'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.generate_run_all_scripts_shell_script" title="Permalink to this definition"></a></dt>
+<dd><p>generate a bash script to run a series of topas scripts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>script_location</strong> (<em>Path</em><em> or </em><em>str</em>) – Directory where the scripts are stored</p></li>
+<li><p><strong>scripts_to_run</strong> (<em>array like</em>) – a list of scripts to run</p></li>
+<li><p><strong>topas_location</strong> (<em>Path</em><em> or </em><em>str</em>) – location of the topas executable</p></li>
+<li><p><strong>G4_DATA</strong> (<em>Path</em><em> or </em><em>str</em>) – location of the G4data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="TopasOpt.utilities.get_all_files">
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">get_all_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PathToData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.get_all_files" title="Permalink to this definition"></a></dt>
+<dd><p>quick script to just collect all the files in the Analysis path
+:param PathToData: folder where the files are
+:type PathToData: pathlib.Path or string
+:param file_extension: extension of files to return, e.g. ‘dcm’
+:type file_extension: str
+:returns Files: list of all found files</p>
 </dd></dl>
 
 <dl class="py class">

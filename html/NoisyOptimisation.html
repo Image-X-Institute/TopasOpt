@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handling noisy data &mdash; TopasOpt  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> TopasOpt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TopasOpt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Handling noisy data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/NoisyOptimisation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="handling-noisy-data">
+<h1>Handling noisy data<a class="headerlink" href="#handling-noisy-data" title="Permalink to this heading"></a></h1>
+<p>In Monte Carlo modelling, we constantly have to trade off how long our simulations run for and how noisy they are. This is particularly important for TopasOpt, where total run time = time_per_sim * n_iterations.</p>
+<p>In general, the easiest way to handle noise is to make sure it is low enough that you don’t care about it. However, there will certainly be situations where this approach results in unacceptably long run times. Therefore, in this example we will look at working with noisy data using Bayesian Optimization.</p>
+<p>This tutorial is split into the following sections:</p>
+<ul class="simple">
+<li><p>Quantifying statistical noise versus n_primary_particles by generating multiple identical simulations</p></li>
+<li><p>modelling the noisy data with gaussian process models</p></li>
+<li><p>re-running TopasOpt with a custom kernel that accounts for noise</p></li>
+</ul>
+<section id="setup-example">
+<h2>Setup example<a class="headerlink" href="#setup-example" title="Permalink to this heading"></a></h2>
+<p>As always; start by setting up a new folder that will hold all the codes to run the example.</p>
+<p>This example is based on the same base code as the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">geometry example</a>. You should complete that example first. All of the source code for the steps below can be found <a class="reference external" href="https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/NoisyOptimisation">here</a>.</p>
+</section>
+<section id="generating-simulations-with-different-level-of-noise">
+<h2>Generating simulations with different level of noise<a class="headerlink" href="#generating-simulations-with-different-level-of-noise" title="Permalink to this heading"></a></h2>
+<p>In order to assess how statistical noise manifests in our objective function, we can generate N identical simulations, assess the objective function for each one, and quantify the variance. We can use our the <code class="docutils literal notranslate"><span class="pre">GenerateTopasScripts.py</span></code> function we <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">previously developed</a> to do this, so copy that one into your example directory. we will make some modifications so that we can also vary the number of primary particles.</p>
+<p>add the following lines inside the GenerateTopasScripts function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;particle_data.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">particle_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        <span class="n">n_particles</span> <span class="o">=</span> <span class="n">particle_data</span><span class="p">[</span><span class="s1">&#39;n_particles&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;could not locate particle_data.json. Please create    									this file and place e.g. the following in it:&#39;</span>
+                                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">`{&quot;n_particles&quot;: 50000}`&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This line of code will attempt to read in the number of particles from a file called particle_data.json, which we will create later.</p>
+<p>Also change</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#change:</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ic:So/Beam/NumberOfHistoriesInRun = 5000&#39;</span><span class="p">)</span>
+<span class="c1"># to</span>
+<span class="n">SimpleCollimator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ic:So/Beam/NumberOfHistoriesInRun = </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">n_particles</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, create a new file called (for instance) <code class="docutils literal notranslate"><span class="pre">generate_identical_sims.py</span></code> and copy the below code into it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">GenerateTopasScripts</span> <span class="kn">import</span> <span class="n">GenerateTopasScripts</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">generate_run_all_scripts_shell_script</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<span class="n">basedirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">))</span> <span class="o">/</span> <span class="s1">&#39;Documents&#39;</span> <span class="o">/</span> <span class="s1">&#39;temp&#39;</span> <span class="o">/</span> <span class="s1">&#39;noise_sims&#39;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">basedirectory</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+    <span class="n">basedirectory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+
+<span class="n">n_sims_to_generate</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">n_particles_to_investigate</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">,</span> <span class="mi">30000</span><span class="p">,</span> <span class="mi">40000</span><span class="p">,</span> <span class="mi">50000</span><span class="p">]</span>
+
+<span class="n">variable_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;UpStreamApertureRadius&#39;</span><span class="p">:</span> <span class="mf">1.82</span><span class="p">,</span>
+                 <span class="s1">&#39;DownStreamApertureRadius&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span>
+                 <span class="s1">&#39;CollimatorThickness&#39;</span><span class="p">:</span> <span class="mi">27</span><span class="p">}</span>
+
+<span class="k">for</span> <span class="n">n_particles</span> <span class="ow">in</span> <span class="n">n_particles_to_investigate</span><span class="p">:</span>
+    <span class="n">particle_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">particle_data</span><span class="p">[</span><span class="s1">&#39;n_particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_particles</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;particle_data.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">particle_data</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>  <span class="c1"># GenerateTopasScripts will read this</span>
+    <span class="n">sim_directory</span> <span class="o">=</span> <span class="n">basedirectory</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;n_particles_</span><span class="si">{</span><span class="n">n_particles</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sim_directory</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="n">sim_directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;Results&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="p">(</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;Results&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;logs&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="p">(</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;logs&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;scripts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="p">(</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;scripts&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="n">sim_num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">variable_dict</span><span class="p">[</span><span class="s1">&#39;n_primaries&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_particles</span>
+    <span class="n">ScriptsToRun</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">n_sim</span> <span class="ow">in</span> <span class="n">n_sims_to_generate</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">SimpleCollimator</span><span class="p">,</span> <span class="n">WaterTank</span><span class="p">],</span> <span class="p">[</span><span class="n">sim1_name</span><span class="p">,</span> <span class="n">sim2_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">GenerateTopasScripts</span><span class="p">(</span><span class="s1">&#39;gah&#39;</span><span class="p">,</span> <span class="n">n_sim</span><span class="p">,</span> <span class="o">**</span><span class="n">variable_dict</span><span class="p">)</span>
+        <span class="n">sim_num</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">sim1</span> <span class="o">=</span> <span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;scripts&#39;</span> <span class="o">/</span> <span class="p">(</span><span class="n">sim1_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sim_num</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.tps&#39;</span><span class="p">)</span>
+        <span class="n">sim2</span> <span class="o">=</span> <span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;scripts&#39;</span> <span class="o">/</span> <span class="p">(</span><span class="n">sim2_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sim_num</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.tps&#39;</span><span class="p">)</span>
+        <span class="n">ScriptsToRun</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sim1</span><span class="p">)</span>
+        <span class="n">ScriptsToRun</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sim2</span><span class="p">)</span>
+        <span class="c1"># write the first simulation</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sim1</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">SimpleCollimator</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># write the second simulation</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sim2</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">WaterTank</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># once all sims are generated, write a &#39;RunAllFiles.sh&#39; script:</span>
+    <span class="n">generate_run_all_scripts_shell_script</span><span class="p">((</span><span class="n">sim_directory</span> <span class="o">/</span> <span class="s1">&#39;scripts&#39;</span><span class="p">),</span> <span class="n">ScriptsToRun</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As the name implies, this script will generate N identical simulations, for varying number of primary parrticles. In addition, we are looping over the n_particles parameter so we can also assess the effect of this on noise.</p>
+<blockquote>
+<div><p>you may have to update the <code class="docutils literal notranslate"><span class="pre">basedirectory</span></code> parameter for your system to a location that actually exists!</p>
+</div></blockquote>
+<p>Running this script will generate a series of folders called n_particles_{some_number}. Inside each folder is a directory called scripts, which contains a shell file called <code class="docutils literal notranslate"><span class="pre">RunAllFiles.sh</span></code>. As the name implies, this will run all scripts in the folder. If you wanted to run everything in one go, you could also create a bash script to run all of these sequentially, e.g:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="nb">cd</span> n_particles_20000/scripts/
+./RunAllFiles.sh
+<span class="nb">cd</span> ../..
+<span class="nb">cd</span> n_particles_40000/scripts/
+./RunAllFiles.sh
+<span class="nb">cd</span> ../..
+<span class="nb">cd</span> n_particles_50000/scripts
+./RunAllFiles.sh
+<span class="nb">cd</span> ../..
+<span class="nb">cd</span> n_particles_500000/scripts
+./RunAllFiles.sh
+<span class="nb">cd</span> ../..
+</pre></div>
+</div>
+<p>You can go ahead and generate results locally if you want, but it is somewhat time consuming, so if you want you can just <a class="reference external" href="https://cloudstor.aarnet.edu.au/plus/s/7X2fwap7iIvC71O">download the pre-run results</a> and continue…</p>
+</section>
+<section id="set-up-a-plotting-function">
+<h2>Set up a plotting function<a class="headerlink" href="#set-up-a-plotting-function" title="Permalink to this heading"></a></h2>
+<p>Create a new file called <code class="docutils literal notranslate"><span class="pre">noise_box_plots.py</span></code> and copy the below into it. We will use this function in the following steps.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="k">def</span> <span class="nf">plot_gp_model_versus_data</span><span class="p">(</span><span class="n">BoxPlotData</span><span class="p">,</span> <span class="n">target_predictions</span><span class="p">,</span> <span class="n">std_predictions</span><span class="p">):</span>
+    <span class="n">figure</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">BoxPlotData</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;n=1e4&#39;</span><span class="p">,</span> <span class="s1">&#39;n=2e4&#39;</span><span class="p">,</span> <span class="s1">&#39;n=3e4&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;n=4e4&#39;</span><span class="p">,</span> <span class="s1">&#39;n=5e4&#39;</span><span class="p">],</span>
+                    <span class="n">medianprops</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;k&#39;</span><span class="p">})</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;couldnt label boxplots, label length didnt match data&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">BoxPlotData</span><span class="p">,</span> <span class="n">medianprops</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;k&#39;</span><span class="p">})</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">BoxPlotData</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">axs</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;OF&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Objective function values&#39;</span><span class="p">)</span>
+
+    <span class="c1"># now add the predictions</span>
+    <span class="n">x_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">std_predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">line1</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">target_predictions</span><span class="p">,</span> <span class="s1">&#39;C6&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Iteration number&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Objective function&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">line2</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">target_predictions</span> <span class="o">+</span> <span class="n">std_predictions</span><span class="p">,</span>
+                     <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">target_predictions</span> <span class="o">-</span> <span class="n">std_predictions</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="n">line1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">line2</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Gaussian Process predictions&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\sigma$&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="assessing-noise-in-the-objective-function">
+<h2>Assessing noise in the objective function<a class="headerlink" href="#assessing-noise-in-the-objective-function" title="Permalink to this heading"></a></h2>
+<p>Now that we have the results (either because you generated them yourself or you downloaded the data) we can assess how the effect the objective function. Create a new script called e.g. <code class="docutils literal notranslate"><span class="pre">quantify_noise.py</span></code> and copy the below into it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">TopasObjectiveFunction</span> <span class="kn">import</span> <span class="n">TopasObjectiveFunction</span>
+<span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">get_all_files</span>
+<span class="kn">from</span> <span class="nn">bayes_opt</span> <span class="kn">import</span> <span class="n">BayesianOptimization</span>
+<span class="kn">from</span> <span class="nn">bayes_opt</span> <span class="kn">import</span> <span class="n">UtilityFunction</span>
+<span class="kn">from</span> <span class="nn">noise_box_plots</span> <span class="kn">import</span> <span class="n">plot_gp_model_versus_data</span>
+<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+
+<span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Downloads/noise_sims&#39;</span><span class="p">)</span> <span class="c1"># where is the previously generated (or downloaded) data</span>
+<span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>  <span class="c1"># dont change</span>
+
+<span class="c1"># set up optimisation params (this is necessary to instantiate the optimizer, we don&#39;t actually use them):</span>
+<span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;ParameterNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UpStreamApertureRadius&#39;</span><span class="p">,</span> <span class="s1">&#39;DownStreamApertureRadius&#39;</span><span class="p">,</span> <span class="s1">&#39;CollimatorThickness&#39;</span><span class="p">]</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.14</span><span class="p">,</span> <span class="mf">1.73</span><span class="p">,</span> <span class="mf">39.9</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">Matern</span><span class="p">(</span><span class="n">length_scale</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">WhiteKernel</span><span class="p">()</span>
+<span class="n">custom_kernel</span> <span class="o">=</span> <span class="n">k1</span> <span class="o">+</span> <span class="n">k2</span>
+<span class="n">target_predictions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">std_predictions</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># generate pbounds</span>
+<span class="n">pbounds</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">parameter_values</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ParamName</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;ParameterNames&#39;</span><span class="p">]):</span>
+    <span class="n">pbounds</span><span class="p">[</span><span class="n">ParamName</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">parameter_values</span><span class="p">[</span><span class="n">ParamName</span><span class="p">]</span> <span class="o">=</span> <span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+
+<span class="n">sims_to_investigate</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n_particles_10000&#39;</span><span class="p">,</span> <span class="s1">&#39;n_particles_20000&#39;</span><span class="p">,</span> <span class="s1">&#39;n_particles_30000&#39;</span><span class="p">,</span> <span class="s1">&#39;n_particles_40000&#39;</span><span class="p">,</span> <span class="s1">&#39;n_particles_50000&#39;</span><span class="p">]</span>
+<span class="n">of_results</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sims_to_investigate</span><span class="p">))]</span>
+<span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">sim</span> <span class="ow">in</span> <span class="n">sims_to_investigate</span><span class="p">:</span>
+    <span class="n">data_loc</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="n">sim</span> <span class="o">/</span> <span class="s1">&#39;Results&#39;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">get_all_files</span><span class="p">(</span><span class="n">data_loc</span><span class="p">,</span> <span class="s1">&#39;bin&#39;</span><span class="p">)</span>
+    <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">utility</span> <span class="o">=</span> <span class="n">UtilityFunction</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;ucb&quot;</span><span class="p">,</span> <span class="n">kappa</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">xi</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">BayesianOptimization</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">pbounds</span><span class="o">=</span><span class="n">pbounds</span><span class="p">,</span>  <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">set_gp_params</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="n">custom_kernel</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">objective_value</span> <span class="o">=</span> <span class="n">TopasObjectiveFunction</span><span class="p">(</span><span class="n">data_loc</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">take_abs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># note we added a new parameter so we aren&#39;t automatically taking absolute values</span>
+        <span class="n">of_results</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objective_value</span><span class="p">)</span>
+        <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">parameter_values</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">objective_value</span><span class="p">)</span>
+    <span class="c1"># because we are running this in a pretty weird way we have to manually fit the model:</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">_gp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">optimizer</span><span class="o">.</span><span class="n">_space</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">_space</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+    <span class="c1"># generate gaussian prediction</span>
+    <span class="n">optimal_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">parameter_values</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>  <span class="c1"># make sure they are in alphabetical order</span>
+    <span class="n">param_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromiter</span><span class="p">(</span><span class="n">optimal_params</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">predicted_target</span><span class="p">,</span> <span class="n">predicted_std</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">_gp</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">param_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">target_predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">predicted_target</span><span class="p">)</span>
+    <span class="n">std_predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicted_std</span><span class="p">)</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">del</span> <span class="n">optimizer</span>
+
+<span class="n">of_results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">of_results</span><span class="p">)</span>
+<span class="n">of_results</span> <span class="o">=</span> <span class="n">of_results</span><span class="o">.</span><span class="n">T</span>
+<span class="n">plot_gp_model_versus_data</span><span class="p">(</span><span class="n">of_results</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target_predictions</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">std_predictions</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This script will attempt to call <code class="docutils literal notranslate"><span class="pre">TopasObjectiveFunction</span></code>, so copy the <a class="reference external" href="https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/ApertureOptimisation">TopasObjectiveFunction from the geometry optimisation example</a> into your working directory. As discussed in the notes for that example, you need to update this function such that it points to wherever your ground truth results are stored:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># change</span>
+<span class="n">GroundTruthDataPath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;SimpleCollimatorExample_TopasFiles&#39;</span> <span class="o">/</span> <span class="s1">&#39;Results&#39;</span><span class="p">)</span>
+<span class="c1"># to wherever your ground truth results are</span>
+</pre></div>
+</div>
+<p>Remember you can also <a class="reference external" href="https://cloudstor.aarnet.edu.au/plus/s/Wm9vndV47u941JU">download the ground truth results</a></p>
+<p>Ok, now we can run <code class="docutils literal notranslate"><span class="pre">quantify_noise.py</span></code>, which will produce the following results:</p>
+<p><img alt="_resources/noise_example/noise_quant.png" src="_resources/noise_example/noise_quant.png" />
+From this, we observe the following:</p>
+<ol class="simple">
+<li><p>In general, the gaussian process model is doing an excellent job modelling the noise. Note that at this point we are only asking the model to predict values which it has a lot of data for - so it <strong>should</strong> work well, but it’s reassuring that it does!</p></li>
+<li><p>Noise in the objective function decreases with increasing number of particles. This is not surprising!</p></li>
+<li><p>Mean value of the objective function increases as noise increases. This perhaps is more surprising, and goes back to the fact that we are taking absolute differences in the objective function, therefore any noise manifests as an increased value of the objective function.</p></li>
+</ol>
+<p>The key step in this process was the construction of a custom kernel:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">k1</span> <span class="o">=</span> <span class="n">Matern</span><span class="p">(</span><span class="n">length_scale</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">WhiteKernel</span><span class="p">()</span>
+<span class="n">custom_kernel</span> <span class="o">=</span> <span class="n">k1</span> <span class="o">+</span> <span class="n">k2</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.gaussian_process.kernels.WhiteKernel.html">WhiteKernel is used for modelling noise</a>. We can also test what happens if we just use the defaul Matern kernel by not adding the white kernel</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">custom_kernel</span> <span class="o">=</span> <span class="n">k1</span>  <span class="c1"># just the standard Matern kernel</span>
+</pre></div>
+</div>
+<p><img alt="_resources/noise_example/noise_quant_no_white_kernel.png" src="_resources/noise_example/noise_quant_no_white_kernel.png" /></p>
+<p>In this case, the prediction basically defaults to the last point it has seen and the noise estimate is zero. So the construction of the appropriate kernel is key!</p>
+</section>
+<section id="passing-the-newly-constructed-kernel-to-topasopt">
+<h2>Passing the newly constructed kernel to TopasOpt<a class="headerlink" href="#passing-the-newly-constructed-kernel-to-topasopt" title="Permalink to this heading"></a></h2>
+<p>So, we know we have a gaussian process model capable of modelling noise - at least under situation where it sees enough data. The next step is to test the effectiveness of the optimization using this gaussian process model.</p>
+<p>We are going to run the optimization repeatedly with a different number of primary particles. We are going to use the custom kernel developed in the previous section. The below run_optimisation script is almost identical the one we <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">used in the other example</a>, except we pass a custom kernel.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/bwhelan/PhaserSims/topas/&#39;</span>
+
+<span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
+<span class="c1"># set up optimisation params:</span>
+<span class="n">optimisation_params</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;ParameterNames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UpStreamApertureRadius&#39;</span><span class="p">,</span><span class="s1">&#39;DownStreamApertureRadius&#39;</span><span class="p">,</span> <span class="s1">&#39;CollimatorThickness&#39;</span><span class="p">]</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;UpperBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;LowerBounds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;start_point&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.14</span><span class="p">,</span> <span class="mf">1.73</span><span class="p">,</span> <span class="mf">39.9</span><span class="p">])</span>
+<span class="c1"># true values are  [1.82, 2.5, 27]</span>
+<span class="n">optimisation_params</span><span class="p">[</span><span class="s1">&#39;Nitterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">ReadMeText</span> <span class="o">=</span> <span class="s1">&#39;reducing the number of primary particles even further, no noise kernel&#39;</span>
+
+<span class="n">k1</span> <span class="o">=</span> <span class="n">Matern</span><span class="p">(</span><span class="n">length_scale</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">WhiteKernel</span><span class="p">()</span>
+<span class="n">custom_kernel</span> <span class="o">=</span> <span class="n">k1</span> <span class="o">+</span> <span class="n">k2</span>
+<span class="k">for</span> <span class="n">n_particles</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">10e3</span><span class="p">,</span> <span class="mf">20e3</span><span class="p">,</span> <span class="mf">30e3</span><span class="p">,</span> <span class="mf">40e3</span><span class="p">,</span> <span class="mf">50e3</span><span class="p">]:</span>
+    <span class="c1"># write the number of particles to a json file:</span>
+    <span class="n">particle_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">particle_data</span><span class="p">[</span><span class="s1">&#39;n_particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_particles</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;particle_data.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">particle_data</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+    <span class="c1"># update simulation name:</span>
+    <span class="n">SimulationName</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;noisy_opt_n_particles_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">n_particles</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="o">=</span><span class="n">optimisation_params</span><span class="p">,</span> 	 <span class="n">BaseDirectory</span><span class="o">=</span><span class="n">BaseDirectory</span><span class="p">,</span>
+                                     <span class="n">SimulationName</span><span class="o">=</span><span class="n">SimulationName</span><span class="p">,</span> <span class="n">OptimisationDirectory</span><span class="o">=</span><span class="n">OptimisationDirectory</span><span class="p">,</span>
+                                     <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas38&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">custom_kernel</span><span class="o">=</span><span class="n">custom_kernel</span><span class="p">)</span>
+    <span class="n">Optimiser</span><span class="o">.</span><span class="n">RunOptimisation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="assessing-optimiser-performance">
+<h2>Assessing optimiser performance<a class="headerlink" href="#assessing-optimiser-performance" title="Permalink to this heading"></a></h2>
+<p>There are two aspects to consider when considering the optimiser perofmrance:</p>
+<ol class="simple">
+<li><p>Did the underlying gaussian process model do a good modelling the noise?</p></li>
+<li><p>How was the convergence rate and overall performance of the optimizer in each case?</p></li>
+</ol>
+<p>For the first case, we can use the logs from the optimizer to ‘retrain’ a gaussian process model, and test the predictions of this optimiser.  We are in essence going to do the same thing as in the previous seciton, except in this case instead of the gaussian process model predicting the values of points it has already seen, we are going to be asking it to infer the values of points it (probably) hasn’t seen! the code to do this is <a class="reference external" href="#">here</a> (I am going to stop pasting all the source code into this article, it is getting very clunky) and the resultant plot is below:</p>
+<blockquote>
+<div><p>Do this!</p>
+</div></blockquote>
+<p><img alt="_resources/noise_example/noise_quant_from_logs.png" src="_resources/noise_example/noise_quant_from_logs.png" />
+Comparing this to the case above, we can see that in most cases, the gaussian process model is performing well. For the n=1e4 case the mean prediction is a bit off, but it is still accurately predicting the amount of noise.</p>
+<p>So the next question is how did the optimization actually perform. To assess this we can compare convergence between the different cases:</p>
+<p><img alt="_resources/noise_example/convergence.png" src="_resources/noise_example/convergence.png" /></p>
+<p>From this it can be seen that</p>
+<ul class="simple">
+<li><p>In general, higher number of primary particles is associated with both more rapid convergence, and lower values found overall</p></li>
+<li><p>Most cases have still converged reasonably well - again, the 1e4 case is substantially worse than the others.</p></li>
+</ul>
+<p>The below table shows the best values found be each optimizer:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th><strong>Parameter</strong></th>
+<th><strong>Ground truth value</strong></th>
+<th><strong>n=1e4</strong></th>
+<th><strong>n=2e4</strong></th>
+<th><strong>n=3e4</strong></th>
+<th><strong>n=4e4</strong></th>
+<th><strong>n=5e4</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Collimator Thickness</strong></td>
+<td>27</td>
+<td>27.94</td>
+<td>26.32</td>
+<td>27.21</td>
+<td>27.61</td>
+<td>26.83</td>
+</tr>
+<tr>
+<td><strong>Upstream hole size</strong></td>
+<td>1.82</td>
+<td>2.53</td>
+<td>1.75</td>
+<td>2.22</td>
+<td>2.11</td>
+<td>1.77</td>
+</tr>
+<tr>
+<td><strong>Downstream hole size</strong></td>
+<td>2.5</td>
+<td>2.29</td>
+<td>2.55</td>
+<td>2.29</td>
+<td>2.37</td>
+<td>2.53</td>
+</tr>
+</tbody>
+</table><p>In general, the most sensitive parameters in these simulations is collimator thickness. All cases recovered this paramaters to within 1 mm. However, larger errors were seen in the other parameters.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
