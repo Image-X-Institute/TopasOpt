@@ -15,6 +15,8 @@ import topas2numpy as tp
 import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 from pathlib import Path
+import stat
+import glob
 # import seaborn as sns
 plt.interactive(False)
 
@@ -93,7 +95,7 @@ class WaterTankData:
 
     """
 
-    def __init__(self, AnalysisPath, FileToAnalyse, AbsDepthDose=False):
+    def __init__(self, AnalysisPath, FileToAnalyse, AbsDepthDose=False, verbose=False):
         """
         :param AnalysisPath: Path where files are located
         :type AnalysisPath: string
@@ -105,6 +107,7 @@ class WaterTankData:
 
         self.AnalysisPath = AnalysisPath
         self.FileToAnalyse = FileToAnalyse
+        self.verbose = verbose
         # the below lists all get appended to as data is read in
         self.Xangles = []
         self.Yangles = []
@@ -175,7 +178,7 @@ class WaterTankData:
             if self.dose.unit == 'Gy':
                 DoseConverter = 1e6
                 self.dose.unit = '\u03BCGy'
-                if not self.DoseUnitsWarning:
+                if not self.DoseUnitsWarning and self.verbose:
                     print(f'converting Gy to {self.dose.unit}')
                     self.DoseUnitsWarning = True
             elif self.dose.unit == 'mGy':
@@ -205,7 +208,7 @@ class WaterTankData:
         # what unit is the file in?
         if self.dose.dimensions[0].unit == 'cm':
             UnitConverter = 10
-            if not self.DistanceUnitMessage:
+            if not self.DistanceUnitMessage and self.verbose:
                 print('converting cm to mm')
                 self.DistanceUnitMessage = True
         elif self.dose.dimensions[0].unit == 'mm':
@@ -673,5 +676,71 @@ def PlotLogFile(LogFileLoc, save_loc=None): # pragma: no cover
         plt.show()
 
 
+def get_all_files(PathToData, file_extension):
+    """
+    quick script to just collect all the files in the Analysis path
+    :param PathToData: folder where the files are
+    :type PathToData: pathlib.Path or string
+    :param file_extension: extension of files to return, e.g. 'dcm'
+    :type file_extension: str
+    :returns Files: list of all found files
+    """
 
+    if not file_extension[0] == '.':
+        # handles the case where the user entered 'dcm' instead of '.dcm'
+        file_extension = '.' + file_extension
+    file_extension = '*' + file_extension
+    # check that this is now in the format we require
+    if not file_extension[0:2] == '*.':
+        logger.error('please enter the file_extension parameter like this : file_extension = "jpg"')
+        sys.exit(1)
 
+    if not isinstance(PathToData,Path):
+        PathToData = Path(PathToData)
+
+    if not os.path.isdir(PathToData):
+        raise FileNotFoundError(f'invalid path supplied; {PathToData} does not exist')
+    AllFiles = glob.glob(str(PathToData / file_extension))
+    Files = []
+    for file in AllFiles:
+        head, tail = os.path.split(file)
+        Files.append(tail)
+    if not Files:
+        logging.error(f'no {file_extension} files in {PathToData}')
+
+    return Files
+
+def generate_run_all_scripts_shell_script(script_location, scripts_to_run, topas_location='~/topas38', G4_DATA='~/G4Data'):
+    """
+    generate a bash script to run a series of topas scripts
+
+    :param script_location: Directory where the scripts are stored
+    :type script_location: Path or str
+    :param scripts_to_run: a list of scripts to run
+    :type scripts_to_run: array like
+    :param topas_location: location of the topas executable
+    :type topas_location: Path or str
+    :param G4_DATA: location of the G4data
+    :type G4_DATA: Path or str
+    :return:
+    """
+    script_location = Path(script_location)
+    FileName = script_location / 'RunAllFiles.sh'
+    f = open(FileName, 'w+')
+    f.write('# !/bin/bash\n\n')
+    f.write('# This script sets up the topas environment then runs all listed files\n\n')
+    f.write('# ensure that any errors cause the script to stop executing:\n')
+    f.write('set - e\n\n')
+    f.write(f'export TOPAS_G4_DATA_DIR={str(G4_DATA)}\n')
+
+    # add in all topas scripts which need to be run:
+    for sim in scripts_to_run:
+        f.write('echo "Beginning analysis of: ' + sim.name + '"')
+        f.write('\n')
+        f.write(f'(time {str(topas_location)}/bin/topas {sim.name}) &> ../logs/{sim.name}')
+        f.write('\n')
+    f.write('\necho "All done!"\n')
+    # change file modifications:
+    st = os.stat(FileName)
+    os.chmod(FileName, st.st_mode | stat.S_IEXEC)
+    f.close()

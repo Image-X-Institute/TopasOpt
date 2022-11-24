@@ -23,6 +23,7 @@ import logging
 from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile, PlotLogFile
 import stat
 from scipy.optimize import rosen
+from abc import abstractmethod
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
@@ -139,7 +140,8 @@ class TopasOptBaseClass:
             TopasLocation = os.path.expanduser(TopasLocation)
         self.TopasLocation = Path(TopasLocation)
         self._testing_mode = False  # overwrite if True
-        if 'testing_mode' in str(self.TopasLocation):
+        self._retrospective_mode = False  # overwrite if True
+        if str(self.TopasLocation) == 'testing_mode':
             self._testing_mode = True
             logger.warning(f'Entering test mode because topas location = {self.TopasLocation}')
 
@@ -273,10 +275,10 @@ class TopasOptBaseClass:
         # make sure topas binary exists
         if not self._testing_mode:
             if not os.path.isfile(self.TopasLocation / 'bin' / 'topas'):
-                logger.error(f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation}'
-                             f'\nPlease initialise with TopasLocation pointing to the topas installation location.'
-                             f'\nQuitting{bcolors.ENDC}')
-                sys.exit(1)
+                error = f'{bcolors.FAIL}could not find topas binary at \n{self.TopasLocation} ' \
+                        f'\nPlease initialise with TopasLocation pointing to the topas installation location.' \
+                        f'\nQuitting{bcolors.ENDC}'
+                raise FileNotFoundError(error)
 
     def _GenerateTopasModel(self, x):
         """
@@ -487,6 +489,13 @@ class TopasOptBaseClass:
                 logger.warning(f'Failed to delete {file_path} from results folder. Reason: {e}. continuing...')
 
     # public methods
+
+    @abstractmethod
+    def RunOptimisation(self):
+        """
+        each inheriting optimizer must supply its own RunOptimisation method
+        """
+        pass
     
     def BlackBoxFunction(self, x_new):
         """
@@ -651,13 +660,13 @@ class BayesianOptimiser(TopasOptBaseClass):
     Class to perform optimisation using the `Bayesian Optimisation code <https://github.com/fmfn/BayesianOptimization>`_
     Specific options are described below, the rest are described in TopasOptBaseClass
 
-    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process  model.  This can be supplied as one of three things:
-
-    - **None**: in this case, the default is used: length_scale=1.0
-    - **Number between 0 and 1**: in this case, the length scales for each parameter are derived as a percentage of range.
-        For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable
-    - **Array-like**: Finally, the user is free to simply specify what length scales to use for each parameter.
-        Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.
+    :param bayes_length_scales: Bayes-specific parameter to defined the length scales used in the gaussian process  model.
+      This can be supplied as one of three things:
+      - **None**: in this case, the default is used: length_scale=1.0
+      - **Number between 0 and 1**: in this case, the length scales for each parameter are derived as a percentage of range.
+         For instance if the user enter 0.1, all length scales will be set to 10% of the range of each variable
+      - **Array-like**: Finally, the user is free to simply specify what length scales to use for each parameter.
+         Make sure you enter them in alphabetical order as this is the order used internally by the optimizer.
     :type bayes_length_scales: None, float, or array (optional)
     :param bayes_UCBkappa: Bayes-specific parameter . kappa value in UCB  function. A higher value=more exploration. see
         `this notebook <https://github.com/fmfn/BayesianOptimization/blob/master/examples/exploitation_vs_exploration.ipynb>`_
@@ -669,10 +678,14 @@ class BayesianOptimiser(TopasOptBaseClass):
     :param bayes_GP_alpha: Bayes-specific parameter. This parameter handles the smoothness of the gaussian process model.
         for a noisy objective function, increasing this value can minimise overfitting errors.
     :type bayes_GP_alpha: float, optional
+    :param custom_kernel: You can optionally [construct your own kernel](https://scikit-learn.org/stable/modules/gaussian_process.html)
+        to use in the gaussian process model
+    :type custom_kernel: instance of scikit-learn.gaussian_process.kernels.Kernel or derived classes
     """
 
     def __init__(self, bayes_length_scales=None, bayes_UCBkappa=5,
-                 bayes_KappaDecayIterations=10, bayes_GP_alpha=0.01, **kwds):
+                 bayes_KappaDecayIterations=10, bayes_GP_alpha=0.01,
+                 custom_kernel=None,**kwds):
         """
         init function for Bayesian optimiser
         """
@@ -688,6 +701,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         self._create_suggested_points_to_probe(self._optimisation_params)
         self._derive_bayes_length_scales(bayes_length_scales)
 
+
         # Bayesian optimisation settings:
         self._target_prediction_mean = []  # keep track of what the optimiser expects to get
         self._target_prediction_std = []  # keep track of what the optimiser expects to get
@@ -698,6 +712,10 @@ class BayesianOptimiser(TopasOptBaseClass):
         self.bayes_KappaDecayIterations = bayes_KappaDecayIterations
         self.UCBKappa_final = 0.1
         self.kappa_decay_delay = self.MaxItterations - self.bayes_KappaDecayIterations  # this many exploritive iterations will be carried out before kappa begins to decay
+        if custom_kernel is None:
+            self._kernel = Matern(length_scale=self.bayes_length_scales, nu=self.Matern_Nu)
+        else:
+            self._kernel = custom_kernel
 
         if self.kappa_decay_delay >= self.MaxItterations:
             logger.warning(f'Kappa decay requested, but since kappa_decay_delay ({self.kappa_decay_delay}) is less'
@@ -707,6 +725,13 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.kappa_decay = (self.UCBKappa_final / self.UCBkappa) ** (
                         1 / (self.MaxItterations - self.kappa_decay_delay))
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
+
+        # instantiate optimizer:
+        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
+        self.optimizer.set_gp_params(normalize_y=True, kernel=self._kernel,
+                                n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
+        self.utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
+                                  kappa_decay=self.kappa_decay)
 
 
     def _derive_bayes_length_scales(self, bayes_length_scales):
@@ -899,16 +924,19 @@ class BayesianOptimiser(TopasOptBaseClass):
         """
         writes the original and optimised length scales to the end of a log file
         """
-        start_length = self.optimizer._gp.kernel.length_scale
-        final_length = self.optimizer._gp.kernel_.length_scale
-        keys = sorted(self.pbounds)
-        start_length = dict(zip(keys, start_length))
-        final_length = dict(zip(keys, final_length))
-        Entry = f'\nStarting length scales were {start_length}'
-        Entry = Entry + f'\nOptimised length scales were {final_length}'
+        try:
+            start_length = self.optimizer._gp.kernel.length_scale
+            final_length = self.optimizer._gp.kernel_.length_scale
+            keys = sorted(self.pbounds)
+            start_length = dict(zip(keys, start_length))
+            final_length = dict(zip(keys, final_length))
+            Entry = f'\nStarting length scales were {start_length}'
+            Entry = Entry + f'\nOptimised length scales were {final_length}'
 
-        with open(self._LogFileLoc , 'a') as f:
-            f.write(Entry)
+            with open(self._LogFileLoc, 'a') as f:
+                f.write(Entry)
+        except AttributeError:
+            pass
 
     def RunOptimisation(self):
         """
@@ -922,15 +950,7 @@ class BayesianOptimiser(TopasOptBaseClass):
         else:
             self._setup_topas_emulator()
 
-        # instantiate optimizer:
 
-        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
-        self.optimizer.set_gp_params(normalize_y=True, kernel=Matern(length_scale=self.bayes_length_scales, nu=self.Matern_Nu),
-                                n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
-        utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
-                                  kappa_decay=self.kappa_decay)
-        logger.warning('setting numpy to ignore underflow errors.')
-        np.seterr(under='ignore')
 
         if self.__RestartMode:
             # then load the previous log files:
@@ -940,7 +960,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
             self.Itteration = len(self.optimizer.space.target)
             self.ItterationStart = len(self.optimizer.space.target)
-            utility._iters_counter = self.ItterationStart
+            self.utility._iters_counter = self.ItterationStart
             if self.Itteration >= self.MaxItterations-1:
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
@@ -954,13 +974,13 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.optimizer.register(self.VariableDict, target=target)
 
         for point in range(self.Itteration, self.MaxItterations):
-            utility.update_params()
+            self.utility.update_params()
             if (self.Nsuggestions is not None) and (self.SuggestionsProbed < self.Nsuggestions):
                 # evaluate any suggested solutions first
                 next_point_to_probe = self.Suggestions[self.SuggestionsProbed]
                 self.SuggestionsProbed += 1
             else:
-                next_point_to_probe = self.optimizer.suggest(utility)
+                next_point_to_probe = self.optimizer.suggest(self.utility)
 
             NextPointValues = np.array(list(next_point_to_probe.values()))
             mean, std = self.optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)

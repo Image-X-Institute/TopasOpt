@@ -3,7 +3,7 @@ from TopasOpt.utilities import WaterTankData
 import numpy as np
 from pathlib import Path
 
-def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
+def CalculateObjectiveFunction(TopasResults, GroundTruthResults, take_abs):
     """
     In this example, for metrics I am going to calculate the RMS error between the desired and actual
     profile and PDD. I will use normalised values to account for the fact that there may be different numbers of
@@ -13,7 +13,7 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     # define the points we want to collect our profile at:
     Xpts = np.linspace(GroundTruthResults.x.min(), GroundTruthResults.x.max(), 100)  # profile over entire X range
     Ypts = np.zeros(Xpts.shape)
-    Zpts = 25 * np.ones(Xpts.shape)  # at the middle of the water tank
+    Zpts = GroundTruthResults.PhantomSizeZ * np.ones(Xpts.shape)  # at the middle of the water tank
 
     OriginalProfile = GroundTruthResults.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
     OriginalProfileNorm = OriginalProfile * 100 / OriginalProfile.max()
@@ -32,20 +32,26 @@ def CalculateObjectiveFunction(TopasResults, GroundTruthResults):
     CurrentDepthDoseNorm = CurrentDepthDose * 100 / np.max(CurrentDepthDose)
     DepthDoseDifference = OriginalDepthDoseNorm - CurrentDepthDoseNorm
 
-    ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
-    return np.log(ObjectiveFunction)
+
+    if take_abs:
+        ObjectiveFunction = np.mean(abs(ProfileDifference)) + np.mean(abs(DepthDoseDifference))
+    else:
+        ObjectiveFunction = np.mean((ProfileDifference)) + np.mean((DepthDoseDifference))
+    return ObjectiveFunction
 
 
-def TopasObjectiveFunction(ResultsLocation, iteration):
+def TopasObjectiveFunction(ResultsLocation, iteration, take_abs=True):
+
     ResultsFile = ResultsLocation / f'WaterTank_itt_{iteration}.bin'
     path, file = os.path.split(ResultsFile)
     CurrentResults = WaterTankData(path, file)
+    GroundTruthDataPath = str(Path(r'/home/brendan/Downloads/SimpleCollimatorExample_TopasFiles/Results'))
+    # GroundTruthDataPath = str(
+    #     Path(r'Z:\python\TopasOpt\examples\NoisyOptimisation\SimpleCollimatorExample_TopasFiles\Results'))
 
-    GroundTruthDataPath = str(Path(__file__).parent)
     # this assumes that you stored the base files in the same directory as this file, updated if needed
     GroundTruthDataFile = 'WaterTank.bin'
     GroundTruthResults = WaterTankData(GroundTruthDataPath, GroundTruthDataFile)
-
-    OF = CalculateObjectiveFunction(CurrentResults, GroundTruthResults)
+    
+    OF = CalculateObjectiveFunction(CurrentResults, GroundTruthResults, take_abs)
     return OF
-
