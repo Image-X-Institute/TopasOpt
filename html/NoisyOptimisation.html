@@ -313,7 +313,7 @@
 </div>
 <p>Remember you can also <a class="reference external" href="https://cloudstor.aarnet.edu.au/plus/s/Wm9vndV47u941JU">download the ground truth results</a></p>
 <p>Ok, now we can run <code class="docutils literal notranslate"><span class="pre">quantify_noise.py</span></code>, which will produce the following results:</p>
-<p><img alt="_resources/noise_example/noise_quant.png" src="_resources/noise_example/noise_quant.png" />
+<p><img alt="_images/noise_quant.png" src="_images/noise_quant.png" />
 From this, we observe the following:</p>
 <ol class="simple">
 <li><p>In general, the gaussian process model is doing an excellent job modelling the noise. Note that at this point we are only asking the model to predict values which it has a lot of data for - so it <strong>should</strong> work well, but it’s reassuring that it does!</p></li>
@@ -330,7 +330,7 @@ From this, we observe the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">custom_kernel</span> <span class="o">=</span> <span class="n">k1</span>  <span class="c1"># just the standard Matern kernel</span>
 </pre></div>
 </div>
-<p><img alt="_resources/noise_example/noise_quant_no_white_kernel.png" src="_resources/noise_example/noise_quant_no_white_kernel.png" /></p>
+<p><img alt="_images/noise_quant_no_white_kernel.png" src="_images/noise_quant_no_white_kernel.png" /></p>
 <p>In this case, the prediction basically defaults to the last point it has seen and the noise estimate is zero. So the construction of the appropriate kernel is key!</p>
 </section>
 <section id="passing-the-newly-constructed-kernel-to-topasopt">
@@ -387,10 +387,10 @@ From this, we observe the following:</p>
 <blockquote>
 <div><p>Do this!</p>
 </div></blockquote>
-<p><img alt="_resources/noise_example/noise_quant_from_logs.png" src="_resources/noise_example/noise_quant_from_logs.png" />
+<p><img alt="_images/noise_quant_from_logs.png" src="_images/noise_quant_from_logs.png" />
 Comparing this to the case above, we can see that in most cases, the gaussian process model is performing well. For the n=1e4 case the mean prediction is a bit off, but it is still accurately predicting the amount of noise.</p>
 <p>So the next question is how did the optimization actually perform. To assess this we can compare convergence between the different cases:</p>
-<p><img alt="_resources/noise_example/convergence.png" src="_resources/noise_example/convergence.png" /></p>
+<p><img alt="_images/convergence.png" src="_images/convergence.png" /></p>
 <p>From this it can be seen that</p>
 <ul class="simple">
 <li><p>In general, higher number of primary particles is associated with both more rapid convergence, and lower values found overall</p></li>
