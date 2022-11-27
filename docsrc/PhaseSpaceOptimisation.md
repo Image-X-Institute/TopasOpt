@@ -161,10 +161,11 @@ Best parameter set: {'target': -0.5824966507848057, 'params': {'BeamAngularCutof
 
 These values are copied into the below table along with the ground truth values and the range we allowed them to vary over:
 
+
 | Parameter          | Ground Truth | Start point (Bounds) | Bayesian Optimized |
 | ------------------ | ------------ | -------------------- | ------------------ |
-| BeamEnergy         | 10           | 7.9 (6-12)           | 9.98 (0.2%%)       |
-| BeamPositionCutoff | 2            | 2.7 (1-3)            | 1.88 (6%)          |
+| BeamEnergy         | 10           | 7.9 (6-12)           | 9.98 (0.5%%)       |
+| BeamPositionCutoff | 2            | 2.7 (1-3)            | 1.88 (20%)          |
 | BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .1 (66%)           |
 | BeamAngularSpread  | .07          | .1 (.01-1)           | .19 (171%)         |
 | BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.0 (80%)          |
@@ -186,10 +187,10 @@ Below is the convergence plot and results for the same problem solved with the N
 | Parameter          | Ground Truth | Start point (Bounds) | Nelder-Mead Optimized |
 | ------------------ | ------------ | -------------------- | --------------------- |
 | BeamEnergy         | 10           | 7.9 (6-12)           | 9.95 (0.2%)           |
-| BeamPositionCutoff | 2            | 2.7 (1-3)            | 2.4 (6%)              |
-| BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .3 (66%)              |
-| BeamAngularSpread  | .07          | .1 (.01-1)           | .1 (171%)             |
-| BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.8 (80%)             |
+| BeamPositionCutoff | 2            | 2.7 (1-3)            | 2.4 (20%)              |
+| BeamPositionSpread | 0.3          | 1.0 (.1-1)           | .3 (0%)              |
+| BeamAngularSpread  | .07          | .1 (.01-1)           | .1 (43%)             |
+| BeamAngularCutoff  | 5            | 2.7 (1-10)           | 1.8 (64%)             |
 
 Again. the Nelder Mead algorithm has done a great job of recovering the starting parameters. In fact it technically outperformed the Bayesian approach, finding a minimum value in the objective function of -0.53 versus -0.49. However, looking at the convergence plot of both optimises suggests that at these lower values, there is a large amount of noise in the objective function. This is the trade off of using a log objective function - it will be more sensitive to the small values you are probably interested in, but also more sensitive to noise in the input data.
 
