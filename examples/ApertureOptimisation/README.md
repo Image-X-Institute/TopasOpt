@@ -29,12 +29,12 @@ When you have finished working through this example you should have a working di
 
 ## Copy the base topas files
 
-The code will need to know where your base model is stored. The base model for this application is available [here](https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true). Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!  
+The code will need to know where your base model is stored. The base model for this application is available [here](https://cloudstor.aarnet.edu.au/plus/s/Rpyc2nv83zxBUXy). Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!  
 
 > hint: if you are running this example inside a command window use the following commands:
 
 ```bash
-wget -O start_files.zip https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true
+wget -O start_files.zip https://cloudstor.aarnet.edu.au/plus/s/Rpyc2nv83zxBUXy/download
 # ^this is all one line!
 unzip start_files.zip
 rm start_files.zip

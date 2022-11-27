@@ -8,4 +8,5 @@ Worked Examples
 
    /ApertureOptimisation.md
    /PhaseSpaceOptimisation.md
+   /NoisyOptimisation.md
    /DevelopmentExample.md
