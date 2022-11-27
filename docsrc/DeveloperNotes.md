@@ -4,11 +4,11 @@ This is some 'behind the scenes' how to's. Although I grandiosly called it devel
 
 ## Additional requirements
 
-You will need to install some additional libraries to perform the below tasks, and a currently incomplete list of these is below....
+To install the required developer libraries
 
-```sphinx recommonmark sphinx_rtd_theme sphinx_markdown_tables```
-
-In the meantime, why don't you do what I do: try to run something and install requirements based on the errors you get :-P
+```
+pip install dev_requirements.txt
+```
 
 ## Packaging instructions
 
