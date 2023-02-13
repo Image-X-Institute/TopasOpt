@@ -26,6 +26,23 @@ The source code for the [worked examples](https://acrf-image-x-institute.github.
 - **docsrc:** markdown/rst documentation.
 - **tests:** tests which are run through github actions
 
+## Citation
+
+This code is described in [this paper](https://aapm.onlinelibrary.wiley.com/doi/10.1002/mp.16126).
+If you use this code in your work, please cite this paper!
+
+```bibtex
+
+@article{whelan_topasopt_2022,
+	title = {{TopasOpt}: {An} open-source library for optimization with {Topas} {Monte} {Carlo}},
+	shorttitle = {{TopasOpt}},
+	journal = {Medical Physics},
+	author = {Whelan, Brendan and Loo Jr, Billy W. and Wang, Jinghui and Keall, Paul},
+	year = {2022},
+	note = {Publisher: Wiley Online Library},
+}
+
+```
 
 
 
