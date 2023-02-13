@@ -16,7 +16,7 @@ import sys, os
 from bayes_opt import BayesianOptimization
 from bayes_opt import UtilityFunction
 from bayes_opt.logger import JSONLogger
-from bayes_opt.util import load_logs
+from bayes_opt.util import load_logs, NotUniqueError
 from bayes_opt.event import Events
 from sklearn.gaussian_process.kernels import Matern
 import logging
@@ -729,7 +729,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
 
         # instantiate optimizer:
-        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1)
+        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1, allow_duplicate_points=False)
         self.optimizer.set_gp_params(normalize_y=True, kernel=self._kernel,
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
         self.utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
@@ -991,7 +991,7 @@ class BayesianOptimiser(TopasOptBaseClass):
             target = self.BlackBoxFunction(next_point_to_probe)
             try:
                 self.optimizer.register(params=next_point_to_probe, target=target)
-            except KeyError:
+            except NotUniqueError:
                 try:
                     self.RepeatedPointsProbed = self.RepeatedPointsProbed + 1
                     logger.warning(
