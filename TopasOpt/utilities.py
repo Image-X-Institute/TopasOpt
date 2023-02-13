@@ -71,11 +71,6 @@ class newJSONLogger(JSONLogger):
 class WaterTankData:
     """
     Read in and analyse a series of topas scoring files in a rectangular phantom (the water tank).
-    There are two ways you might want to use this:
-
-    1. Analyse a single dose file
-    2. Analyse multiple dose files all on the same scoring grid
-
     The main attribute is the 'DoseCube' array. This is the agregate of all the input files. If you
     only put one file in, then this is simply the agregate of that single file.
     A number of plotting routines are already provided which operate on this array, but if you need to you can use
@@ -93,6 +88,14 @@ class WaterTankData:
         Zpts = Dose.PhantomSizeZ * np.ones(Xpts.shape)
         XY_data = Dose.ExtractDataFromDoseCube(Xpts, Ypts, Zpts)
 
+    :param AnalysisPath: Location of result files
+    :type AnalysisPath: str or Path
+    :param FileToAnalyse: all result files to read in
+    :type FileToAnalyse: str, or list of strings
+    :param AbsDepthDose: if True, absolute dose instead of normalized dose is plotted
+    :type AbsDepthDose: bool
+    :param verbose: if True, various messages are printed
+    :type verbose: bool
     """
 
     def __init__(self, AnalysisPath, FileToAnalyse, AbsDepthDose=False, verbose=False):
@@ -329,7 +332,14 @@ class WaterTankData:
         Extract data from the dose cube at positions Xpts, Ypts, Zpts
         Each of these is an array or list, and they must be the same shape (they can be of any dimensionality as
         they are flattened inside the function). The data is returned in the same shape as the input points.
+
+        :param Xpts: x points
+        :param Ypts: y points
+        :param Zpts: z points
+        :return: InterpolatedData: numpy array of Dose at [Xpts, Ypts, Zpts]. Shape is the same
+            as the input coordinate arrays
         """
+
         assert Xpts.shape == Ypts.shape == Zpts.shape
         InputShape = Xpts.shape
         # convert to array and flatten
@@ -353,6 +363,8 @@ class WaterTankData:
     def Plot_DosePlanes(self, AddColorBar=False): # pragma: no cover
         """
         Use the DoseCube data to create a plot through each of the cardinal planes.
+
+        :param AddColorBar: adds color bar if True
         """
 
         fig, (axs1, axs2, axs3) = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
@@ -442,6 +454,9 @@ class WaterTankData:
         """
         Plot profiles through integrated data. Can choose dir='X' or dir='Y'
         You can also optionally pass multiple Z points; otherwise Z is set to the middle of the phantom
+
+        :param dir: 'X' or 'Y', controls profile direction
+        :param Zpoints: Z coordinates to plot profiles at; if None will plot through the middle of the Phantom
         """
         fig, IntProfile_axs = plt.subplots(figsize=(5, 5))
         if Zpoints is None:

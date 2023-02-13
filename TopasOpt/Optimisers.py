@@ -74,6 +74,8 @@ class TopasOptBaseClass:
     :type OptimisationDirectory: string or Path
     :param ReadMeText: If supplied, is written to a readme file in BaseDirectory
     :type ReadMeText: string, optional
+    :param G4dataLocation: location of G4data files
+    :type G4dataLocation: str
     :param TopasLocation: location of topas installation. Default is ~/topas if you follow the topas instructions.
     :type TopasLocation: string or pathlib.Path, optional
     :param ShellScriptHeader: Header to place at the start of the bash file that runs the topas model. This header
