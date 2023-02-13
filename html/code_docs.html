@@ -235,6 +235,7 @@ are specific to a particular optimiser. We may find a more elegant way to handle
 <li><p><strong>SimulationName</strong> (<em>string</em>) – Specific folder for this simulation</p></li>
 <li><p><strong>OptimisationDirectory</strong> (<em>string</em><em> or </em><em>Path</em>) – location that TopasObjectiveFunction and GenerateTopasScript are located</p></li>
 <li><p><strong>ReadMeText</strong> (<em>string</em><em>, </em><em>optional</em>) – If supplied, is written to a readme file in BaseDirectory</p></li>
+<li><p><strong>G4dataLocation</strong> (<em>str</em>) – location of G4data files</p></li>
 <li><p><strong>TopasLocation</strong> (<em>string</em><em> or </em><em>pathlib.Path</em><em>, </em><em>optional</em>) – location of topas installation. Default is ~/topas if you follow the topas instructions.</p></li>
 <li><p><strong>ShellScriptHeader</strong> (<em>string</em><em>, </em><em>optional</em>) – Header to place at the start of the bash file that runs the topas model. This header
 should contain all the commands you normally perform to set up your terminal environment.</p></li>
@@ -358,12 +359,7 @@ No error checking included! If not supplied, behaviour is instead to show the pl
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">WaterTankData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AnalysisPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileToAnalyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AbsDepthDose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Read in and analyse a series of topas scoring files in a rectangular phantom (the water tank).
-There are two ways you might want to use this:</p>
-<ol class="arabic simple">
-<li><p>Analyse a single dose file</p></li>
-<li><p>Analyse multiple dose files all on the same scoring grid</p></li>
-</ol>
-<p>The main attribute is the ‘DoseCube’ array. This is the agregate of all the input files. If you
+The main attribute is the ‘DoseCube’ array. This is the agregate of all the input files. If you
 only put one file in, then this is simply the agregate of that single file.
 A number of plotting routines are already provided which operate on this array, but if you need to you can use
 ExtractDataFromDoseCube to generate any additional data from it.</p>
@@ -379,12 +375,35 @@ ExtractDataFromDoseCube to generate any additional data from it.</p>
 <span class="n">XY_data</span> <span class="o">=</span> <span class="n">Dose</span><span class="o">.</span><span class="n">ExtractDataFromDoseCube</span><span class="p">(</span><span class="n">Xpts</span><span class="p">,</span> <span class="n">Ypts</span><span class="p">,</span> <span class="n">Zpts</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AnalysisPath</strong> (<em>str</em><em> or </em><em>Path</em>) – Location of result files</p></li>
+<li><p><strong>FileToAnalyse</strong> (<em>str</em><em>, or </em><em>list</em><em> of </em><em>strings</em>) – all result files to read in</p></li>
+<li><p><strong>AbsDepthDose</strong> (<em>bool</em>) – if True, absolute dose instead of normalized dose is plotted</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – if True, various messages are printed</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.ExtractDataFromDoseCube">
 <span class="sig-name descname"><span class="pre">ExtractDataFromDoseCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xpts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ypts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zpts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.ExtractDataFromDoseCube" title="Permalink to this definition"></a></dt>
 <dd><p>Extract data from the dose cube at positions Xpts, Ypts, Zpts
 Each of these is an array or list, and they must be the same shape (they can be of any dimensionality as
 they are flattened inside the function). The data is returned in the same shape as the input points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Xpts</strong> – x points</p></li>
+<li><p><strong>Ypts</strong> – y points</p></li>
+<li><p><strong>Zpts</strong> – z points</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>InterpolatedData: numpy array of Dose at [Xpts, Ypts, Zpts]. Shape is the same
+as the input coordinate arrays</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -397,6 +416,11 @@ they are flattened inside the function). The data is returned in the same shape 
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.Plot_DosePlanes">
 <span class="sig-name descname"><span class="pre">Plot_DosePlanes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AddColorBar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_DosePlanes" title="Permalink to this definition"></a></dt>
 <dd><p>Use the DoseCube data to create a plot through each of the cardinal planes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AddColorBar</strong> – adds color bar if True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -404,6 +428,14 @@ they are flattened inside the function). The data is returned in the same shape 
 <span class="sig-name descname"><span class="pre">Plot_Profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_Profiles" title="Permalink to this definition"></a></dt>
 <dd><p>Plot profiles through integrated data. Can choose dir=’X’ or dir=’Y’
 You can also optionally pass multiple Z points; otherwise Z is set to the middle of the phantom</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> – ‘X’ or ‘Y’, controls profile direction</p></li>
+<li><p><strong>Zpoints</strong> – Z coordinates to plot profiles at; if None will plot through the middle of the Phantom</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
