@@ -70,7 +70,6 @@ class generate_topas_script_generator:
         if not os.path.isdir(self.OutputDirectory):
             logger.error(f'Specified output directory does not exist: {self.OutputDirectory}')
 
-
     def _handle_include_files(self, OriginalFileLocation, line):
         """
         This function is called when an includeFile statement is found in the input topas script.
@@ -183,6 +182,7 @@ class generate_topas_script_generator:
         """
         # check whether this is a dynamic or static phase space source
         UseStaticPhaseSpace = True
+        OriginalFileLocation = Path(OriginalFileLocation)
         for OutputPhaseSpace in OutputPhaseSpaceFilesNames:
             if OutputPhaseSpace in line:
                 UseStaticPhaseSpace = False
