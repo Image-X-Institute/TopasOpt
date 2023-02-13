@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Environment set up &mdash; TopasOpt  documentation</title>
@@ -11,10 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -29,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> TopasOpt
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TopasOpt
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -61,7 +63,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Environment set up</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/EnvironmentSetup.md.txt" rel="nofollow"> View page source</a>
@@ -79,33 +81,33 @@
 These were tested on Ubunutu 18.04 but something very similar should work on most linux versions.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># optional: start a new screen session. This allows you to easily come back to this session later</span>
 <span class="c1"># see here: https://linuxize.com/post/how-to-use-linux-screen/</span>
-screen -S TopasOpt
+screen<span class="w"> </span>-S<span class="w"> </span>TopasOpt
 
 <span class="c1"># check python version:</span>
-python3 -V
+python3<span class="w"> </span>-V
 <span class="c1"># should be &gt;= 3.8 - update if you need to:</span>
-sudo apt install python3.8
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3.8
 <span class="c1"># the above command will by default install python to the symbolic link python3.8</span>
 <span class="c1"># you can google how to change this if you want to!</span>
 
 <span class="c1"># make virtual environment:</span>
-python3.8 -m venv TopasOptVenv
+python3.8<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>TopasOptVenv
 <span class="c1"># activate it:</span>
-<span class="nb">source</span> TopasOptVenv/bin/activate
+<span class="nb">source</span><span class="w"> </span>TopasOptVenv/bin/activate
 
 <span class="c1"># Make sure the version of your pip and setuptools is sufficient for manylinux2014 wheels.</span>
 <span class="c1"># thank to this answer:</span>
 <span class="c1"># https://stackoverflow.com/questions/64095094/command-python-setup-py-egg-info-failed-with-error-code-1-in-tmp</span>
-pip3 install -U pip
-pip3 install -U setuptools
+pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>pip
+pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>setuptools
 
 <span class="c1"># install TopasOpt</span>
-pip install TopasOpt
+pip<span class="w"> </span>install<span class="w"> </span>TopasOpt
 <span class="c1"># test installation:</span>
-python3  <span class="c1"># enter a python session</span>
-import TopasOpt
-TopasOpt.__version__  <span class="c1"># just to check it&#39;s there - should print e.g. 0.0.2</span>
-exit<span class="o">()</span>  <span class="c1"># exit python session.</span>
+python3<span class="w">  </span><span class="c1"># enter a python session</span>
+import<span class="w"> </span>TopasOpt
+TopasOpt.__version__<span class="w">  </span><span class="c1"># just to check it&#39;s there - should print e.g. 0.0.2</span>
+exit<span class="o">()</span><span class="w">  </span><span class="c1"># exit python session.</span>
 </pre></div>
 </div>
 <p>you should now be able to set up and run the examples.</p>
@@ -115,9 +117,9 @@ deactivate
 <span class="c1"># to leave the screen session</span>
 <span class="c1"># hold ctrl, press a, release, then press d</span>
 <span class="c1"># to reneter the screen session</span>
-screen -r TopasOpt  <span class="c1"># or whatever name you gave this session</span>
+screen<span class="w"> </span>-r<span class="w"> </span>TopasOpt<span class="w">  </span><span class="c1"># or whatever name you gave this session</span>
 <span class="c1"># to exit and terminate screen session</span>
-<span class="nb">exit</span> <span class="c1"># if you are not inside the screen session when you type this you will kill your main sesson instead!</span>
+<span class="nb">exit</span><span class="w"> </span><span class="c1"># if you are not inside the screen session when you type this you will kill your main sesson instead!</span>
 </pre></div>
 </div>
 </section>

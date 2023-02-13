@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Code documentation &mdash; TopasOpt  documentation</title>
@@ -11,10 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -28,11 +26,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> TopasOpt
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TopasOpt
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -120,7 +122,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Code documentation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/code_docs.rst.txt" rel="nofollow"> View page source</a>
@@ -147,7 +149,7 @@ which other optimisers inherit from.</p>
 <p>Class to perform optimisation using the <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">Bayesian Optimisation code</a>
 Specific options are described below, the rest are described in TopasOptBaseClass</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bayes_length_scales</strong> (<em>None</em><em>, </em><em>float</em><em>, or </em><em>array</em><em> (</em><em>optional</em><em>)</em>) – <p>Bayes-specific parameter to defined the length scales used in the gaussian process  model.
 This can be supplied as one of three things:
@@ -200,7 +202,7 @@ For explanation of the various parameters and commands, start with the</p>
 <dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a></p>
 <p>Implementation of Nelder-Mead based on scipy. Other options are defined in TopasOptBaseClass</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>NM_StartingSimplex</strong> (<em>None</em><em> or </em><em>float</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – This is a Nelder-Mead specific parameter which controls the size of the
 starting simplex. A value of .1 will create a starting simplex that is spans 10% of the starting values,
 which is the default behavior. Alternatively one can specify the starting simplex, e.g. for a 2D function
@@ -226,7 +228,7 @@ This class is not intended to be used in isolation and won’t work if you try.
 An important thing to note is that the variables from all optimisers are defined here, which means some of these options
 are specific to a particular optimiser. We may find a more elegant way to handle this in future!</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>optimisation_params</strong> (<em>list</em><em> or </em><em>array</em>) – Parameters to be optimised.</p></li>
 <li><p><strong>BaseDirectory</strong> (<em>string</em>) – Place where all the topas simulation results are stored</p></li>
@@ -279,7 +281,7 @@ Each list element contains one line of the topas script, which can be used to au
 This class will also attempt to handle input/output lines in the topas language such as include lines and input
 and output of phase space lines.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>OutputDirectory</strong> (<em>string</em><em> or </em><em>pathlib.Path</em>) – location to write the returned python function to</p></li>
 <li><p><strong>TopasScriptLocation</strong> (<em>string</em><em> or </em><em>pathlib.Path</em>) – location of all topas scripts which need to be recreated. Note that you do not need
@@ -330,7 +332,7 @@ scripts are portable. If no path is entered then they will be written to OutputD
 <span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">PlotLogFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LogFileLoc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.PlotLogFile" title="Permalink to this definition"></a></dt>
 <dd><p>This function can be used to plot an existing log file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>LogFileLoc</strong> (<em>string</em><em> or </em><em>pathlib.Path</em>) – location of log file</p></li>
 <li><p><strong>save_loc</strong> (<em>string</em><em> or </em><em>pathlib.Path</em>) – if supplied, will attempt to save the log file there without displaying it.
@@ -345,7 +347,7 @@ No error checking included! If not supplied, behaviour is instead to show the pl
 <span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">ReadInLogFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LogFileLoc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.ReadInLogFile" title="Permalink to this definition"></a></dt>
 <dd><p>Read in a log file and return as a dictionary</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>LogFileLoc</strong> (<em>string</em><em> or </em><em>pathlib.Path</em>) – path to log file</p>
 </dd>
 </dl>
@@ -470,7 +472,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 <span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">compare_multiple_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BinFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_dose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_legend_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.compare_multiple_results" title="Permalink to this definition"></a></dt>
 <dd><p>this produces depth dose and profile plots for a list of topas .bin files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>BinFiles</strong> (<em>list</em>) – list of files to analyse</p></li>
 <li><p><strong>abs_dose</strong> (<em>boolean</em><em>, </em><em>optional</em>) – % dose (False) or absolute dose (True)</p></li>
@@ -485,7 +487,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 <span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">generate_run_all_scripts_shell_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scripts_to_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topas_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/topas38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G4_DATA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/G4Data'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.generate_run_all_scripts_shell_script" title="Permalink to this definition"></a></dt>
 <dd><p>generate a bash script to run a series of topas scripts</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>script_location</strong> (<em>Path</em><em> or </em><em>str</em>) – Directory where the scripts are stored</p></li>
 <li><p><strong>scripts_to_run</strong> (<em>array like</em>) – a list of scripts to run</p></li>
@@ -493,7 +495,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 <li><p><strong>G4_DATA</strong> (<em>Path</em><em> or </em><em>str</em>) – location of the G4data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
