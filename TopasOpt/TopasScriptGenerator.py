@@ -240,7 +240,7 @@ class generate_topas_script_generator:
             for line in f:
                 line = line.replace('\n', '')  # remove new line characters
                 CommentLine = False
-                if (not line == '') and line.lstrip()[0] == '#':
+                if (not line.lstrip() == '') and line.lstrip()[0] == '#':
                     CommentLine = True
 
                 if not CommentLine:  # avoid doing anything silly to commented lines
