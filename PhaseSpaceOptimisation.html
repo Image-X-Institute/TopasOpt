@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="phase-space-optmisation-example">
-<h1>Phase space optmisation example<a class="headerlink" href="#phase-space-optmisation-example" title="Permalink to this heading"></a></h1>
+<h1>Phase space optmisation example<a class="headerlink" href="#phase-space-optmisation-example" title="Link to this heading"></a></h1>
 <blockquote>
 <div><p><strong>Note:</strong> in this example it is assumed you have already completed the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">example on Geometry optimisation</a>.</p>
 </div></blockquote>
@@ -106,15 +106,15 @@ This is a much more difficult problem for several reasons:</p>
 <li><p>X-ray dose is actually pretty insensitive to the starting parameters of the electron beam used to produce it.</p></li>
 </ul>
 <section id="directory-set-up">
-<h2>Directory set up<a class="headerlink" href="#directory-set-up" title="Permalink to this heading"></a></h2>
+<h2>Directory set up<a class="headerlink" href="#directory-set-up" title="Link to this heading"></a></h2>
 <p>Since we are now running a new optimisation, you have to create a new base directory (you will repeat these basic steps every time you have an optimisation problem). So, create a new directory called e.g. PhaseSpaceOptimisation. The basic setup is the same as the ApertureOptimisation example - you can start by copying accross the SimpleCollimatorExample_TopasFiles directory</p>
 </section>
 <section id="creating-generatetopasscript-py">
-<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this heading"></a></h2>
+<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Link to this heading"></a></h2>
 <p>This step is the same as in the geometry example; you should create your base line topas script as described in that example</p>
 </section>
 <section id="creating-runoptimisation-py">
-<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this heading"></a></h2>
+<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Link to this heading"></a></h2>
 <p>The following is the script to run this optimisation. Remember to change the BaseDirectory to a place that exists on your computer!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -148,7 +148,7 @@ This is a much more difficult problem for several reasons:</p>
 </div>
 </section>
 <section id="editing-generatetopasscript-py">
-<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Permalink to this heading"></a></h2>
+<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Link to this heading"></a></h2>
 <p>Just like last time, we have to edit our baseline script with the parameters that we want to optimise.</p>
 <p>In order to reduce the total number of parameters we need to tune, we are going to make the assumption that our source is symmetric in x and y. Make the following changes to GenerateTopasScript.py:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># change</span>
@@ -177,7 +177,7 @@ This is a much more difficult problem for several reasons:</p>
 </div>
 </section>
 <section id="create-topasobjectivefunction-py">
-<h2>Create TopasObjectiveFunction.py<a class="headerlink" href="#create-topasobjectivefunction-py" title="Permalink to this heading"></a></h2>
+<h2>Create TopasObjectiveFunction.py<a class="headerlink" href="#create-topasobjectivefunction-py" title="Link to this heading"></a></h2>
 <p>We need to create an objective function. Since our basic problem is the same in the Aperture Optimisation example, we are using a very similar objective function. However, because we expect the results aren’t especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html">here</a>.</p>
 <p>Note that there’s a lot of things we could do to make this objective function better  - especially in light of the NelderMead results from the first example! But for now I am just keeping these examples very simple.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -234,12 +234,12 @@ This is a much more difficult problem for several reasons:</p>
 </div>
 </section>
 <section id="running-the-example">
-<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this heading"></a></h2>
+<h2>Running the example<a class="headerlink" href="#running-the-example" title="Link to this heading"></a></h2>
 <p>Note that there are many other beam parameters we could choose to include.
 We are going to keep this relatively simple by just having four optimization parameters</p>
 </section>
 <section id="analyzing-the-results">
-<h2>Analyzing the results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this heading"></a></h2>
+<h2>Analyzing the results<a class="headerlink" href="#analyzing-the-results" title="Link to this heading"></a></h2>
 <p><img alt="_images/ConvergencePlot1.png" src="_images/ConvergencePlot1.png" />
 <img alt="_images/CorrelationPlot1.png" src="_images/CorrelationPlot1.png" />
 Next, open up OptimisationLogs.txt, and scroll to the end; the best found solution is recorded:</p>
@@ -297,7 +297,7 @@ Next, open up OptimisationLogs.txt, and scroll to the end; the best found soluti
 These plots show the predicted change in the objective function as each single parameter is varied and all other parameters are held at their optimal value. From these plots, we can see that the most sensitive parameters seem to be BeamEnergy, BeamPositionSpread, and BeamAngularSpread.</p>
 </section>
 <section id="neldermead-optimiser">
-<h2>NelderMead Optimiser<a class="headerlink" href="#neldermead-optimiser" title="Permalink to this heading"></a></h2>
+<h2>NelderMead Optimiser<a class="headerlink" href="#neldermead-optimiser" title="Link to this heading"></a></h2>
 <p>Below is the convergence plot and results for the same problem solved with the Nelder Mead optimiser:</p>
 <p><img alt="_images/ConvergencePlotNM1.png" src="_images/ConvergencePlotNM1.png" />
 | Parameter          | Ground Truth | Start point (Bounds) | Nelder-Mead Optimized |
@@ -310,7 +310,7 @@ These plots show the predicted change in the objective function as each single p
 <p>Again. the Nelder Mead algorithm has done a great job of recovering the starting parameters. In fact it technically outperformed the Bayesian approach, finding a minimum value in the objective function of -0.53 versus -0.49. However, looking at the convergence plot of both optimises suggests that at these lower values, there is a large amount of noise in the objective function. This is the trade off of using a log objective function - it will be more sensitive to the small values you are probably interested in, but also more sensitive to noise in the input data.</p>
 </section>
 <section id="comparing-the-results">
-<h2>Comparing the results:<a class="headerlink" href="#comparing-the-results" title="Permalink to this heading"></a></h2>
+<h2>Comparing the results:<a class="headerlink" href="#comparing-the-results" title="Link to this heading"></a></h2>
 <p>Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
 

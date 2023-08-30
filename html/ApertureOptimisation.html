@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -98,28 +98,28 @@
            <div itemprop="articleBody">
              
   <section id="geometry-optimisation-example">
-<h1>Geometry Optimisation Example<a class="headerlink" href="#geometry-optimisation-example" title="Permalink to this heading"></a></h1>
+<h1>Geometry Optimisation Example<a class="headerlink" href="#geometry-optimisation-example" title="Link to this heading"></a></h1>
 <p>The starting point for an optimisation is a working topas model. In this example we are going to optimise the geometry of a simple x-ray collimator. We are going to randomise the values shown in read, and see if we can recover the correct values using the Bayesian optimisation. To guide the optimisation, we will create an objective function which simply measures the difference between the original depth dose curves and profile data and those created by a given set of parameters.</p>
 <p>If you are an experienced python and topas user, you should allow 1-2 hours to set up this example (this will get much quicker once you get the hang of it; it takes me about 15 minutes).</p>
 <p>Actually running this example will take ~4 hours on a decent computer.</p>
 <section id="environmental-set-up-and-installation">
-<h2>Environmental set up and installation<a class="headerlink" href="#environmental-set-up-and-installation" title="Permalink to this heading"></a></h2>
+<h2>Environmental set up and installation<a class="headerlink" href="#environmental-set-up-and-installation" title="Link to this heading"></a></h2>
 <p>If you need help getting your environment or with installation set up see <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/EnvironmentSetup.html">here</a>.</p>
 </section>
 <section id="base-model-and-problem-overview">
-<h2>Base model and problem overview<a class="headerlink" href="#base-model-and-problem-overview" title="Permalink to this heading"></a></h2>
+<h2>Base model and problem overview<a class="headerlink" href="#base-model-and-problem-overview" title="Link to this heading"></a></h2>
 <p>In this example, we will optimise the geometry of an X-ray collimator. The geometry is shown below, with the parameters targeted for optimisation shown in red. The original values for each of these parameters are: Collimator Thickness = 54 mm, Up-stream aperture radius = 1.82 mm, and Down-stream aperture radius = 2.5 mm. This is modelled in two stages: in stage one an electron beam hits the target and the resultant collimated X-ray beam is scored below the secondary collimator. In stage 2, this phase space is used to simulate the dose in the water tank.</p>
 <p>In this example, each of these parameters will first be assigned a random value. We will then attempt to recover the original values by constructing a simple objective function based on the differences between the original data and the current iteration.</p>
 <p><img alt="_images/Sketch.png" src="_images/Sketch.png" /></p>
 </section>
 <section id="directory-set-up">
-<h2>directory set up<a class="headerlink" href="#directory-set-up" title="Permalink to this heading"></a></h2>
+<h2>directory set up<a class="headerlink" href="#directory-set-up" title="Link to this heading"></a></h2>
 <p>To start with, create a folder somewhere called for instance ‘ApertureOptExample’ (or whatever you want). This is where you will store all the code necessary to run the optimisation. The rest of the instructions assume you are in this working directory.</p>
 <p>When you have finished working through this example you should have a working directory which looks like this:</p>
 <p><img alt="_images/ApertureDirectoryStructure.jpg" src="_images/ApertureDirectoryStructure.jpg" /></p>
 </section>
 <section id="copy-the-base-topas-files">
-<h2>Copy the base topas files<a class="headerlink" href="#copy-the-base-topas-files" title="Permalink to this heading"></a></h2>
+<h2>Copy the base topas files<a class="headerlink" href="#copy-the-base-topas-files" title="Link to this heading"></a></h2>
 <p>The code will need to know where your base model is stored. The base model for this application is available <a class="reference external" href="https://cloudstor.aarnet.edu.au/plus/s/Rpyc2nv83zxBUXy">here</a>. Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!</p>
 <blockquote>
 <div><p>hint: if you are running this example inside a command window use the following commands:</p>
@@ -132,7 +132,7 @@ rm<span class="w"> </span>start_files.zip
 </div>
 </section>
 <section id="creating-generatetopasscript-py">
-<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Permalink to this heading"></a></h2>
+<h2>Creating GenerateTopasScript.py<a class="headerlink" href="#creating-generatetopasscript-py" title="Link to this heading"></a></h2>
 <p>The first thing we will be needing is a function that generates your topas script.</p>
 <p>Create a python file called ‘temp_GenerateTopasScript.py’ (or whatever you want, the name isn’t important). Copy the below code into it (or use an interactive console if you prefer):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.TopasScriptGenerator</span> <span class="kn">import</span> <span class="n">generate_topas_script_generator</span>
@@ -157,7 +157,7 @@ rm<span class="w"> </span>start_files.zip
 </div></blockquote>
 </section>
 <section id="creating-runoptimisation-py">
-<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Permalink to this heading"></a></h2>
+<h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Link to this heading"></a></h2>
 <p>Create a new file called RunOptimisation_main.py (or whatever you want, the name isn’t important). Copy the below code into it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -205,7 +205,7 @@ rm<span class="w"> </span>start_files.zip
 </ul>
 </section>
 <section id="editing-generatetopasscript-py">
-<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Permalink to this heading"></a></h2>
+<h2>Editing GenerateTopasScript.py<a class="headerlink" href="#editing-generatetopasscript-py" title="Link to this heading"></a></h2>
 <p>Remember from earlier that GenerateTopasScripts.py currently regenerates the original topas scripts. For an optimisation, we need to be able to receive parameters from the optimiser, and build a model reflecting these parameters. Therefore we will have to make some changes to this script!</p>
 <p>Whenever GenerateTopasScript is called from the optimiser, it will be passed a dictionary that contains the variables defined in optimisation_params and their current values. We need to edit GenerateTopasScript so that when these parameters change, the topas parameters change accordingly. Firstly, we need to change three lines:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. change</span>
@@ -242,7 +242,7 @@ rm<span class="w"> </span>start_files.zip
 </div></blockquote>
 </section>
 <section id="creating-topasobjectivefunction-py">
-<h2>Creating TopasObjectiveFunction.py<a class="headerlink" href="#creating-topasobjectivefunction-py" title="Permalink to this heading"></a></h2>
+<h2>Creating TopasObjectiveFunction.py<a class="headerlink" href="#creating-topasobjectivefunction-py" title="Link to this heading"></a></h2>
 <p>Finally, create a file called TopasObjectiveFunction.py. The name of this <strong>does</strong> matter!</p>
 <p>The only things this file <strong>must</strong> do is</p>
 <ol class="simple">
@@ -331,7 +331,7 @@ Copy this code into TopasObjectiveFunction.py and update the location of <code c
 </div></blockquote>
 </section>
 <section id="running-the-example">
-<h2>Running the example<a class="headerlink" href="#running-the-example" title="Permalink to this heading"></a></h2>
+<h2>Running the example<a class="headerlink" href="#running-the-example" title="Link to this heading"></a></h2>
 <p>You now have all the building blocks in place to run this example. To do so, you simply need to run RunOptimisation_main.py:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># from a command window:</span>
 python<span class="w"> </span>RunOptimisation_main.py<span class="w"> </span>
@@ -343,7 +343,7 @@ python<span class="w"> </span>RunOptimisation_main.py<span class="w"> </span>
 </div></blockquote>
 </section>
 <section id="interpreting-the-results">
-<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this heading"></a></h2>
+<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Link to this heading"></a></h2>
 <p>Ok, you’ve gone away and drunk several beers while the optimisation was running, and you are now ready to see how it did!</p>
 <p>Navigate to whatever you set up as BaseDirectory / SimulationName in your RunOptimisation script. An explanation of the folders you see here:</p>
 <ul class="simple">
@@ -406,7 +406,7 @@ In this case, the correlation values are reasonable, so we should be reasonably 
 </table><p>This is pretty good! In just 40 iterations, we recovered the original values to within 10% of their original values. Compare this to a grid search approach: if we split each variable into 10, it would require 1000 iterations, and the spacing between solutions would still be larger than the accuracy obtained here. It is also helpful to interpret these results in the context of the single parameter plots shown above. These plots suggest that the least sensitive parameter is the Upstream Aperture, which is the parameter we have the largest error in (9%). We might therefore expect that the dose profiles are not all that sensitive to this error. A comparison between the starting results and optimized results is shown at the end of this example.</p>
 </section>
 <section id="comparison-with-nelder-mead-optimiser">
-<h2>Comparison with Nelder-Mead optimiser<a class="headerlink" href="#comparison-with-nelder-mead-optimiser" title="Permalink to this heading"></a></h2>
+<h2>Comparison with Nelder-Mead optimiser<a class="headerlink" href="#comparison-with-nelder-mead-optimiser" title="Link to this heading"></a></h2>
 <p>Another optimisation algorithm commonly applied to these types of problems is the NelderMead algorithm. To switch to the NelderMead optimiser, you just have to change one line inside RunOptimisation.main:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># change</span>
 <span class="n">Optimiser</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">BayesianOptimiser</span><span class="p">(</span><span class="n">optimisation_params</span><span class="p">,</span> <span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">SimulationName</span><span class="p">,</span> 	 <span class="n">OptimisationDirectory</span><span class="p">,</span> <span class="n">TopasLocation</span><span class="o">=</span><span class="s1">&#39;~/topas37&#39;</span><span class="p">,</span> <span class="n">ReadMeText</span><span class="o">=</span><span class="n">ReadMeText</span><span class="p">,</span> <span class="n">Overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">KeepAllResults</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -455,7 +455,7 @@ and the results:</p>
 </table><p>In this case, the NelderMead Optimiser has also done a great job, almost as good as the Bayesian optimiser. For complex objective functions, the NelderMead approach has a tendency to get stuck in local minima. However for simple situations, it will often converge mode quickly than the Bayesian approach, since it doesn’t have to learn the underlying objective function to be effective.</p>
 </section>
 <section id="comparison-with-ground-truth-data">
-<h2>Comparison with ground truth data<a class="headerlink" href="#comparison-with-ground-truth-data" title="Permalink to this heading"></a></h2>
+<h2>Comparison with ground truth data<a class="headerlink" href="#comparison-with-ground-truth-data" title="Link to this heading"></a></h2>
 <p>To compare multiple results we have included a function in utilities.compare_multiple_results, which is used like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
 
@@ -473,7 +473,7 @@ and the results:</p>
 <p><img alt="_images/compare.png" src="_images/compare.png" /></p>
 </section>
 <section id="improving-these-results">
-<h2>Improving these results<a class="headerlink" href="#improving-these-results" title="Permalink to this heading"></a></h2>
+<h2>Improving these results<a class="headerlink" href="#improving-these-results" title="Link to this heading"></a></h2>
 <p>There are number of things you could do to improve these results, many of which are explained in a bit more detail in the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/next_steps.html">next steps</a> section:</p>
 <ul class="simple">
 <li><p>Run more iterations</p></li>

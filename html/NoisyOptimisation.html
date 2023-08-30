@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -91,7 +91,7 @@
            <div itemprop="articleBody">
              
   <section id="handling-noisy-data">
-<h1>Handling noisy data<a class="headerlink" href="#handling-noisy-data" title="Permalink to this heading"></a></h1>
+<h1>Handling noisy data<a class="headerlink" href="#handling-noisy-data" title="Link to this heading"></a></h1>
 <p>In Monte Carlo modelling, we constantly have to trade off how long our simulations run for and how noisy they are. This is particularly important for TopasOpt, where total run time = time_per_sim * n_iterations.</p>
 <p>In general, the easiest way to handle noise is to make sure it is low enough that you don’t care about it. However, there will certainly be situations where this approach results in unacceptably long run times. Therefore, in this example we will look at working with noisy data using Bayesian Optimization.</p>
 <p>This tutorial is split into the following sections:</p>
@@ -101,12 +101,12 @@
 <li><p>re-running TopasOpt with a custom kernel that accounts for noise</p></li>
 </ul>
 <section id="setup-example">
-<h2>Setup example<a class="headerlink" href="#setup-example" title="Permalink to this heading"></a></h2>
+<h2>Setup example<a class="headerlink" href="#setup-example" title="Link to this heading"></a></h2>
 <p>As always; start by setting up a new folder that will hold all the codes to run the example.</p>
 <p>This example is based on the same base code as the <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">geometry example</a>. You should complete that example first. All of the source code for the steps below can be found <a class="reference external" href="https://github.com/ACRF-Image-X-Institute/TopasOpt/tree/master/examples/NoisyOptimisation">here</a>.</p>
 </section>
 <section id="generating-simulations-with-different-level-of-noise">
-<h2>Generating simulations with different level of noise<a class="headerlink" href="#generating-simulations-with-different-level-of-noise" title="Permalink to this heading"></a></h2>
+<h2>Generating simulations with different level of noise<a class="headerlink" href="#generating-simulations-with-different-level-of-noise" title="Link to this heading"></a></h2>
 <p>In order to assess how statistical noise manifests in our objective function, we can generate N identical simulations, assess the objective function for each one, and quantify the variance. We can use our the <code class="docutils literal notranslate"><span class="pre">GenerateTopasScripts.py</span></code> function we <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">previously developed</a> to do this, so copy that one into your example directory. we will make some modifications so that we can also vary the number of primary particles.</p>
 <p>add the following lines inside the GenerateTopasScripts function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -206,7 +206,7 @@
 <p>You can go ahead and generate results locally if you want, but it is somewhat time consuming, so if you want you can just <a class="reference external" href="https://cloudstor.aarnet.edu.au/plus/s/7X2fwap7iIvC71O">download the pre-run results</a> and continue…</p>
 </section>
 <section id="set-up-a-plotting-function">
-<h2>Set up a plotting function<a class="headerlink" href="#set-up-a-plotting-function" title="Permalink to this heading"></a></h2>
+<h2>Set up a plotting function<a class="headerlink" href="#set-up-a-plotting-function" title="Link to this heading"></a></h2>
 <p>Create a new file called <code class="docutils literal notranslate"><span class="pre">noise_box_plots.py</span></code> and copy the below into it. We will use this function in the following steps.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -241,7 +241,7 @@
 </div>
 </section>
 <section id="assessing-noise-in-the-objective-function">
-<h2>Assessing noise in the objective function<a class="headerlink" href="#assessing-noise-in-the-objective-function" title="Permalink to this heading"></a></h2>
+<h2>Assessing noise in the objective function<a class="headerlink" href="#assessing-noise-in-the-objective-function" title="Link to this heading"></a></h2>
 <p>Now that we have the results (either because you generated them yourself or you downloaded the data) we can assess how the effect the objective function. Create a new script called e.g. <code class="docutils literal notranslate"><span class="pre">quantify_noise.py</span></code> and copy the below into it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -337,7 +337,7 @@ From this, we observe the following:</p>
 <p>In this case, the prediction basically defaults to the last point it has seen and the noise estimate is zero. So the construction of the appropriate kernel is key!</p>
 </section>
 <section id="passing-the-newly-constructed-kernel-to-topasopt">
-<h2>Passing the newly constructed kernel to TopasOpt<a class="headerlink" href="#passing-the-newly-constructed-kernel-to-topasopt" title="Permalink to this heading"></a></h2>
+<h2>Passing the newly constructed kernel to TopasOpt<a class="headerlink" href="#passing-the-newly-constructed-kernel-to-topasopt" title="Link to this heading"></a></h2>
 <p>So, we know we have a gaussian process model capable of modelling noise - at least under situation where it sees enough data. The next step is to test the effectiveness of the optimization using this gaussian process model.</p>
 <p>We are going to run the optimization repeatedly with a different number of primary particles. We are going to use the custom kernel developed in the previous section. The below run_optimisation script is almost identical the one we <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">used in the other example</a>, except we pass a custom kernel.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -380,7 +380,7 @@ From this, we observe the following:</p>
 </div>
 </section>
 <section id="assessing-optimiser-performance">
-<h2>Assessing optimiser performance<a class="headerlink" href="#assessing-optimiser-performance" title="Permalink to this heading"></a></h2>
+<h2>Assessing optimiser performance<a class="headerlink" href="#assessing-optimiser-performance" title="Link to this heading"></a></h2>
 <p>There are two aspects to consider when considering the optimiser perofmrance:</p>
 <ol class="simple">
 <li><p>Did the underlying gaussian process model do a good modelling the noise?</p></li>

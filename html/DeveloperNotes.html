@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -83,17 +83,17 @@
            <div itemprop="articleBody">
              
   <section id="developer-notes">
-<h1>Developer Notes<a class="headerlink" href="#developer-notes" title="Permalink to this heading"></a></h1>
+<h1>Developer Notes<a class="headerlink" href="#developer-notes" title="Link to this heading"></a></h1>
 <p>This is some ‘behind the scenes’ how to’s. Although I grandiosly called it developer notes, in reality it is so that I can remember how to update this repository in the future.</p>
 <section id="additional-requirements">
-<h2>Additional requirements<a class="headerlink" href="#additional-requirements" title="Permalink to this heading"></a></h2>
+<h2>Additional requirements<a class="headerlink" href="#additional-requirements" title="Link to this heading"></a></h2>
 <p>To install the required developer libraries</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">dev_requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </section>
 <section id="packaging-instructions">
-<h2>Packaging instructions<a class="headerlink" href="#packaging-instructions" title="Permalink to this heading"></a></h2>
+<h2>Packaging instructions<a class="headerlink" href="#packaging-instructions" title="Link to this heading"></a></h2>
 <p>nb: this is mostly for me so I can remember how I did this :-P</p>
 <p>Packaging for this project has been setup based on <a class="reference external" href="https://packaging.python.org/en/latest/tutorials/packaging-projects/">this tutorial</a>.
 To update the distribution code, use the following commands.
@@ -111,7 +111,7 @@ twine<span class="w"> </span>upload<span class="w"> </span>dist/*<span class="w"
 </div>
 </section>
 <section id="testing-framework">
-<h2>Testing framework<a class="headerlink" href="#testing-framework" title="Permalink to this heading"></a></h2>
+<h2>Testing framework<a class="headerlink" href="#testing-framework" title="Link to this heading"></a></h2>
 <p>We have some test cases set up which run using <a class="reference external" href="https://www.google.com/search?channel=fs&amp;client=ubuntu&amp;q=pytest">pytest</a>. These are more like ‘integration and tests’ than unit tests, they mostly test that the code runs without errors and succesfully optimises the rosenbrock function (read more <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/DevelopmentExample.html">here</a>.)</p>
 <p>The tests are automatically run one someone does <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>, but if you ever want to run them manually instructions are below:</p>
 <ul class="simple">
@@ -121,7 +121,7 @@ twine<span class="w"> </span>upload<span class="w"> </span>dist/*<span class="w"
 </ul>
 </section>
 <section id="building-documentation">
-<h2>Building documentation<a class="headerlink" href="#building-documentation" title="Permalink to this heading"></a></h2>
+<h2>Building documentation<a class="headerlink" href="#building-documentation" title="Link to this heading"></a></h2>
 <p>The documentation is build from the docsrc directory by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">github</span></code>.</p>
 <p>If you want to include a new example in the documents, follow these instructions</p>
 <ul class="simple">
@@ -134,7 +134,7 @@ twine<span class="w"> </span>upload<span class="w"> </span>dist/*<span class="w"
 </ul>
 </section>
 <section id="adding-new-optimisation-algorithms">
-<h2>Adding new optimisation algorithms<a class="headerlink" href="#adding-new-optimisation-algorithms" title="Permalink to this heading"></a></h2>
+<h2>Adding new optimisation algorithms<a class="headerlink" href="#adding-new-optimisation-algorithms" title="Link to this heading"></a></h2>
 <p>This library has been designed to make it easy to add new optimisation algorithms. The basic approach for a new optimiser is below</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.Optimisers</span> <span class="kn">import</span> <span class="n">TopasOptBaseClass</span>   <span class="c1"># only necesary if you are not adding directly to TopasOpt.Optimisers.py</span>
 

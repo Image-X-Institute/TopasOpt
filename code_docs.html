@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -135,17 +135,17 @@
            <div itemprop="articleBody">
              
   <section id="code-documentation">
-<h1>Code documentation<a class="headerlink" href="#code-documentation" title="Permalink to this heading"></a></h1>
+<h1>Code documentation<a class="headerlink" href="#code-documentation" title="Link to this heading"></a></h1>
 <p>The following documentation is generated directly from the source code.
 It should enable an overview of the different options which are available for
 different optimisers.</p>
 <section id="module-TopasOpt.Optimisers">
-<span id="optimisers"></span><h2>Optimisers<a class="headerlink" href="#module-TopasOpt.Optimisers" title="Permalink to this heading"></a></h2>
+<span id="optimisers"></span><h2>Optimisers<a class="headerlink" href="#module-TopasOpt.Optimisers" title="Link to this heading"></a></h2>
 <p>This module contains the specific optimisation algorithms for TopasOpt. Most functionality is defined in TopasOptBaseClass,
 which other optimisers inherit from.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.BayesianOptimiser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">BayesianOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bayes_length_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_UCBkappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_KappaDecayIterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_GP_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">BayesianOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bayes_length_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_UCBkappa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_KappaDecayIterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayes_GP_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a></p>
 <p>Class to perform optimisation using the <a class="reference external" href="https://github.com/fmfn/BayesianOptimization">Bayesian Optimisation code</a>
 Specific options are described below, the rest are described in TopasOptBaseClass</p>
@@ -181,7 +181,7 @@ to use in the gaussian process model</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.BayesianOptimiser.RestartOptimisation">
-<span class="sig-name descname"><span class="pre">RestartOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser.RestartOptimisation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">RestartOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser.RestartOptimisation" title="Link to this definition"></a></dt>
 <dd><p>Sometimes for whatever reason an optimisation is stopped prematurely.
 This function allows you to restart the optimisation by loading the previous log files.
 You just have to change Optimiser.RunOptimisation() to Optimiser.RestartOptimisation()
@@ -190,7 +190,7 @@ in your optimisation script; the code will do the rest automatically.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.BayesianOptimiser.RunOptimisation">
-<span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser.RunOptimisation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.BayesianOptimiser.RunOptimisation" title="Link to this definition"></a></dt>
 <dd><p>This is the main optimisation loop.
 For explanation of the various parameters and commands, start with the</p>
 </dd></dl>
@@ -199,7 +199,7 @@ For explanation of the various parameters and commands, start with the</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.NelderMeadOptimiser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">NelderMeadOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NM_StartingSimplex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.NelderMeadOptimiser" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">NelderMeadOptimiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NM_StartingSimplex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.NelderMeadOptimiser" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="TopasOpt.Optimisers.TopasOptBaseClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopasOptBaseClass</span></code></a></p>
 <p>Implementation of Nelder-Mead based on scipy. Other options are defined in TopasOptBaseClass</p>
 <dl class="field-list simple">
@@ -212,7 +212,7 @@ starting_sim = [[0.9, 0.9], [0.72, 0.9], [0.9, 0.72]]</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.NelderMeadOptimiser.RunOptimisation">
-<span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.NelderMeadOptimiser.RunOptimisation" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.NelderMeadOptimiser.RunOptimisation" title="Link to this definition"></a></dt>
 <dd><p>Use the scipy.optimize.minimize module to perform the optimisation.
 Note that most of the ‘action’ is happening in BlackBoxFunction, which is repeated called by the optimiser</p>
 </dd></dl>
@@ -221,17 +221,15 @@ Note that most of the ‘action’ is happening in BlackBoxFunction, which is re
 
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.TopasOptBaseClass">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">TopasOptBaseClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimisation_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BaseDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SimulationName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OptimisationDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ReadMeText</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G4dataLocation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/G4Data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TopasLocation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/topas/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ShellScriptHeader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">KeepAllResults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.Optimisers.</span></span><span class="sig-name descname"><span class="pre">TopasOptBaseClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimisation_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BaseDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SimulationName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OptimisationDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ReadMeText</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G4dataLocation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/G4Data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TopasLocation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/topas/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ShellScriptHeader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">KeepAllResults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>There are many overlapping functionalities required by all optimisation algorithms: logging, calculation of objective function,
 generation of models…etc. All of these common methods are contained this base class which other optimisation methods inherit.
-This class is not intended to be used in isolation and won’t work if you try.
-An important thing to note is that the variables from all optimisers are defined here, which means some of these options
-are specific to a particular optimiser. We may find a more elegant way to handle this in future!</p>
+This class is not intended to be used in isolation and won’t work if you try.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>optimisation_params</strong> (<em>list</em><em> or </em><em>array</em>) – Parameters to be optimised.</p></li>
+<li><p><strong>optimisation_params</strong> (<em>list</em><em> or </em><em>array</em>) – Parpytameters to be optimised.</p></li>
 <li><p><strong>BaseDirectory</strong> (<em>string</em>) – Place where all the topas simulation results are stored</p></li>
 <li><p><strong>SimulationName</strong> (<em>string</em>) – Specific folder for this simulation</p></li>
 <li><p><strong>OptimisationDirectory</strong> (<em>string</em><em> or </em><em>Path</em>) – location that TopasObjectiveFunction and GenerateTopasScript are located</p></li>
@@ -249,20 +247,20 @@ which can take a lot of space</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.TopasOptBaseClass.BlackBoxFunction">
-<span class="sig-name descname"><span class="pre">BlackBoxFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.BlackBoxFunction" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">BlackBoxFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_new</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.BlackBoxFunction" title="Link to this definition"></a></dt>
 <dd><p>Called Black Box function in the spirit of bayesian optimisation, this function simply takes the most recent
 parameter guesses, and solves the model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.TopasOptBaseClass.RunOptimisation">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.RunOptimisation" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RunOptimisation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.RunOptimisation" title="Link to this definition"></a></dt>
 <dd><p>each inheriting optimizer must supply its own RunOptimisation method</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.Optimisers.TopasOptBaseClass.SetUpDirectoryStructure">
-<span class="sig-name descname"><span class="pre">SetUpDirectoryStructure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.SetUpDirectoryStructure" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SetUpDirectoryStructure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.Optimisers.TopasOptBaseClass.SetUpDirectoryStructure" title="Link to this definition"></a></dt>
 <dd><p>Method to set up directory structure. This will attempt to empty the directory if it already exists.
 If Overwrite=False, it will ask first, otherwise just do it.
 Also writes the readme text if that exists, and copies all attributes of self to a json file.</p>
@@ -272,11 +270,11 @@ Also writes the readme text if that exists, and copies all attributes of self to
 
 </section>
 <section id="module-TopasOpt.TopasScriptGenerator">
-<span id="topasscriptgenerator"></span><h2>TopasScriptGenerator<a class="headerlink" href="#module-TopasOpt.TopasScriptGenerator" title="Permalink to this heading"></a></h2>
+<span id="topasscriptgenerator"></span><h2>TopasScriptGenerator<a class="headerlink" href="#module-TopasOpt.TopasScriptGenerator" title="Link to this heading"></a></h2>
 <p>Convert topas parameter files into a python function that recreates the input files.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.TopasScriptGenerator.generate_topas_script_generator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.TopasScriptGenerator.</span></span><span class="sig-name descname"><span class="pre">generate_topas_script_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OutputDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TopasScriptLocation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IncludeFileStorageDirectory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ErrorChecking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.TopasScriptGenerator.generate_topas_script_generator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.TopasScriptGenerator.</span></span><span class="sig-name descname"><span class="pre">generate_topas_script_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OutputDirectory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TopasScriptLocation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IncludeFileStorageDirectory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ErrorChecking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.TopasScriptGenerator.generate_topas_script_generator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This code will take a list topas scripts, and create a python function that returns a list for each script.
 Each list element contains one line of the topas script, which can be used to automatically regenerate that script.
@@ -300,38 +298,38 @@ scripts are portable. If no path is entered then they will be written to OutputD
 
 </section>
 <section id="module-TopasOpt.utilities">
-<span id="utilities"></span><h2>utilities<a class="headerlink" href="#module-TopasOpt.utilities" title="Permalink to this heading"></a></h2>
+<span id="utilities"></span><h2>utilities<a class="headerlink" href="#module-TopasOpt.utilities" title="Link to this heading"></a></h2>
 <p>Supporting classes and functions that don’t belong anywhere else in particular</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.FigureSpecs">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">FigureSpecs</span></span><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">FigureSpecs</span></span><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Thought this might be the easiest way to ensure universal parameters accross all figures</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.FigureSpecs.AxisFontSize">
-<span class="sig-name descname"><span class="pre">AxisFontSize</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.AxisFontSize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">AxisFontSize</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.AxisFontSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.FigureSpecs.Font">
-<span class="sig-name descname"><span class="pre">Font</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'serif'</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.Font" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Font</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'serif'</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.Font" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.FigureSpecs.LabelFontSize">
-<span class="sig-name descname"><span class="pre">LabelFontSize</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.LabelFontSize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">LabelFontSize</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.LabelFontSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.FigureSpecs.TitleFontSize">
-<span class="sig-name descname"><span class="pre">TitleFontSize</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.TitleFontSize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">TitleFontSize</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#TopasOpt.utilities.FigureSpecs.TitleFontSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="TopasOpt.utilities.PlotLogFile">
-<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">PlotLogFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LogFileLoc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.PlotLogFile" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">PlotLogFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LogFileLoc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.PlotLogFile" title="Link to this definition"></a></dt>
 <dd><p>This function can be used to plot an existing log file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -346,7 +344,7 @@ No error checking included! If not supplied, behaviour is instead to show the pl
 
 <dl class="py function">
 <dt class="sig sig-object py" id="TopasOpt.utilities.ReadInLogFile">
-<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">ReadInLogFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LogFileLoc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.ReadInLogFile" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">ReadInLogFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LogFileLoc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.ReadInLogFile" title="Link to this definition"></a></dt>
 <dd><p>Read in a log file and return as a dictionary</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -357,7 +355,7 @@ No error checking included! If not supplied, behaviour is instead to show the pl
 
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">WaterTankData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AnalysisPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileToAnalyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AbsDepthDose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">WaterTankData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AnalysisPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileToAnalyse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AbsDepthDose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Read in and analyse a series of topas scoring files in a rectangular phantom (the water tank).
 The main attribute is the ‘DoseCube’ array. This is the agregate of all the input files. If you
@@ -388,7 +386,7 @@ ExtractDataFromDoseCube to generate any additional data from it.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.ExtractDataFromDoseCube">
-<span class="sig-name descname"><span class="pre">ExtractDataFromDoseCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xpts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ypts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zpts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.ExtractDataFromDoseCube" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ExtractDataFromDoseCube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xpts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ypts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zpts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.ExtractDataFromDoseCube" title="Link to this definition"></a></dt>
 <dd><p>Extract data from the dose cube at positions Xpts, Ypts, Zpts
 Each of these is an array or list, and they must be the same shape (they can be of any dimensionality as
 they are flattened inside the function). The data is returned in the same shape as the input points.</p>
@@ -409,13 +407,13 @@ as the input coordinate arrays</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.Plot_DepthDose">
-<span class="sig-name descname"><span class="pre">Plot_DepthDose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_DepthDose" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Plot_DepthDose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_DepthDose" title="Link to this definition"></a></dt>
 <dd><p>Plot integral depth dose curves of all beamlets</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.Plot_DosePlanes">
-<span class="sig-name descname"><span class="pre">Plot_DosePlanes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AddColorBar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_DosePlanes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Plot_DosePlanes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">AddColorBar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_DosePlanes" title="Link to this definition"></a></dt>
 <dd><p>Use the DoseCube data to create a plot through each of the cardinal planes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -426,7 +424,7 @@ as the input coordinate arrays</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.Plot_Profiles">
-<span class="sig-name descname"><span class="pre">Plot_Profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_Profiles" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Plot_Profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Zpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_Profiles" title="Link to this definition"></a></dt>
 <dd><p>Plot profiles through integrated data. Can choose dir=’X’ or dir=’Y’
 You can also optionally pass multiple Z points; otherwise Z is set to the middle of the phantom</p>
 <dl class="field-list simple">
@@ -441,7 +439,7 @@ You can also optionally pass multiple Z points; otherwise Z is set to the middle
 
 <dl class="py method">
 <dt class="sig sig-object py" id="TopasOpt.utilities.WaterTankData.Plot_XYsurface">
-<span class="sig-name descname"><span class="pre">Plot_XYsurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Zpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_XYsurface" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">Plot_XYsurface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Zpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.WaterTankData.Plot_XYsurface" title="Link to this definition"></a></dt>
 <dd><p>Plot XY plots for multiple Z
 if Z = None, a single plot through the middle of the water phantom is produced</p>
 </dd></dl>
@@ -450,59 +448,59 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">bcolors</span></span><a class="headerlink" href="#TopasOpt.utilities.bcolors" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">bcolors</span></span><a class="headerlink" href="#TopasOpt.utilities.bcolors" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This is just here to enable me to print pretty colors to the linux terminal</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.BOLD">
-<span class="sig-name descname"><span class="pre">BOLD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[1m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.BOLD" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">BOLD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[1m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.BOLD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.ENDC">
-<span class="sig-name descname"><span class="pre">ENDC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[0m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.ENDC" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ENDC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[0m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.ENDC" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.FAIL">
-<span class="sig-name descname"><span class="pre">FAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[91m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.FAIL" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">FAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[91m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.FAIL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.HEADER">
-<span class="sig-name descname"><span class="pre">HEADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[95m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.HEADER" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">HEADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[95m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.HEADER" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.OKBLUE">
-<span class="sig-name descname"><span class="pre">OKBLUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[94m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.OKBLUE" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">OKBLUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[94m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.OKBLUE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.OKCYAN">
-<span class="sig-name descname"><span class="pre">OKCYAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[96m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.OKCYAN" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">OKCYAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[96m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.OKCYAN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.OKGREEN">
-<span class="sig-name descname"><span class="pre">OKGREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[92m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.OKGREEN" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">OKGREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[92m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.OKGREEN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.UNDERLINE">
-<span class="sig-name descname"><span class="pre">UNDERLINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[4m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.UNDERLINE" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">UNDERLINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[4m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.UNDERLINE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="TopasOpt.utilities.bcolors.WARNING">
-<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[93m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.WARNING" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[93m'</span></em><a class="headerlink" href="#TopasOpt.utilities.bcolors.WARNING" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="TopasOpt.utilities.compare_multiple_results">
-<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">compare_multiple_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BinFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_dose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_legend_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.compare_multiple_results" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">compare_multiple_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BinFiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_dose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_legend_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.compare_multiple_results" title="Link to this definition"></a></dt>
 <dd><p>this produces depth dose and profile plots for a list of topas .bin files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -517,7 +515,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="TopasOpt.utilities.generate_run_all_scripts_shell_script">
-<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">generate_run_all_scripts_shell_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scripts_to_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topas_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/topas38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G4_DATA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/G4Data'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.generate_run_all_scripts_shell_script" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">generate_run_all_scripts_shell_script</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scripts_to_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topas_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/topas38'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G4_DATA</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'~/G4Data'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.generate_run_all_scripts_shell_script" title="Link to this definition"></a></dt>
 <dd><p>generate a bash script to run a series of topas scripts</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -536,7 +534,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="TopasOpt.utilities.get_all_files">
-<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">get_all_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PathToData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.get_all_files" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">get_all_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PathToData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_extension</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.get_all_files" title="Link to this definition"></a></dt>
 <dd><p>quick script to just collect all the files in the Analysis path
 :param PathToData: folder where the files are
 :type PathToData: pathlib.Path or string
@@ -547,7 +545,7 @@ if Z = None, a single plot through the middle of the water phantom is produced</
 
 <dl class="py class">
 <dt class="sig sig-object py" id="TopasOpt.utilities.newJSONLogger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">newJSONLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.newJSONLogger" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">TopasOpt.utilities.</span></span><span class="sig-name descname"><span class="pre">newJSONLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#TopasOpt.utilities.newJSONLogger" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONLogger</span></code></p>
 <p>To avoid the annoying behaviour where the bayesian logs get deleted on restart.
 Thanks to: <a class="reference external" href="https://github.com/fmfn/BayesianOptimization/issues/159">https://github.com/fmfn/BayesianOptimization/issues/159</a></p>
