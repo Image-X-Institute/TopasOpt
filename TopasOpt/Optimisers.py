@@ -61,10 +61,8 @@ class TopasOptBaseClass:
     There are many overlapping functionalities required by all optimisation algorithms: logging, calculation of objective function,
     generation of models...etc. All of these common methods are contained this base class which other optimisation methods inherit.
     This class is not intended to be used in isolation and won't work if you try.
-    An important thing to note is that the variables from all optimisers are defined here, which means some of these options
-    are specific to a particular optimiser. We may find a more elegant way to handle this in future!
 
-    :param optimisation_params: Parameters to be optimised.
+    :param optimisation_params: Parpytameters to be optimised.
     :type optimisation_params: list or array
     :param BaseDirectory: Place where all the topas simulation results are stored
     :type BaseDirectory: string

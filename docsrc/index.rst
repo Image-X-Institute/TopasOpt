@@ -6,14 +6,14 @@
 Optimisation for Topas
 ======================
 
-`This repository <https://github.com/ACRF-Image-X-Institute/TopasOpt>`_ enables users to transform any radiation transport model in  `TopasMC <http://www.topasmc.org/>`_, into an optimisation problem, hence enabling users to apply the power of formal mathematical optimisation with the well established use cases for Monte Carlo modelling.
+`This repository <https://github.com/image-x-institute/TopasOpt>`_ enables users to transform any radiation transport model in  `TopasMC <http://www.topasmc.org/>`_, into an optimisation problem, hence enabling users to apply the power of formal mathematical optimisation with the well established use cases for Monte Carlo modelling.
 
 To install::
 
    pip install TopasOpt
    
-For help getting an appropriate environment set up, see `here <https://acrf-image-x-institute.github.io/TopasOpt/EnvironmentSetup.html>`_
-The quickest way to get started is to go through the `worked examples <https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html>`_.
+For help getting an appropriate environment set up, see `here <https://image-x-institute.github.io/TopasOpt/EnvironmentSetup.html>`_
+The quickest way to get started is to go through the `worked examples <https://image-x-institute.github.io/TopasOpt/worked_examples.html>`_.
 
 
 .. image:: _resources/BasicOptLoop.svg

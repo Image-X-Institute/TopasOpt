@@ -8,7 +8,7 @@ Actually running this example will take ~4 hours on a decent computer.
 
 ## Environmental set up and installation
 
-If you need help getting your environment or with installation set up see [here](https://acrf-image-x-institute.github.io/TopasOpt/EnvironmentSetup.html).
+If you need help getting your environment or with installation set up see [here](https://image-x-institute.github.io/TopasOpt/EnvironmentSetup.html).
 
 ## Base model and problem overview
 
@@ -27,12 +27,12 @@ When you have finished working through this example you should have a working di
 
 ## Copy the base topas files
 
-The code will need to know where your base model is stored. The base model for this application is available [here](https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true). Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!  
+The code will need to know where your base model is stored. The base model for this application is available [here](https://github.com/image-x-institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true). Download and unzip this folder, and place the contents inside your working directory (ApertureOptExample in this example). Note that in principle these files can reside anywhere; we are only using the working directory to make this example as simple as possible!  
 
 > hint: if you are running this example inside a command window use the following commands:
 
 ```bash
-wget -O start_files.zip https://github.com/ACRF-Image-X-Institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true
+wget -O start_files.zip https://github.com/image-x-institute/TopasOpt/blob/master/examples/SimpleCollimatorExample_TopasFiles.zip?raw=true
 # ^this is all one line!
 unzip start_files.zip
 rm start_files.zip
@@ -106,7 +106,7 @@ Optimiser.RunOptimisation()
 
 ```
 
-A full list of Optimiser options are [here](https://acrf-image-x-institute.github.io/TopasOpt/code_docs.html#module-TopasOpt.Optimisers) but the inputs we are using this case are described below:  
+A full list of Optimiser options are [here](https://image-x-institute.github.io/TopasOpt/code_docs.html#module-TopasOpt.Optimisers) but the inputs we are using this case are described below:  
 
 - **optimisation_params** is the dictionary of parameters we set up in this script, which describe the parameter names, starting values, and allowed bounds.
 - **BaseDirectory** is where you want to store all your optimisations
@@ -360,7 +360,7 @@ Using this code, we can generate the following figure:
 ![](_resources/ApertureOpt/compare.png)
 ## Improving these results
 
-There are number of things you could do to improve these results, many of which are explained in a bit more detail in the [next steps](https://acrf-image-x-institute.github.io/TopasOpt/next_steps.html) section:
+There are number of things you could do to improve these results, many of which are explained in a bit more detail in the [next steps](https://image-x-institute.github.io/TopasOpt/next_steps.html) section:
 
 - Run more iterations
 - Nelder-Mead: change the starting point, change the starting simplex
