@@ -1,8 +1,8 @@
 # Phase space optmisation example
 
-> **Note:** in this example it is assumed you have already completed the [example on Geometry optimisation](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html).
+> **Note:** in this example it is assumed you have already completed the [example on Geometry optimisation](https://image-x-institute.github.io/TopasOpt/ApertureOptimisation.html).
 
-In this example, we are going to optimise the same model as in the [ApertureOptimisation example](https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html), but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
+In this example, we are going to optimise the same model as in the [ApertureOptimisation example](https://image-x-institute.github.io/TopasOpt/ApertureOptimisation.html), but instead of optimising geometric parameters, we are going to optimize phase space parameters, shown in blue:
 
 ![](_resources/ApertureOpt/Sketch.png)
 This is a much more difficult problem for several reasons:
@@ -87,7 +87,7 @@ SimpleCollimator.append('ic:So/Beam/NumberOfHistoriesInRun = 200000') # note we 
 
 ## Create TopasObjectiveFunction.py
 
-We need to create an objective function. Since our basic problem is the same in the Aperture Optimisation example, we are using a very similar objective function. However, because we expect the results aren't especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see [here](https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html).
+We need to create an objective function. Since our basic problem is the same in the Aperture Optimisation example, we are using a very similar objective function. However, because we expect the results aren't especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see [here](https://image-x-institute.github.io/TopasOpt/designing_objective_functions.html).
 
 Note that there's a lot of things we could do to make this objective function better  - especially in light of the NelderMead results from the first example! But for now I am just keeping these examples very simple. 
 

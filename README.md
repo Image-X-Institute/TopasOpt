@@ -16,13 +16,13 @@ To install: ```pip install TopasOpt```
 
 ## Usage and Documentation
 
-Detailed documentation is provided [here](https://acrf-image-x-institute.github.io/TopasOpt/index.html)
-The source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) is inside the examples folder.
+Detailed documentation is provided [here](https://image-x-institute.github.io/TopasOpt/)
+The source code for the [worked examples](https://image-x-institute.github.io/TopasOpt/worked_examples.html) is inside the examples folder.
 
 ## Directory Structure
 
 - **TopasOpt:** source code
-- **examples:** source code for the [worked examples](https://acrf-image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
+- **examples:** source code for the [worked examples](https://image-x-institute.github.io/TopasOpt/worked_examples.html) provided in the docs
 - **docsrc:** markdown/rst documentation.
 - **tests:** tests which are run through github actions
 
