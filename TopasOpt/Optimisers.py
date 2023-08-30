@@ -62,7 +62,7 @@ class TopasOptBaseClass:
     generation of models...etc. All of these common methods are contained this base class which other optimisation methods inherit.
     This class is not intended to be used in isolation and won't work if you try.
 
-    :param optimisation_params: Parameters to be optimised.
+    :param optimisation_params: Parpytameters to be optimised.
     :type optimisation_params: list or array
     :param BaseDirectory: Place where all the topas simulation results are stored
     :type BaseDirectory: string
