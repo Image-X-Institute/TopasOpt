@@ -285,7 +285,14 @@ class TopasOptBaseClass:
         Generates a topas model with the latest parameters as well as a shell script called RunAllFiles.sh to run it.
         """
 
-        self.TopasScripts, self.TopasScriptNames = self.TopasScriptGenerator(self.BaseDirectory, self.Itteration, **self.VariableDict)
+        self.TopasScripts, self.TopasScriptNames = self.TopasScriptGenerator(Path(self.BaseDirectory) / self.SimulationName,
+                                                                             self.Itteration, **self.VariableDict,)
+        '''
+        ^ Note: in most cases, the first passed variable (base directory) will not be used in TopasScriptGenerator.
+        I'm leaving it here for backwards compatability, and in certain scenarious it's handy to have a hacky way
+        to pass an extra argument. I just want everyone to know, i'm not proud of myself for this.
+        '''
+
         self.ScriptsToRun = []
         for i, script_name in enumerate(self.TopasScriptNames):
             script_name = script_name + '_itt_' + str(self.Itteration) + '.tps'
