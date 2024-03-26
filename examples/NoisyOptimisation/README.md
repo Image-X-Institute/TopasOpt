@@ -124,7 +124,7 @@ cd n_particles_500000/scripts
 cd ../..
 ```
 
-You can go ahead and generate results locally if you want, but it is somewhat time consuming, so if you want you can just [download the pre-run results]([https://cloudstor.aarnet.edu.au/plus/s/7X2fwap7iIvC71O](https://zenodo.org/records/10369362)) and continue...
+You can go ahead and generate results locally if you want, but it is somewhat time consuming, so if you want you can just [download the pre-run results](https://zenodo.org/records/10369362) and continue...
 
 ## Set up a plotting function
 
@@ -241,7 +241,7 @@ GroundTruthDataPath = str(Path(__file__).parent / 'SimpleCollimatorExample_Topas
 # to wherever your ground truth results are
 ```
 
-Remember you can also [download the ground truth results](https://cloudstor.aarnet.edu.au/plus/s/Wm9vndV47u941JU)
+Remember you can also [download the ground truth results](https://zenodo.org/records/10369362)
 
 Ok, now we can run `quantify_noise.py`, which will produce the following results:
 
