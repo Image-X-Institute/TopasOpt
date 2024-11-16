@@ -16,6 +16,7 @@ jsonpickle = "^4.0.0"
 topas2numpy = "^0.2.0"
 
 
+
 [tool.poetry.group.dev]  # for testing/developing
 optional = true
 [tool.poetry.group.dev.dependencies]
@@ -32,6 +33,7 @@ sphinx-autodoc-typehints = [
 ]
 sphinx-markdown-tables = "^0.0.17"
 sphinx-rtd-theme = "^3.0.2"
+recommonmark = "^0.7.1"
 
 [build-system]
 requires = ["poetry-core"]
