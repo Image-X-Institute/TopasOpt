@@ -1,5 +1,5 @@
 """
-This script basically offers an 'itnegration test' for each optimiser.  For each optimiser, it will
+This script basically offers an 'integration test' for each optimiser.  For each optimiser, it will
 
 - check that it actually runs
 - check that the results are within 10% of a known ground truth
@@ -106,7 +106,7 @@ def test_BayesianRestart():
     best_y = ResultsDict['y'][best_solution_number]
     assert 0.9 <= best_x <= 1.1  # test answer within plus/minus 10% of truth
     assert 0.9 <= best_y <= 1.1  # test answer within plus/minus 10% of truth
-
+#
 
 def test_passing_wrong_parameters():
     """

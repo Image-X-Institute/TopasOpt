@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import sys, os
 from bayes_opt import BayesianOptimization
-from bayes_opt import UtilityFunction
+from bayes_opt import acquisition
 from bayes_opt.logger import JSONLogger
 from bayes_opt.util import load_logs, NotUniqueError
 from bayes_opt.event import Events
@@ -527,10 +527,7 @@ class TopasOptBaseClass:
                 x = self.x
             elif self.x.shape[0] == 1:
                 x = self.x[0]
-            else:
-                logger.error('how have you managed this.')
-                sys.exit(1)
-            self.OF = np.min([rosen(x), 100])  # rosenbrock function can get huge, so just cap it at 100.
+            self.OF = np.min([rosen(x), 10])  # rosenbrock function can get huge, so just cap it at 100.
             self.AllObjectiveFunctionValues.append(self.OF)
             self._UpdateOptimisationLogs(self.x, self.OF)
             self._Plot_Convergence()
@@ -734,11 +731,12 @@ class BayesianOptimiser(TopasOptBaseClass):
             # ^^ this is the parameter to ensure we end up with UCBKappa_final on the last iteration
 
         # instantiate optimizer:
-        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1, allow_duplicate_points=False)
+        acq = acquisition.UpperConfidenceBound(kappa=self.UCBkappa, exploration_decay=self.kappa_decay,
+                                                        exploration_decay_delay=self.kappa_decay_delay)
+        self.optimizer = BayesianOptimization(f=None, pbounds=self.pbounds, random_state=1,
+                                              allow_duplicate_points=False, acquisition_function=acq)
         self.optimizer.set_gp_params(normalize_y=True, kernel=self._kernel,
                                 n_restarts_optimizer=self.n_restarts_optimizer, alpha=self.bayes_GP_alpha)  # tuning of the gaussian parameters...
-        self.utility = UtilityFunction(kind="ucb", kappa=self.UCBkappa, xi=0.0, kappa_decay_delay=self.kappa_decay_delay,
-                                  kappa_decay=self.kappa_decay)
 
 
     def _derive_bayes_length_scales(self, bayes_length_scales):
@@ -957,17 +955,15 @@ class BayesianOptimiser(TopasOptBaseClass):
         else:
             self._setup_topas_emulator()
 
-
-
         if self.__RestartMode:
             # then load the previous log files:
             load_logs(self.optimizer, logs=[self.BayesOptLogLoc])
-            bayes_opt_logger = newJSONLogger(path=str(self.BayesOptLogLoc))
+            bayes_opt_logger = newJSONLogger(path=self.BayesOptLogLoc)
             self.optimizer.subscribe(Events.OPTIMIZATION_STEP, bayes_opt_logger)
             self.optimizer._gp.fit(self.optimizer._space.params, self.optimizer._space.target)
             self.Itteration = len(self.optimizer.space.target)
             self.ItterationStart = len(self.optimizer.space.target)
-            self.utility._iters_counter = self.ItterationStart
+            self.optimizer.acquisition_function.i =self.ItterationStart
             if self.Itteration >= self.MaxItterations-1:
                 logger.error(f'nothing to restart; max iterations is {self.MaxItterations} and have already been completed')
                 sys.exit(1)
@@ -981,18 +977,18 @@ class BayesianOptimiser(TopasOptBaseClass):
             self.optimizer.register(self.VariableDict, target=target)
 
         for point in range(self.Itteration, self.MaxItterations):
-            self.utility.update_params()
+
             if (self.Nsuggestions is not None) and (self.SuggestionsProbed < self.Nsuggestions):
                 # evaluate any suggested solutions first
                 next_point_to_probe = self.Suggestions[self.SuggestionsProbed]
                 self.SuggestionsProbed += 1
             else:
-                next_point_to_probe = self.optimizer.suggest(self.utility)
+                next_point_to_probe = self.optimizer.suggest()
 
             NextPointValues = np.array(list(next_point_to_probe.values()))
             mean, std = self.optimizer._gp.predict(NextPointValues.reshape(1, -1), return_std=True)
-            self._target_prediction_mean.append(mean[0])
-            self._target_prediction_std.append(std[0])
+            self._target_prediction_mean.append(float(mean))
+            self._target_prediction_std.append(float(mean))
             target = self.BlackBoxFunction(next_point_to_probe)
             try:
                 self.optimizer.register(params=next_point_to_probe, target=target)
