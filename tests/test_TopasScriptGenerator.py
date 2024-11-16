@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 this_dir = Path(__file__).parent
 sys.path.insert(0, str(this_dir.parent))
+
 from TopasOpt.TopasScriptGenerator import generate_topas_script_generator
 from pathlib import Path
 

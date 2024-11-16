@@ -7,5 +7,5 @@ https://acrf-image-x-institute.github.io/TopasOpt/
 import importlib.metadata
 
 __author__ = 'Brendan Whelan'
-__version__ = importlib.metadata.version("bayesian-optimization")
+__version__ = importlib.metadata.version("topasopt")
 
