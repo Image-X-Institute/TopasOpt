@@ -3,11 +3,7 @@ Supporting classes and functions that don't belong anywhere else in particular
 """
 from bayes_opt.logger import JSONLogger
 import sys
-import os
 sys.path.append('.')
-# from WaterTankAnalyser import WaterTankData
-# import numpy as np
-# from matplotlib import pyplot as plt
 import os, sys
 import logging
 import numpy as np
@@ -17,9 +13,8 @@ from scipy.interpolate import RegularGridInterpolator
 from pathlib import Path
 import stat
 import glob
-# import seaborn as sns
-plt.interactive(False)
 
+plt.interactive(False)
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
@@ -59,13 +54,14 @@ class newJSONLogger(JSONLogger):
     To avoid the annoying behaviour where the bayesian logs get deleted on restart.
     Thanks to: https://github.com/fmfn/BayesianOptimization/issues/159
     """
-    def __init__(self, path):
+    def __init__(self, path: Path):
         """
         I have to put a docstring here because I can't figure out how to make interrogate ignore it :-/
         """
-        self._path = None
+        self._path = path
+        # force json extension
+        self._path = self._path.with_suffix(".json")
         super(JSONLogger, self).__init__()
-        self._path = path if path[-5:] == ".json" else path + ".json"
 
 
 class WaterTankData:
@@ -724,6 +720,7 @@ def get_all_files(PathToData, file_extension):
         logging.error(f'no {file_extension} files in {PathToData}')
 
     return Files
+
 
 def generate_run_all_scripts_shell_script(script_location, scripts_to_run, topas_location='~/topas38', G4_DATA='~/G4Data'):
     """

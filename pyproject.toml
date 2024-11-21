@@ -1,9 +1,44 @@
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+[tool.poetry]
+name = "topasopt"
+version = "1.0.0"
+description = ""
+authors = ["brendan whelan"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "TopasOpt"}]
 
-[tool.interrogate]
-ignore-init-method = true
+[tool.poetry.dependencies]
+python = "^3.9"
+scikit-learn = "^1.0.0"
+numpy = ">=1.25"
+scipy = "^1.0.0"
+matplotlib = "^3.9.2"
+jsonpickle = "^4.0.0"
+topas2numpy = "^0.2.0"
+bayesian-optimization = "^2.0.0"
+
+
+
+
+[tool.poetry.group.dev]  # for testing/developing
+optional = true
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+coverage = "^7.4.1"
+sphinx = [
+    {version = "^7.0.0", python = "<3.10"},
+    {version = "^8.0.0", python = ">=3.10"}
+]
+sphinx-autodoc-typehints = [
+    {version = "^2.3.0", python = "<3.10"},
+    {version = "^2.4.0", python = ">=3.10"}
+]
+sphinx-markdown-tables = "^0.0.17"
+sphinx-rtd-theme = "^3.0.2"
+recommonmark = "^0.7.1"
+interrogate = "^1.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
 
 jobs:
   deploy:
@@ -15,22 +14,19 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
-
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.10'
-
-      - name: Upgrade pip
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Install test dependencies
         run: |
-          python3 -m pip install --upgrade pip
-      - name: Install dependencies
-        run: python3 -m pip install -r dev_requirements.txt
-
+          poetry install --with dev
       - name: build sphinx docs
         run: |
           cd docsrc
-          make github
+          poetry run make github
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/master' }}
