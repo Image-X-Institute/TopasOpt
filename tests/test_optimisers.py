@@ -73,7 +73,7 @@ def test_Nelder_Mead_UserDefinedSimplex():
 
 def test_Bayesian():
     ## Test Bayesian
-    optimisation_params['Nitterations'] = 100
+    optimisation_params['Nitterations'] = 200
     optimisation_params['Suggestions'] = np.array([0.7, 0.7])
 
     Optimiser = to.BayesianOptimiser(optimisation_params=optimisation_params, BaseDirectory=BaseDirectory,
