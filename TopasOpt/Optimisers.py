@@ -3,27 +3,30 @@
 This module contains the specific optimisation algorithms for TopasOpt. Most functionality is defined in TopasOptBaseClass,
 which other optimisers inherit from.
 """
-import subprocess
-import jsonpickle
-from matplotlib import pyplot as plt
+import logging
+import os
 # matplotlib.use('Agg')  # if having trouble with generating figures through ssh, this resolves...
 import shutil
-from scipy.optimize import minimize
-from scipy import stats
+import stat
+import subprocess
+import sys
+from abc import abstractmethod
 from pathlib import Path
+
+import jsonpickle
 import numpy as np
-import sys, os
 from bayes_opt import BayesianOptimization
 from bayes_opt import acquisition
+from bayes_opt.event import Events
 from bayes_opt.logger import JSONLogger
 from bayes_opt.util import load_logs, NotUniqueError
-from bayes_opt.event import Events
-from sklearn.gaussian_process.kernels import Matern
-import logging
-from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile, PlotLogFile
-import stat
+from matplotlib import pyplot as plt
+from scipy import stats
+from scipy.optimize import minimize
 from scipy.optimize import rosen
-from abc import abstractmethod
+from sklearn.gaussian_process.kernels import Matern
+
+from .utilities import bcolors, FigureSpecs, newJSONLogger, ReadInLogFile, PlotLogFile
 
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(filename)s: line %(lineno)d %(levelname)8s] %(message)s')
