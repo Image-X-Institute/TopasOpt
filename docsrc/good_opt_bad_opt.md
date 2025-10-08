@@ -29,3 +29,11 @@ Since you are using the Bayesian Optimiser, you will get several default plots i
 - `SingleParameterPlots` - have you observed a minimum within your bounds? if not: the bounds may need to be adjusted. How does the modelled uncertainty look? if it's high, you probably need to run more iterations.
 
 If you've done all this and you still think the optimisation doesn't work, then please raise an issue!
+
+**5. KISS: keep it simple stupid**
+
+Basically what we are doing here is a parameter search. The bigger the search space, the harder it is to find the solution. so:
+
+- limit the dimensionality: if you throw more than ~10 parameters in, you're going to have a hard time. If you have a lot of parameters, consider whether you can split the problem into stages, rather than optimizing every parameter at the same time.
+- limit the search region: bound your parameter space as tightly as possible
+- build up the problem complexity: verify you can get this working for simple cases, then build up complexity.
