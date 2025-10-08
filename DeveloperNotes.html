@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Developer Notes &mdash; TopasOpt  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="good_opt_bad_opt.html">How to know if the optimization has worked</a></li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Notes</a><ul>
@@ -136,23 +137,23 @@ twine<span class="w"> </span>upload<span class="w"> </span>dist/*<span class="w"
 <section id="adding-new-optimisation-algorithms">
 <h2>Adding new optimisation algorithms<a class="headerlink" href="#adding-new-optimisation-algorithms" title="Link to this heading"></a></h2>
 <p>This library has been designed to make it easy to add new optimisation algorithms. The basic approach for a new optimiser is below</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.Optimisers</span> <span class="kn">import</span> <span class="n">TopasOptBaseClass</span>   <span class="c1"># only necesary if you are not adding directly to TopasOpt.Optimisers.py</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.Optimisers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TopasOptBaseClass</span>   <span class="c1"># only necesary if you are not adding directly to TopasOpt.Optimisers.py</span>
 
-<span class="k">class</span> <span class="nc">NewOptimiser</span><span class="p">(</span><span class="n">TopasOptBaseClass</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewOptimiser</span><span class="p">(</span><span class="n">TopasOptBaseClass</span><span class="p">):</span>
     <span class="c1"># note all __init__ is handled in TopasOptBaseClass. You can see the source code for an example. You don&#39;t have to do it</span>
     <span class="c1"># exactly like this if you don&#39;t want - feel free to add your own __init__ and then use super().__init__ if you want.</span>
 
-    <span class="k">def</span> <span class="nf">_some_supporting_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_some_supporting_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 	<span class="c1"># all methods should be private except for RunOptimisation and RestartOptimisation. I prefer soft-private formalism, e.g. 		  # prefix your methods with a single underscore.</span>
         <span class="k">pass</span>
     
-    <span class="k">def</span> <span class="nf">RunOptimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># public method</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">RunOptimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># public method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">SetUpDirectoryStructure</span><span class="p">()</span> <span class="c1"># this is needed here for every optimiser</span>
         
         <span class="c1"># the function you want to minimise is self.BlackBoxFunction, which your optimiser has inherited from TOpasOptBaseClass</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">minimise</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">BlackBoxFunction</span><span class="p">)</span>  <span class="c1"># for example</span>
         
-    <span class="k">def</span> <span class="nf">RestartOptimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># this can be another handy public method but is not required or even possible for all optimisers.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">RestartOptimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># this can be another handy public method but is not required or even possible for all optimisers.</span>
         <span class="k">pass</span>
 </pre></div>
 </div>

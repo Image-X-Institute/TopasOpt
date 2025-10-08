@@ -26,6 +26,7 @@ The quickest way to get started is to go through the `worked examples <https://i
    :caption: Contents:
 
    /worked_examples
+   /good_opt_bad_opt
    /next_steps.md
    /EnvironmentSetup.md
    /DeveloperNotes.md

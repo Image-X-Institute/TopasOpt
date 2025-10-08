@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Next steps &mdash; TopasOpt  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Environment set up" href="EnvironmentSetup.html" />
-    <link rel="prev" title="Development example" href="DevelopmentExample.html" /> 
+    <link rel="prev" title="How to know if the optimization has worked" href="good_opt_bad_opt.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="good_opt_bad_opt.html">How to know if the optimization has worked</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Next steps</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#designing-objective-functions">Designing objective functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#competing-objectives">Competing objectives</a></li>
@@ -173,7 +174,7 @@ If you have not, it is strongly recommended that you go back and do so before pr
 <h3>read in and plot a previous log file<a class="headerlink" href="#read-in-and-plot-a-previous-log-file" title="Link to this heading"></a></h3>
 <p>Whenever an optimisation is run, a log file is created at BaseDirectory / SimulationName / logs/ OptimisationLogs.txt.
 You can read this file into a dictionary as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">ReadInLogFile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReadInLogFile</span>
 
 <span class="n">LogFileLoc</span> <span class="o">=</span> <span class="s1">&#39;/home/brendan/Documents/temp/NMtest/logs/OptimisationLogs.txt&#39;</span>
 <span class="n">LogFileDict</span> <span class="o">=</span> <span class="n">ReadInLogFile</span><span class="p">(</span><span class="n">LogFileLoc</span><span class="p">)</span>
@@ -181,7 +182,7 @@ You can read this file into a dictionary as follows:</p>
 </div>
 <p>You are then free to create your own plotting routines to present this data any way
 you want, but we do provide a default ploting function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">PlotLogFile</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotLogFile</span>
 
 <span class="n">LogFileLoc</span> <span class="o">=</span> <span class="s1">&#39;/home/brendan/Documents/temp/NMtest/logs/OptimisationLogs.txt&#39;</span>
 <span class="n">PlotLogFile</span><span class="p">(</span><span class="n">LogFileLoc</span><span class="p">)</span>
@@ -245,7 +246,7 @@ length scales used were, and what the fitted length scales at the end of the run
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="DevelopmentExample.html" class="btn btn-neutral float-left" title="Development example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="good_opt_bad_opt.html" class="btn btn-neutral float-left" title="How to know if the optimization has worked" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="EnvironmentSetup.html" class="btn btn-neutral float-right" title="Environment set up" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

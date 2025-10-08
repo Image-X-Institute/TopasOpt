@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Handling noisy data &mdash; TopasOpt  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -59,6 +59,7 @@
 <li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html">Development example</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="good_opt_bad_opt.html">How to know if the optimization has worked</a></li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
@@ -127,11 +128,11 @@
 </pre></div>
 </div>
 <p>Next, create a new file called (for instance) <code class="docutils literal notranslate"><span class="pre">generate_identical_sims.py</span></code> and copy the below code into it:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">GenerateTopasScripts</span> <span class="kn">import</span> <span class="n">GenerateTopasScripts</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">generate_run_all_scripts_shell_script</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">GenerateTopasScripts</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerateTopasScripts</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_run_all_scripts_shell_script</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
 
 <span class="n">basedirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">))</span> <span class="o">/</span> <span class="s1">&#39;Documents&#39;</span> <span class="o">/</span> <span class="s1">&#39;temp&#39;</span> <span class="o">/</span> <span class="s1">&#39;noise_sims&#39;</span>
@@ -208,10 +209,10 @@
 <section id="set-up-a-plotting-function">
 <h2>Set up a plotting function<a class="headerlink" href="#set-up-a-plotting-function" title="Link to this heading"></a></h2>
 <p>Create a new file called <code class="docutils literal notranslate"><span class="pre">noise_box_plots.py</span></code> and copy the below into it. We will use this function in the following steps.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 
-<span class="k">def</span> <span class="nf">plot_gp_model_versus_data</span><span class="p">(</span><span class="n">BoxPlotData</span><span class="p">,</span> <span class="n">target_predictions</span><span class="p">,</span> <span class="n">std_predictions</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_gp_model_versus_data</span><span class="p">(</span><span class="n">BoxPlotData</span><span class="p">,</span> <span class="n">target_predictions</span><span class="p">,</span> <span class="n">std_predictions</span><span class="p">):</span>
     <span class="n">figure</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -243,14 +244,14 @@
 <section id="assessing-noise-in-the-objective-function">
 <h2>Assessing noise in the objective function<a class="headerlink" href="#assessing-noise-in-the-objective-function" title="Link to this heading"></a></h2>
 <p>Now that we have the results (either because you generated them yourself or you downloaded the data) we can assess how the effect the objective function. Create a new script called e.g. <code class="docutils literal notranslate"><span class="pre">quantify_noise.py</span></code> and copy the below into it.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">TopasObjectiveFunction</span> <span class="kn">import</span> <span class="n">TopasObjectiveFunction</span>
-<span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">get_all_files</span>
-<span class="kn">from</span> <span class="nn">bayes_opt</span> <span class="kn">import</span> <span class="n">BayesianOptimization</span>
-<span class="kn">from</span> <span class="nn">bayes_opt</span> <span class="kn">import</span> <span class="n">UtilityFunction</span>
-<span class="kn">from</span> <span class="nn">noise_box_plots</span> <span class="kn">import</span> <span class="n">plot_gp_model_versus_data</span>
-<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasObjectiveFunction</span><span class="w"> </span><span class="kn">import</span> <span class="n">TopasObjectiveFunction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_all_files</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bayes_opt</span><span class="w"> </span><span class="kn">import</span> <span class="n">BayesianOptimization</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bayes_opt</span><span class="w"> </span><span class="kn">import</span> <span class="n">UtilityFunction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">noise_box_plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_gp_model_versus_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
 
 <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;/home/brendan/Downloads/noise_sims&#39;</span><span class="p">)</span> <span class="c1"># where is the previously generated (or downloaded) data</span>
 <span class="n">OptimisationDirectory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>  <span class="c1"># dont change</span>
@@ -340,11 +341,11 @@ From this, we observe the following:</p>
 <h2>Passing the newly constructed kernel to TopasOpt<a class="headerlink" href="#passing-the-newly-constructed-kernel-to-topasopt" title="Link to this heading"></a></h2>
 <p>So, we know we have a gaussian process model capable of modelling noise - at least under situation where it sees enough data. The next step is to test the effectiveness of the optimization using this gaussian process model.</p>
 <p>We are going to run the optimization repeatedly with a different number of primary particles. We are going to use the custom kernel developed in the previous section. The below run_optimisation script is almost identical the one we <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/ApertureOptimisation.html">used in the other example</a>, except we pass a custom kernel.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
-<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matern</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
 <span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/bwhelan/PhaserSims/topas/&#39;</span>
 

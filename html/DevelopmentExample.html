@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Development example &mdash; TopasOpt  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Next steps" href="next_steps.html" />
+    <link rel="next" title="How to know if the optimization has worked" href="good_opt_bad_opt.html" />
     <link rel="prev" title="Handling noisy data" href="NoisyOptimisation.html" /> 
 </head>
 
@@ -56,6 +56,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="good_opt_bad_opt.html">How to know if the optimization has worked</a></li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
@@ -105,7 +106,7 @@ which is a very commonly used function to test optimisers, and has a known globa
 <li><p>When you instantiate the optimser, you <strong>must</strong> set TopasLocation=’testing_mode’.</p></li>
 </ul>
 <p>GenerateTopasScripts:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">GenerateTopasScripts</span><span class="p">(</span><span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="o">**</span><span class="n">variable_dict</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">GenerateTopasScripts</span><span class="p">(</span><span class="n">BaseDirectory</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="o">**</span><span class="n">variable_dict</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;dummy_script&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;dummy_script&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -113,15 +114,15 @@ which is a very commonly used function to test optimisers, and has a known globa
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This does nothing, it is just here to enable tests to run</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="k">def</span> <span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">0</span>
 </pre></div>
 </div>
 <p>developmen_main.py:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
 
 <span class="n">BaseDirectory</span> <span class="o">=</span>  <span class="s1">&#39;/home/brendan/Documents/temp&#39;</span>
 <span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;development_test&#39;</span>
@@ -185,7 +186,7 @@ which is a very commonly used function to test optimisers, and has a known globa
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="NoisyOptimisation.html" class="btn btn-neutral float-left" title="Handling noisy data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="next_steps.html" class="btn btn-neutral float-right" title="Next steps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="good_opt_bad_opt.html" class="btn btn-neutral float-right" title="How to know if the optimization has worked" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

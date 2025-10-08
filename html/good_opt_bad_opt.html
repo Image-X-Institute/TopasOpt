@@ -1,0 +1,142 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to know if the optimization has worked &mdash; TopasOpt  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Next steps" href="next_steps.html" />
+    <link rel="prev" title="Development example" href="DevelopmentExample.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TopasOpt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="worked_examples.html">Worked Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to know if the optimization has worked</a></li>
+<li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_docs.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TopasOpt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">How to know if the optimization has worked</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/good_opt_bad_opt.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-to-know-if-the-optimization-has-worked">
+<h1>How to know if the optimization has worked<a class="headerlink" href="#how-to-know-if-the-optimization-has-worked" title="Link to this heading"></a></h1>
+<p>Just because your optimisation RUNS, doesn’t mean that it actually found the minimum. Here is some advice on assessing the quality of the optimisation. After some discussions with a colleague I felt inspired to write this brief notes.</p>
+<p><strong>1. Use the Bayesian Optimiser</strong></p>
+<p>Although this code supports multiple optimisers, the Bayesian optimiser gives excellent feedback about whether or not it actually worked, which is simply lacking in most other approaches. For this reason: I heavily recommend using the Bayesian approach</p>
+<p><strong>2. Make sure that your Topas simulation is robust before you start</strong></p>
+<p>If the simulation is no good, the optimisation will be no good. Of critical importance: is the noise level in the simulations acceptable for your use case? See <a class="reference external" href="https://image-x-institute.github.io/TopasOpt/NoisyOptimisation.html">handling noisy data</a> for instructions on assessing noise in the simulations. You can and should spend a lot of time on the Topas simulation side, tuning the noise versus run time and implementing appropriate variance reduction.</p>
+<p><strong>3. is your objective function appropriate</strong></p>
+<p>See <a class="reference external" href="https://image-x-institute.github.io/TopasOpt/next_steps.html#designing-objective-functions">designing objective functions</a>. If the objective function:</p>
+<ul class="simple">
+<li><p>does not in fact capture your objective</p></li>
+<li><p>has multiple global minima of similar magnitude</p></li>
+<li><p>is too noisy (see above)</p></li>
+</ul>
+<p>you are unlikely to get a high quality optimisation</p>
+<p><strong>4. Look at the default plots</strong></p>
+<p>Since you are using the Bayesian Optimiser, you will get several default plots in the logs folder.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ConvergencePlot</span></code> - do the predicted values correlate with the observed values? if not, then for some reason, the Gaussian process model is not modelling the objective</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Retrospective</span> <span class="pre">Model</span> <span class="pre">Fit</span></code> - this shows the predicted objective, for points which have already been observed. This one SHOULD correlate very well - it’s not hard to predict something that already happened!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SingleParameterPlots</span></code> - have you observed a minimum within your bounds? if not: the bounds may need to be adjusted. How does the modelled uncertainty look? if it’s high, you probably need to run more iterations.</p></li>
+</ul>
+<p>If you’ve done all this and you still think the optimisation doesn’t work, then please raise an issue!</p>
+<p><strong>5. KISS: keep it simple stupid</strong></p>
+<p>Basically what we are doing here is a parameter search. The bigger the search space, the harder it is to find the solution. so:</p>
+<ul class="simple">
+<li><p>limit the dimensionality: if you throw more than ~10 parameters in, you’re going to have a hard time. If you have a lot of parameters, consider whether you can split the problem into stages, rather than optimizing every parameter at the same time.</p></li>
+<li><p>limit the search region: bound your parameter space as tightly as possible</p></li>
+<li><p>build up the problem complexity: verify you can get this working for simple cases, then build up complexity.</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="DevelopmentExample.html" class="btn btn-neutral float-left" title="Development example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="next_steps.html" class="btn btn-neutral float-right" title="Next steps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Brendan Whelan(s).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

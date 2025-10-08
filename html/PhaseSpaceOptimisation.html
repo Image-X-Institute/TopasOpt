@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phase space optmisation example &mdash; TopasOpt  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -62,6 +62,7 @@
 <li class="toctree-l2"><a class="reference internal" href="DevelopmentExample.html">Development example</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="good_opt_bad_opt.html">How to know if the optimization has worked</a></li>
 <li class="toctree-l1"><a class="reference internal" href="next_steps.html">Next steps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="EnvironmentSetup.html">Environment set up</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DeveloperNotes.html">Developer Notes</a></li>
@@ -116,12 +117,12 @@ This is a much more difficult problem for several reasons:</p>
 <section id="creating-runoptimisation-py">
 <h2>Creating RunOptimisation.py<a class="headerlink" href="#creating-runoptimisation-py" title="Link to this heading"></a></h2>
 <p>The following is the script to run this optimisation. Remember to change the BaseDirectory to a place that exists on your computer!</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">TopasOpt</span> <span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimisers</span> <span class="k">as</span> <span class="n">to</span>
 
 <span class="n">BaseDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/Documents/temp&#39;</span>
 <span class="n">SimulationName</span> <span class="o">=</span> <span class="s1">&#39;PhaseSpaceOptimisationTutorial_bayes&#39;</span>
@@ -180,12 +181,12 @@ This is a much more difficult problem for several reasons:</p>
 <h2>Create TopasObjectiveFunction.py<a class="headerlink" href="#create-topasobjectivefunction-py" title="Link to this heading"></a></h2>
 <p>We need to create an objective function. Since our basic problem is the same in the Aperture Optimisation example, we are using a very similar objective function. However, because we expect the results aren’t especially sensitive to the parameters we are optimising, we know we will be looking for small differences. Therefore, we could take the log of the objective function to emphasize the difference between small changes. For explanation about why we choose to take the log see <a class="reference external" href="https://acrf-image-x-institute.github.io/TopasOpt/designing_objective_functions.html">here</a>.</p>
 <p>Note that there’s a lot of things we could do to make this objective function better  - especially in light of the NelderMead results from the first example! But for now I am just keeping these examples very simple.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">WaterTankData</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaterTankData</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="k">def</span> <span class="nf">CalculateObjectiveFunction</span><span class="p">(</span><span class="n">TopasResults</span><span class="p">,</span> <span class="n">GroundTruthResults</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">CalculateObjectiveFunction</span><span class="p">(</span><span class="n">TopasResults</span><span class="p">,</span> <span class="n">GroundTruthResults</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    In this example, for metrics I am going to calculate the RMS error between the desired and actual</span>
 <span class="sd">    profile and PDD. I will use normalised values to account for the fact that there may be different numbers of</span>
@@ -218,7 +219,7 @@ This is a much more difficult problem for several reasons:</p>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ObjectiveFunction</span><span class="p">)</span>  <span class="c1"># only difference from the geometry optimisation is that we will take the log here!</span>
 
 
-<span class="k">def</span> <span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">TopasObjectiveFunction</span><span class="p">(</span><span class="n">ResultsLocation</span><span class="p">,</span> <span class="n">iteration</span><span class="p">):</span>
     <span class="n">ResultsFile</span> <span class="o">=</span> <span class="n">ResultsLocation</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;WaterTank_itt_</span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s1">.bin&#39;</span>
     <span class="n">path</span><span class="p">,</span> <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">ResultsFile</span><span class="p">)</span>
     <span class="n">CurrentResults</span> <span class="o">=</span> <span class="n">WaterTankData</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
@@ -312,7 +313,7 @@ These plots show the predicted change in the objective function as each single p
 <section id="comparing-the-results">
 <h2>Comparing the results:<a class="headerlink" href="#comparing-the-results" title="Link to this heading"></a></h2>
 <p>Maybe you want to take a look at how a given iteration has performed versus the ground truth data. We have a handy function that allows you to quickly produce simple plots comparing different results:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">TopasOpt.utilities</span> <span class="kn">import</span> <span class="n">compare_multiple_results</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TopasOpt.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">compare_multiple_results</span>
 
 <span class="c1"># update paths to point to wherever your results are.</span>
 <span class="n">ResultsToCompare</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SimpleCollimatorExample_TopasFiles/Results/WaterTank.bin&#39;</span><span class="p">,</span>
